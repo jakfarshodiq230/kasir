@@ -43,18 +43,24 @@
 <body style="background: white">
     <div class="container">
             <!-- top navigation -->
-            <div class="top_nav">
-                <div class="nav_menu" style="background: #2A3F54">
+            <div class="top_nav mb-4" style="position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;">
+                <div class="nav_menu" style="background: #2A3F54; display: flex; align-items: center; justify-content: space-between;">
+                    <!-- Tulisan Sebelah Kiri -->
+                    <div style="color: white; font-size: 18px; font-weight: bold; padding-left: 15px;">
+                        POS {{strtoupper(session('toko_nama'))}} (  {{ strtoupper(Auth::user()->level_user).' '. strtoupper(session('cabang_nama'))}} )
+                    </div>
+
+                    <!-- Menu Sebelah Kanan -->
                     <nav class="nav navbar-nav">
-                        <ul class=" navbar-right">
+                        <ul class="navbar-right">
                             <li class="nav-item dropdown open" style="padding-left: 15px; ">
-                                <a href="javascript:;" class="user-profile dropdown-toggle" aria-haspopup="true" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
-                                    <img src="{{ asset('images/user.png') }}" alt="...">{{ Auth::user()->name }}
+                                <a href="javascript:;" class="user-profile dropdown-toggle" aria-haspopup="true" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false" style="color: white !importan;">
+                                    <img src="{{ asset('images/user.png') }}" alt="..." >{{ Auth::user()->name }}
                                 </a>
                                 <div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="{{route('kasir.index')}}"><i class="fa fa-shopping-bag pull-right"></i> Transaksi Non Pesanan</a>
                                     <a class="dropdown-item" href="{{route('kasir.pesanan')}}"><i class="fa fa-shopping-cart pull-right"></i> Transaksi Pesanan</a>
-                                    <a class="dropdown-item" href="{{route('kasir.list')}}"><i class="fa fa-sign-out pull-right"></i> Transaksi</a>
+                                    <a class="dropdown-item" href="{{route('kasir.list')}}"><i class="fa fa-sign-in pull-right"></i> Transaksi</a>
                                     <a class="dropdown-item" href="{{route('logout')}}"><i class="fa fa-sign-out pull-right"></i> Log Out</a>
                                 </div>
                             </li>

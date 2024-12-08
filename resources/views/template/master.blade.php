@@ -92,6 +92,7 @@
                                             <li><a href="{{ route('owner-laporan.stock')}}">Stock</a></li>
                                         </ul>
                                     </li>
+                                    <li><a href="#"><i class="fa fa-home"></i>Toko</a></li>
                                 </ul>
                             </div>
                         @endif
