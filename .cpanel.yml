@@ -1,4 +1,4 @@
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/shom5685/repositories/pos_optik
+    - export DEPLOYPATH=/home/shom5685/repositories/pos_optik_11
     - /usr/bin/rsync -Paz * $DEPLOYPATH --delete
