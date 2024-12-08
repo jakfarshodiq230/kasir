@@ -21,7 +21,7 @@
                     <form id="password-reset-form">
                         @csrf
                         <div class="d-flex flex-column">
-                            <h3 class="text-center mb-2">Login <br> <b>Irene Optik</b></h3>
+                            <h3 class="text-center mb-2">Reset Password <br> <b>Irene Optik</b></h3>
                             <input type="hidden" name="token" value="{{ $request->route('token') }}">
                             {{-- Display error for inactive user --}}
                             @if ($errors->has('status_user'))
