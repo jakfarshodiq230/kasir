@@ -263,11 +263,11 @@
                             <label class="d-block">JENIS TRANSAKSI</label>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="jenis_transaksi" id="jenis_transaksi1" value="non_hutang" checked required>
-                                <label class="form-check-label" for="jenis_transaksi1">NON HUTANG</label>
+                                <label class="form-check-label" for="jenis_transaksi1">NON UTANG</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="jenis_transaksi" id="jenis_transaksi2" value="hutang">
-                                <label class="form-check-label" for="jenis_transaksi2">HUTANG</label>
+                                <input class="form-check-input" type="radio" name="jenis_transaksi" id="jenis_transaksi2" value="hutang" disabled>
+                                <label class="form-check-label" for="jenis_transaksi2">UTANG</label>
                             </div>
                         </div>
                     </div>
