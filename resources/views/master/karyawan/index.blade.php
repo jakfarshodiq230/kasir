@@ -120,8 +120,13 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" form="addDataForm" class="btn btn-primary btn-sm">Submit</button>
+                        <div class="modal-footer d-flex justify-content-between w-100">
+                            <span class="text-danger">*Password default: 1234567890</span>
+                            <div>
+                                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" form="addDataForm" class="btn btn-primary btn-sm">Submit</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -170,6 +175,9 @@ $("#datatable-buttons2").DataTable({
                     </button>
                     <button class="btn btn-sm ${row.status_user == 0? 'btn-secondary' : 'btn-success'} toggle-status-btn" data-id="${row.id}" data-status="${ row.status_user == 0 ? 1 : 0}">
                         <i class="fas ${row.status_user == 0 ? 'fa-ban' : 'fa-check'}"></i> ${row.status_user == 0 ? 'Deactivate' : 'Activate'}
+                    </button>
+                    <button class="btn btn-sm btn-warning reset-btn" data-email="${row.email}">
+                        <i class="fas fa-key"></i> Reset Password
                     </button>
                 `;
             }
@@ -450,6 +458,57 @@ $(document).ready(function() {
             }
         });
     });
+
+    $(document).on('click', '.reset-btn', function() {
+    var email = $(this).data('email');
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "This action cannot be undone!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, reset password!',
+        cancelButtonText: 'No, keep it'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Send AJAX request to reset the password
+            $.ajax({
+                url: 'owner-reset-password',
+                type: 'post',
+                data: {
+                    email: email,
+                    _token: '{{ csrf_token() }}',
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Password Reset!',
+                            text: response.message ||'Please check your email for further instructions.',
+                        }).then(() => {
+                            $("#datatable-buttons2").DataTable().ajax.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: response.message || 'An error occurred while resetting the password.',
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'An error occurred!',
+                        text: error || 'Something went wrong with the request.',
+                    });
+                }
+            });
+        }
+    });
+});
+
 });
 
 </script>

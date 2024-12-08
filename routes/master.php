@@ -13,11 +13,16 @@ use App\Http\Controllers\Master\KaryawanController;
 use App\Http\Controllers\Master\CabangController;
 use App\Http\Controllers\Master\DashboardController;
 use App\Http\Controllers\Master\LaporanController;
-
+use App\Http\Controllers\Master\PasswordResetLinkController;
 
 Route::middleware('auth', 'verified', 'cek_level:owner')->group(function () {
     Route::prefix('owner-dashboard')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('owner-dashboard.index');
+    });
+
+    // reset password
+    Route::prefix('owner-reset-password')->group(function () {
+        Route::post('/', [PasswordResetLinkController::class, 'store'])->name('owner-reset-password.index');
     });
 
     Route::prefix('type')->group(function () {
