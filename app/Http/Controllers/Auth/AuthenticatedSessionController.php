@@ -28,6 +28,14 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Periksa status_user
+        if ($request->user()->status_user != 1) {
+            Auth::logout(); // Logout pengguna jika status_user tidak valid
+            return redirect()->route('login')->withErrors([
+                'status_user' => 'Akun Anda belum aktif. Silakan hubungi administrator.',
+            ]);
+        }
+
         $cabang = $request->user()->cabang;
         $toko = $request->user()->toko;
         $gudang = $request->user()->gudang;
@@ -40,7 +48,6 @@ class AuthenticatedSessionController extends Controller
             $request->session()->put('toko_id', $toko->id);
             $request->session()->put('toko_nama', $toko->nama_toko);
         }
-
         if ($gudang) {
             $request->session()->put('gudang_id', $gudang->id);
             $request->session()->put('gudang_nama', $gudang->nama_gudang);
@@ -61,8 +68,9 @@ class AuthenticatedSessionController extends Controller
             }
         }
 
-        // return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended(route('login', absolute: false));
     }
+
 
     /**
      * Destroy an authenticated session.

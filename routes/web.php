@@ -10,7 +10,7 @@ use App\Http\Controllers\SearchController;
 
 Route::get('/', function () {
     return view('welcome');
-})->name('ladingPage');
+})->name('dashboard');
 Route::get('/sercing-data-pesanan', [SearchController::class, 'index'])->name('gudang-dashboard.index');
 
 Route::middleware('auth')->group(function () {

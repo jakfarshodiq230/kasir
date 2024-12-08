@@ -31,9 +31,36 @@
                             <h4 class="card-title text-success mb-0">
                                 TRACKING PESANAN
                             </h4>
-                            <a href="{{ route('login') }}" class="d-flex align-items-center text-decoration-none">
-                                <i class="fa fa-sign-in fa-lg"></i>
-                            </a>
+                            @if (Route::has('login'))
+                                @auth
+                                    @php
+                                        $redirectUrl = '#'; // Default URL jika tidak ada level_user yang cocok
+                                        switch (Auth::user()->level_user) {
+                                            case 'kasir':
+                                                $redirectUrl = route('kasir.index');
+                                                break;
+                                            case 'admin':
+                                                $redirectUrl = route('admin-dashboard.index');
+                                                break;
+                                            case 'gudang':
+                                                $redirectUrl = route('gudang-dashboard.index');
+                                                break;
+                                            case 'owner':
+                                                $redirectUrl = route('owner-dashboard.index');
+                                                break;
+                                            default:
+                                                $redirectUrl = url('/'); // Atau arahkan ke halaman error jika tidak valid
+                                        }
+                                    @endphp
+                                    <a href="{{ $redirectUrl }}" class="d-flex align-items-center text-decoration-none">
+                                        <i class="fa fa-home fa-lg"></i>
+                                    </a>
+                                @else
+                                    <a href="{{ route('login') }}" class="d-flex align-items-center text-decoration-none">
+                                        <i class="fa fa-sign-in fa-lg"></i>
+                                    </a>
+                                @endauth
+                            @endif
                         </div>
 
                         <!-- Search form centered and responsive -->

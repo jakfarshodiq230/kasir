@@ -302,7 +302,7 @@ class TransaksiController extends Controller
         $date = now();
         $nomor_transaksi = $this->generateNextProductCodePesnan($date);
         $seting = OpSetingLensa::first();
-        $gudang = OpGudang::all();
+        $gudang = OpGudang::where('status_gudang', '=', 1)->get();
         //return response()->json(['success' => true, 'message' => 'Item deleted successfully', 'data' => $barang]);
         return view("kasir.transaksi-pesanan", compact('nomor_transaksi', 'seting', 'gudang'));
     }

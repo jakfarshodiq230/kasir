@@ -551,10 +551,13 @@
                         showCancelButton: true,
                         confirmButtonText: 'Tutup',
                         cancelButtonText: 'Print Nota',
-                        preConfirm: () => {
+                    }).then((result) => {
+                        if (result.dismiss === Swal.DismissReason.cancel) {
+                            // Jika tombol "Print Nota" diklik
                             printNota(idNota);
                         }
                     });
+
                 } else {
                     Swal.fire({
                         title: 'Gagal memproses transaksi!',
