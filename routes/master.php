@@ -17,7 +17,7 @@ use App\Http\Controllers\Master\LaporanController;
 
 Route::middleware('auth', 'verified', 'cek_level:owner')->group(function () {
     Route::prefix('owner-dashboard')->group(function () {
-        Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
+        Route::get('/', [DashboardController::class, 'index'])->name('owner-dashboard.index');
     });
 
     Route::prefix('type')->group(function () {

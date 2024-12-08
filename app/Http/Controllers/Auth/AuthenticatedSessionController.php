@@ -55,7 +55,7 @@ class AuthenticatedSessionController extends Controller
                 case 'gudang':
                     return redirect()->route('gudang-dashboard.index');
                 case 'owner':
-                    return redirect()->route('dashboard.index');
+                    return redirect()->route('owner-dashboard.index');
                 default:
                     abort(403, 'Unauthorized action.');
             }

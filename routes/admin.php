@@ -5,14 +5,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\StockBarangController;
 use App\Http\Controllers\admin\TransaksiController;
 use App\Http\Controllers\admin\KasController;
-use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\admin\LaporanController;
 
 // Middleware gabungan dengan 'cek_level:admin'
 Route::middleware(['auth', 'verified', 'cek_level:admin'])->group(function () {
     // Admin Dashboard
     Route::prefix('admin-dashboard')->group(function () {
-        Route::get('/', [DashboardController::class, 'index'])->name('admin-dashboard.index');
+        Route::get('/', [AdminDashboardController::class, 'index'])->name('admin-dashboard.index');
     });
 
     // Admin Stock

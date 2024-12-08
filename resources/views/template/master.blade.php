@@ -8,7 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="images/favicon.ico" type="image/ico" />
-
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/mata.png')}}">
     <title>{{strtoupper(session('toko_nama')).' '.strtoupper(session('cabang_nama'))}} </title>
 
     <!-- Bootstrap -->
@@ -71,7 +71,7 @@
                             <div class="menu_section">
                                 <h3>Owner</h3>
                                 <ul class="nav side-menu">
-                                    <li><a href="{{ route('dashboard.index')}}"><i class="fa fa-dashboard"></i>Dashboard</a></li>
+                                    <li><a href="{{ route('owner-dashboard.index')}}"><i class="fa fa-dashboard"></i>Dashboard</a></li>
                                     <li><a><i class="fa fa-database"></i> Master <span class="fa fa-chevron-down"></span></a>
                                         <ul class="nav child_menu">
                                             <li><a href="{{ route('kategori.index') }}">Kategori</a></li>

@@ -87,7 +87,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function gudang(): BelongsTo
     {
-        return $this->belongsTo(opGudang::class, 'id_gudang');
+        return $this->belongsTo(OpGudang::class, 'id_gudang');
     }
 
     public function penjualan()
