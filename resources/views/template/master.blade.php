@@ -176,8 +176,44 @@
                                     <img src="{{ asset('images/user.png') }}" alt="...">{{ Auth::user()->name }}
                                 </a>
                                 <div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#emailModal">
+                                        <i class="fa fa-key pull-right"></i>Password
+                                    </a>
                                     <a class="dropdown-item" href="{{route('logout')}}"><i class="fa fa-sign-out pull-right"></i> Log Out</a>
                                 </div>
+                                <!-- Modal -->
+                                <div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true" data-bs-backdrop="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <form id="emailForm" method="POST" action="#">
+                                                @csrf
+                                                <!-- Header Modal -->
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="emailModalLabel">Masukkan Email</h5>
+                                                </div>
+                                                <!-- Body Modal -->
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label for="email" class="form-label">Email</label>
+                                                        <input type="email" id="email" name="email" class="form-control" value="{{ old('email') }}" required autofocus>
+                                                        @if ($errors->has('email'))
+                                                            <div class="alert alert-danger mt-2">
+                                                                {{ $errors->first('email') }}
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                    <div id="statusMessage"></div>
+                                                </div>
+                                                <!-- Footer Modal -->
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </li>
                         </ul>
                     </nav>
@@ -265,7 +301,37 @@
 	<script src="{{ asset('vendors/devbridge-autocomplete/dist/jquery.autocomplete.min.js') }}"></script>
 
     @yield('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#emailForm').submit(function(event) {
+                event.preventDefault(); // Prevent the form from submitting normally
 
+                var form = $(this);
+                var formData = form.serialize(); // Serialize the form data
+
+                $.ajax({
+                    url: '/forgot-password',
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+                    console.log(response);
+
+                        $('#statusMessage').html('<div class="alert alert-success mt-3">' + response.message + '</div>');
+                        form[0].reset(); // Optionally reset the form
+                    },
+                    error: function(xhr) {
+                        // Handle error
+                        var errors = xhr.responseJSON.errors;
+                        var errorMessages = '';
+                        $.each(errors, function(key, value) {
+                            errorMessages += '<div class="alert alert-danger mt-2">' + value[0] + '</div>';
+                        });
+                        $('#statusMessage').html(errorMessages);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
