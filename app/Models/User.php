@@ -99,4 +99,9 @@ class User extends Authenticatable  implements MustVerifyEmail
     {
         return $this->hasMany(OpKas::class, 'id_user');
     }
+
+    public function sessionLogin(): BelongsTo
+    {
+        return $this->belongsTo(OpSession::class, 'user_id');
+    }
 }

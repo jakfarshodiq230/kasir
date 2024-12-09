@@ -12,6 +12,7 @@ use App\Http\Controllers\Master\TypeController;
 use App\Http\Controllers\Master\KaryawanController;
 use App\Http\Controllers\Master\CabangController;
 use App\Http\Controllers\Master\DashboardController;
+use App\Http\Controllers\Master\DivaceController;
 use App\Http\Controllers\Master\KasController;
 use App\Http\Controllers\Master\LaporanController;
 use App\Http\Controllers\Master\PasswordResetLinkController;
@@ -130,5 +131,10 @@ Route::middleware('auth', 'verified', 'cek_level:owner')->group(function () {
     Route::prefix('laporan-kas')->group(function () {
         Route::get('/kas', [KasController::class, 'index'])->name('owner-kas.index');
         Route::post('/kas-data', [KasController::class, 'GatDataKas'])->name('owner-kas.data-kas');
+    });
+
+    Route::prefix('divace')->group(function () {
+        Route::get('/login', [DivaceController::class, 'index'])->name('owner-divace-login.index');
+        Route::get('/login-data', [DivaceController::class, 'GetDataDivace'])->name('owner-divace-login.data-login');
     });
 });

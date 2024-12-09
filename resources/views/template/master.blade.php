@@ -94,6 +94,7 @@
                                     </li>
                                     <li><a href="{{ route('owner-kas.index')}}"><i class="fa fa-usd"></i>Kas</a></li>
                                     <li><a href="{{ route('owner-toko.index')}}"><i class="fa fa-home"></i>Toko</a></li>
+                                    <li><a href="{{ route('owner-divace-login.index')}}"><i class="fa fa-laptop"></i>Divace Login</a></li>
                                 </ul>
                             </div>
                         @endif
