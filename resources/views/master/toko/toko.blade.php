@@ -47,8 +47,8 @@
                                 </div>
                             </div>
                             <div class="field item form-group">
-                                <div class="col-md-6 col-sm-6 offset-md-3">
-                                    <button type="submit" class="btn btn-primary">Update</button>
+                                <div class="col-md-12 d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary btn-sm">Update</button>
                                 </div>
                             </div>
                         </form>
