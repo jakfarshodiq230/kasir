@@ -38,13 +38,13 @@
                     <div class="col-md-6 col-sm- ">
                         <div class="form-group row">
                             <input type="hidden" name="id" id="barang_id" value="">
-                            <label class="col-form-label col-md-3 col-sm-3 ">Nomor Transaksi</label>
+                            <label class="col-form-label col-md-3 col-sm-3 ">Nomor Transaksi<span class="required">*</span></label>
                             <div class="col-md-9 col-sm-9 ">
                                 <input type="text" class="form-control form-control-sm" id="nomor_transaksi" name="nomor_transaksi" value="<?= $nomor_transaksi ?>" placeholder="Nomor Transaksi" readonly>
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="control-label col-md-3 col-sm-3 ">Nama</label>
+                            <label class="control-label col-md-3 col-sm-3 ">Nama<span class="required">*</span></label>
                             <div class="col-md-0 col-sm-9 ">
                                 <input type="text" class="form-control form-control-sm" id="nama" name="nama" placeholder="Nama">
                             </div>
@@ -57,14 +57,14 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-form-label col-md-3 col-sm-3 ">Petugas</label>
+                            <label class="col-form-label col-md-3 col-sm-3 ">Petugas<span class="required">*</span></label>
                             <div class="col-md-9 col-sm-9 ">
                                 <input type="text" class="form-control form-control-sm" value="<?=  Auth::user()->name ?>" placeholder="Nama Petugas" readonly>
                                 <input type="hidden" name="id_user" id="id_user" value="<?=  Auth::user()->id ?>" class="form-control form-control-sm" placeholder="Nama Petugas">
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-form-label col-md-3 col-sm-3 ">Phone TLF/WA</label>
+                            <label class="col-form-label col-md-3 col-sm-3 ">Phone TLF/WA<span class="required">*</span></label>
                             <div class="col-md-9 col-sm-9 ">
                                 <input type="text" name="phone_transaksi" id="phone_transaksi" class="form-control form-control-sm form-control form-control-sm-sm" placeholder="Phone TLF/WA">
                             </div>
@@ -72,7 +72,7 @@
                         <br>
                         <div class="form-group row mt-4">
                             <div class="col-md-12 col-sm-12 p-0">
-                                <label class="col-form-label col-md-1 col-sm-1 ">R</label>
+                                <label class="col-form-label col-md-1 col-sm-1 ">R<span class="required">*</span></label>
                                 <input type="number" step="1" name="r_sph" id="r_sph" min="<?= $seting->sph_dari ?>" max="<?= $seting->sph_sampai ?>" class="form-control form-control-sm col-md-2 mr-2" placeholder="SPH">
                                 <input type="number" step="1" name="r_cyl" id="r_cyl" min="<?= $seting->cyl_dari ?>" max="<?= $seting->cyl_sampai ?>" class="form-control form-control-sm col-md-2 mr-2" placeholder="CYL">
                                 <input type="number" step="1" name="r_axs" id="r_axs" min="<?= $seting->axs_dari ?>" max="<?= $seting->axs_sampai ?>" class="form-control form-control-sm col-md-2 mr-2" placeholder="AXS">
@@ -83,37 +83,37 @@
                     </div>
                     <div class="col-md-6 col-sm-6  bg-white">
                         <div class="form-group row">
-                            <label class="control-label col-md-3 col-sm-3 ">Diamater</label>
+                            <label class="control-label col-md-3 col-sm-3 ">Diamater<span class="required">*</span></label>
                             <div class="col-md-9 col-sm-9 ">
                                 <input type="number" name="diameter" id="diameter" class="form-control form-control-sm" placeholder="Diamater">
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="control-label col-md-3 col-sm-3 ">Warna</label>
+                            <label class="control-label col-md-3 col-sm-3 ">Warna<span class="required">*</span></label>
                             <div class="col-md-9 col-sm-9 ">
                                 <input type="text" name="warna" id="warna" class="form-control form-control-sm" placeholder="Warna">
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-form-label col-md-3 col-sm-3 ">Tanggal Transaksi*</label>
+                            <label class="col-form-label col-md-3 col-sm-3 ">Tanggal Transaksi<span class="required">*</span></label>
                             <div class="col-md-9 col-sm-9 ">
                                 <input type="date" name="tanggal_transaksi" id="tanggal_transaksi" class="form-control form-control-sm" placeholder="Harga Grosir">
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-form-label col-md-3 col-sm-3 ">Tanggal Selesai*</label>
+                            <label class="col-form-label col-md-3 col-sm-3 ">Tanggal Selesai<span class="required">*</span></label>
                             <div class="col-md-9 col-sm-9 ">
                                 <input type="date" name="tanggal_selesai" id="tanggal_selesai" class="form-control form-control-sm" placeholder="Harga Grosir">
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-form-label col-md-3 col-sm-3 ">Tanggal Ambil*</label>
+                            <label class="col-form-label col-md-3 col-sm-3 ">Tanggal Ambil<span class="required">*</span></label>
                             <div class="col-md-9 col-sm-9 ">
                                 <input type="date" name="tanggal_ambil" id="tanggal_ambil" class="form-control form-control-sm" placeholder="Tanggal Ambil">
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-form-label col-md-3 col-sm-3 ">Gudang</label>
+                            <label class="col-form-label col-md-3 col-sm-3 ">Gudang<span class="required">*</span></label>
                             <div class="col-md-9 col-sm-9 ">
                                 <select class="select2_single form-control form-control-sm" tabindex="-1" name="id_gudang" id="id_gudang">
                                     <option value="" disabled selected>PILIH</option>
@@ -129,7 +129,7 @@
                         <br>
                         <div class="form-group row">
                             <div class="col-md-12 col-sm-12 p-0">
-                                <label class="col-form-label col-md-1 col-sm-1 ">L</label>
+                                <label class="col-form-label col-md-1 col-sm-1 ">L<span class="required">*</span></label>
                                 <input type="number" step="1" name="l_sph" id="l_sph" min="<?= $seting->sph_dari ?>" max="<?= $seting->sph_sampai ?>" class="form-control form-control-sm col-md-2 mr-2" placeholder="SPH">
                                 <input type="number" step="1" name="l_cyl" id="l_cyl" min="<?= $seting->cyl_dari ?>" max="<?= $seting->cyl_sampai ?>" class="form-control form-control-sm col-md-2 mr-2" placeholder="CYL">
                                 <input type="number" step="1" name="l_axs" id="l_axs" min="<?= $seting->axs_dari ?>" max="<?= $seting->axs_sampai ?>" class="form-control form-control-sm col-md-2 mr-2" placeholder="AXS">
@@ -155,25 +155,25 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="control-label col-md-3 col-sm-3 ">Kode Barang</label>
+                                    <label class="control-label col-md-3 col-sm-3 ">Kode Barang<span class="required">*</span></label>
                                     <div class="col-md-9 col-sm-9 ">
                                         <input type="text" name="kode_produk" id="kode_produk" class="form-control form-control-sm" placeholder="Kode Barang" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="control-label col-md-3 col-sm-3 ">Nama Barang</label>
+                                    <label class="control-label col-md-3 col-sm-3 ">Nama Barang<span class="required">*</span></label>
                                     <div class="col-md-9 col-sm-9 ">
                                         <input type="text" name="nama_produk" id="nama_produk" class="form-control form-control-sm" placeholder="Nama Barang" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="control-label col-md-3 col-sm-3 ">Stock</label>
+                                    <label class="control-label col-md-3 col-sm-3 ">Stock<span class="required">*</span></label>
                                     <div class="col-md-9 col-sm-9 ">
                                         <input type="number" name="stock_barang" id="stock_barang" class="form-control form-control-sm" placeholder="Stock" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="control-label col-md-3 col-sm-3 ">Harga</label>
+                                    <label class="control-label col-md-3 col-sm-3 ">Harga<span class="required">*</span></label>
                                     <div class="col-md-9 col-sm-9 ">
                                         <select class="select2_single form-control form-control-sm" tabindex="-1" name="harga_barang" id="harga_barang">
                                             <option>PILIH</option>
@@ -181,7 +181,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="control-label col-md-3 col-sm-3 ">Jumlah</label>
+                                    <label class="control-label col-md-3 col-sm-3 ">Jumlah<span class="required">*</span></label>
                                     <div class="col-md-9 col-sm-9 ">
                                         <input type="number" name="jumlah_barang" id="jumlah_barang" class="form-control form-control-sm" value="0" placeholder="Jumlah Beli">
                                     </div>
@@ -247,7 +247,7 @@
                 <div class="row">
                     <div class="col-sm-2 text-center" style="padding: 0px;">
                         <div class="form-group">
-                            <label class="d-block">PEMBAYARAN</label>
+                            <label class="d-block">PEMBAYARAN<span class="required">*</span></label>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="pembayaran" id="paymentCash" value="tunai" checked required>
                                 <label class="form-check-label" for="paymentCash">CASH</label>
@@ -260,7 +260,7 @@
                     </div>
                     <div class="col-sm-3 text-center" style="padding: 0px;">
                         <div class="form-group">
-                            <label class="d-block">JENIS TRANSAKSI</label>
+                            <label class="d-block">JENIS TRANSAKSI<span class="required">*</span></label>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="jenis_transaksi" id="jenis_transaksi1" value="non_hutang" checked required>
                                 <label class="form-check-label" for="jenis_transaksi1">NON UTANG</label>
