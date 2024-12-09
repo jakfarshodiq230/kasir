@@ -107,7 +107,13 @@ $("#datatable-buttons2").DataTable({
     columns: [
         { data: "id", title: "ID" },
         { data: "type", title: "type" },
-        { data: "created_at", title: "Created" },
+        {
+            data: "created_at",
+            title: "Created",
+            render: function(data, type, row) {
+                return moment(data).format('YYYY-MM-DD HH:mm:ss');
+            }
+        },
         {
             data: null,
             title: "Action",
