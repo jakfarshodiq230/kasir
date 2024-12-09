@@ -92,6 +92,7 @@
                                             <li><a href="{{ route('owner-laporan.stock')}}">Stock</a></li>
                                         </ul>
                                     </li>
+                                    <li><a href="{{ route('owner-kas.index')}}"><i class="fa fa-usd"></i>Kas</a></li>
                                     <li><a href="{{ route('owner-toko.index')}}"><i class="fa fa-home"></i>Toko</a></li>
                                 </ul>
                             </div>

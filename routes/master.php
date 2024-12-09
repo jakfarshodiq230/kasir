@@ -12,6 +12,7 @@ use App\Http\Controllers\Master\TypeController;
 use App\Http\Controllers\Master\KaryawanController;
 use App\Http\Controllers\Master\CabangController;
 use App\Http\Controllers\Master\DashboardController;
+use App\Http\Controllers\Master\KasController;
 use App\Http\Controllers\Master\LaporanController;
 use App\Http\Controllers\Master\PasswordResetLinkController;
 use App\Http\Controllers\Master\TokoController;
@@ -124,5 +125,10 @@ Route::middleware('auth', 'verified', 'cek_level:owner')->group(function () {
         Route::post('/utang/data', [LaporanController::class, 'GetDataUtang'])->name('owner-laporan.data-utang');
         Route::get('/stock', [LaporanController::class, 'stock'])->name('owner-laporan.stock');
         Route::post('/stock/data', [LaporanController::class, 'GetDataStock'])->name('owner-laporan.data-stock');
+    });
+
+    Route::prefix('laporan-kas')->group(function () {
+        Route::get('/kas', [KasController::class, 'index'])->name('owner-kas.index');
+        Route::post('/kas-data', [KasController::class, 'GatDataKas'])->name('owner-kas.data-kas');
     });
 });
