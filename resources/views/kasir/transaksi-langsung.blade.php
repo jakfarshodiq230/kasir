@@ -283,8 +283,26 @@
         // print
         function printNota(id) {
             const url = `/kasir/transaksi-langsung-cetak/${id}`;
-            window.location.href = url;
+
+            // Ambil konten halaman menggunakan AJAX
+            fetch(url)
+                .then(response => response.text())  // Mengambil konten dalam format HTML
+                .then(html => {
+                    // Membuka jendela baru untuk menampilkan konten
+                    const printWindow = window.open('', '', 'width=600,height=600');
+                    printWindow.document.write(html);  // Menulis konten ke jendela baru
+                    printWindow.document.close();
+
+                    // Setelah konten dimuat, cetak dokumen
+                    printWindow.onload = function() {
+                        printWindow.print();  // Membuka dialog cetak
+                    };
+                })
+                .catch(error => {
+                    console.error('Terjadi kesalahan saat mengambil dokumen:', error);
+                });
         }
+
 
         // menampilkan data tabel
         function loadCartData() {

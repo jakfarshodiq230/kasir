@@ -301,8 +301,27 @@
     });
     function printNota(id) {
         const url = `/kasir/transaksi-pemesanan-cetak/${id}`;
-        window.location.href = url;
+
+        // Ambil konten halaman menggunakan fetch
+        fetch(url)
+            .then(response => response.text()) // Ambil respon dalam bentuk teks (HTML)
+            .then(html => {
+                // Membuka jendela baru
+                const printWindow = window.open('', '', 'width=800,height=600');
+                printWindow.document.write(html); // Menulis konten HTML ke dalam jendela baru
+                printWindow.document.close();
+
+                // Tunggu hingga jendela siap, lalu cetak
+                printWindow.onload = function() {
+                    printWindow.print(); // Buka dialog cetak
+                    printWindow.close(); // Tutup jendela setelah mencetak
+                };
+            })
+            .catch(error => {
+                console.error('Gagal mengambil halaman untuk mencetak:', error);
+            });
     }
+
     // menampilkan data tabel
     function loadCartData() {
         $.ajax({

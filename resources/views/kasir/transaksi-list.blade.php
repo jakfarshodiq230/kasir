@@ -529,13 +529,34 @@
                 var dataId = $('#addDataForm').data('id');
                 var jenis = $('#addDataForm').data('jenis');
                 let url = '';
+
+                // Tentukan URL berdasarkan jenis transaksi
                 if (jenis === 'langsung') {
-                     url = `/kasir/transaksi-langsung-cetak/${dataId}`;
+                    url = `/kasir/transaksi-langsung-cetak/${dataId}`;
                 } else {
-                     url = `/kasir/transaksi-pemesanan-cetak/${dataId}`;
+                    url = `/kasir/transaksi-pemesanan-cetak/${dataId}`;
                 }
-                window.location.href = url;
+
+                // Ambil konten halaman menggunakan fetch
+                fetch(url)
+                    .then(response => response.text()) // Ambil respon dalam format teks (HTML)
+                    .then(html => {
+                        // Membuka jendela baru untuk konten cetak
+                        const printWindow = window.open('', '', 'width=800,height=600');
+                        printWindow.document.write(html); // Masukkan HTML ke dalam jendela baru
+                        printWindow.document.close();
+
+                        // Tunggu hingga dokumen siap, lalu cetak
+                        printWindow.onload = function() {
+                            printWindow.print(); // Dialog cetak muncul
+                            printWindow.close(); // Tutup jendela setelah mencetak
+                        };
+                    })
+                    .catch(error => {
+                        console.error('Gagal mengambil halaman untuk mencetak:', error);
+                    });
             });
+
 
             // hutang
             function checkJumlahBayar() {
