@@ -1,4 +1,12 @@
 @extends('template.master')
+@section('styles')
+    <style>
+        .panel_toolbox {
+            float: right;
+            min-width: 0px;
+        }
+    </style>
+@endsection
 @section('konten')
 <div class="right_col" role="main">
     {{-- isi conten --}}
