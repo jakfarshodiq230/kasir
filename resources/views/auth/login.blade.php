@@ -21,7 +21,7 @@
                     <form action="{{ route('login') }}" method="POST">
                         @csrf
                         <div class="d-flex flex-column">
-                            <h3 class="text-center mb-2">Login <br> <b>Irene Optik</b></h3>
+                            <h3 class="text-center mb-2">Login <br> <b>{{ $toko->nama_toko}}</b></h3>
 
                             {{-- Display error for inactive user --}}
                             @if ($errors->has('status_user'))
