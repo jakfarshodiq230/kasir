@@ -110,6 +110,10 @@ return [
     |
     */
 
+    'events' => [
+        'login' => \App\Events\Login::class,
+    ],
+
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
 ];

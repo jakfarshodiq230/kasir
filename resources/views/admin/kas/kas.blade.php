@@ -41,7 +41,7 @@
                         <input type="date" id="filter-tanggal-transaksi" class="form-control form-control-sm">
                     </div>
                     <div class="col-auto">
-                        <input type="text" id="filter-nomor-transaksi" class="form-control form-control-sm">
+                        <input type="text" id="filter-nomor-transaksi" class="form-control form-control-sm" placeholder="ketikan kode transaksi">
                     </div>
                 </div>
             </div>

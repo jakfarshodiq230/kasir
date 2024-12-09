@@ -635,7 +635,11 @@
                     }
                 },
                 error: function () {
-                    alert('Failed to fetch Barang');
+                    Swal.fire({
+                        title: 'Gagal memproses pengambilan daftar barang pada gudang, hubungi administrator gudang!',
+                        icon: 'error',
+                        confirmButtonText: 'Tutup'
+                    });
                 }
             });
         }

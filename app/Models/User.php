@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable  implements MustVerifyEmail
 {
 
     /** @use HasFactory<\Database\Factories\UserFactory> */

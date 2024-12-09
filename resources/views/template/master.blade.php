@@ -230,7 +230,16 @@
             <!-- footer content -->
             <footer>
                 <div class="pull-right">
-                    {{strtoupper(session('toko_nama'))}} (  {{ strtoupper(Auth::user()->level_user).' '. strtoupper(session('cabang_nama'))}} )  @ 2024
+                    @if (strtoupper(Auth::user()->level_user) === 'OWNER')
+                    {{ strtoupper(Auth::user()->toko->nama_toko) }}
+                @else
+                    {{ strtoupper(Auth::user()->toko->nama_toko) }}
+                    ( {{ strtoupper(Auth::user()->level_user) . ' ' . strtoupper(Auth::user()->cabang->nama_toko_cabang) }} )
+                @endif
+                    @
+                @php
+                     echo date('Y');
+                @endphp
                 </div>
                 <div class="clearfix"></div>
             </footer>
