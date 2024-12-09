@@ -36,6 +36,24 @@
     <link href="{{ asset('vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css') }}" rel="stylesheet">
+    <style>
+        ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+        border: 2px solid #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+        }
+    </style>
     {{-- select2 --}}
     @yield('styles')
 </head>
