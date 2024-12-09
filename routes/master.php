@@ -14,6 +14,7 @@ use App\Http\Controllers\Master\CabangController;
 use App\Http\Controllers\Master\DashboardController;
 use App\Http\Controllers\Master\LaporanController;
 use App\Http\Controllers\Master\PasswordResetLinkController;
+use App\Http\Controllers\Master\TokoController;
 
 Route::middleware('auth', 'verified', 'cek_level:owner')->group(function () {
     Route::prefix('owner-dashboard')->group(function () {
@@ -23,6 +24,11 @@ Route::middleware('auth', 'verified', 'cek_level:owner')->group(function () {
     // reset password
     Route::prefix('owner-reset-password')->group(function () {
         Route::post('/', [PasswordResetLinkController::class, 'store'])->name('owner-reset-password.index');
+    });
+
+    Route::prefix('owner-toko')->group(function () {
+        Route::get('/', [TokoController::class, 'index'])->name('owner-toko.index');
+        Route::put('/update-toko/{id}', [TokoController::class, 'update'])->name('owner-toko.update');
     });
 
     Route::prefix('type')->group(function () {
