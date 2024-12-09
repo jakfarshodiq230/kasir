@@ -50,7 +50,7 @@
                                         <th>No</th>
                                         <th>Nomor Transaksi</th>
                                         <th>Nomor Transaksi</th>
-                                        <th>Harga</th>
+                                        <th>Nama</th>
                                         <th>Jumlah</th>
                                         <th>Sub Total</th>
                                         <th>Ketrangan</th>
@@ -82,7 +82,7 @@
                                         <th>No</th>
                                         <th>Nomor Transaksi</th>
                                         <th>Nomor Transaksi</th>
-                                        <th>Harga</th>
+                                        <th>Nama</th>
                                         <th>Jumlah</th>
                                         <th>Sub Total</th>
                                         <th>Ketrangan</th>
@@ -114,7 +114,7 @@
                                         <th>No</th>
                                         <th>Nomor Transaksi</th>
                                         <th>Nomor Transaksi</th>
-                                        <th>Harga</th>
+                                        <th>Nama</th>
                                         <th>Rincian</th>
                                         <th>Ketrangan</th>
                                         <th>Action</th>
@@ -173,7 +173,7 @@
                                       <tr>
                                         <th>No.</th>
                                         <th>Rincian</th>
-                                        <th>Harga</th>
+                                        <th>Nama</th>
                                         <th>Jumlah</th>
                                         <th>Subtotal</th>
                                       </tr>
@@ -398,7 +398,11 @@
                         }
                     },
                     { data: 'nomor_transaksi', name: 'Nomor Transaksi' },
-                    { data: 'nama', name: 'Nama' },
+                    {
+                        data: 'nama',
+                        name: 'Nama',
+                        titel: 'Nama',
+                    },
                     {
                         data: 'total_beli',
                         name: 'jumlah',
