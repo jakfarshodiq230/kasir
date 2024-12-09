@@ -566,6 +566,7 @@
         });
 
         $('#btnReset').click(function() {
+            $('#btnPrintNota').prop('disabled', true);
             // Reset the form values
             $('#nama').val('');
             $('#alamat').val('');
@@ -586,15 +587,26 @@
 
         $('#btnNewTransaksi').click(function() {
             window.location.reload();
+            $('#nama').val('');
+            $('#alamat').val('');
+            $('#id_user').val('');
+            $('#phone_transaksi').val('');
+            $('#diameter').val('');
+            $('#warna').val('');
+            $('#tanggal_transaksi').val('');
+            $('#tanggal_selesai').val('');
+            $('#tanggal_ambil').val('');
+            $('#pembayaran').val('');
+            $('#jenis_transaksi').val('');
+            $('#total_beli').val('');
+            $('#diskon').val('');
+            $('#jumlah_bayar').val('');
+            $('#sisa_bayar').val('');
         });
 
         // cek klik button simpan
         $('#btnProseTransaksi').on('click', function () {
             $('#btnPrintNota').prop('disabled', false);
-        });
-
-        $('#btnReset').on('click', function () {
-            $('#btnPrintNota').prop('disabled', true);
         });
 
         $('#btnPrintNota').on('click', function () {

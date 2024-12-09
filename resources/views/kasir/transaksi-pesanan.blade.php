@@ -493,6 +493,22 @@
 
     $('#btnNewTransaksi').click(function() {
         window.location.reload();
+        $('#nama').val('');
+        $('#alamat').val('');
+        $('#id_user').val('');
+        $('#phone_transaksi').val('');
+        $('#diameter').val('');
+        $('#warna').val('');
+        $('#tanggal_transaksi').val('');
+        $('#tanggal_selesai').val('');
+        $('#tanggal_ambil').val('');
+        $('#pembayaran').val('');
+        $('#jenis_transaksi').val('');
+        $('#total_beli').val('');
+        $('#diskon').val('');
+        $('#jumlah_bayar').val('');
+        $('#sisa_bayar').val('');
+        $('#id_gudang').val('');
     });
 
     // cek klik button simpan
