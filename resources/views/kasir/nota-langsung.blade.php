@@ -166,32 +166,36 @@
                 <tr class="tabletitle">
                     <td class="item"><h2>Item</h2></td>
                     <td class="Hours"><h2>Qty</h2></td>
+                    <td class="Rate"><h2>Harga</h2></td>
                     <td class="Rate"><h2>Sub Total</h2></td>
                 </tr>
                 <?php
+                $total = 0;
                     foreach ($detailenjulan as $key => $value) {
+                        $total = $value->jumlah_barang * $value->harga_barang;
                 ?>
                     <tr class="service">
                         <td class="tableitem"><p class="itemtext"><?= $value->barang->nama_produk ?></p></td>
                         <td class="tableitem"><p class="itemtext"><?= $value->jumlah_barang ?></p></td>
                         <td class="tableitem"><p class="itemtext">Rp <?= number_format($value->harga_barang, 0, ',', '.') ?>,-</p></td>
+                        <td class="tableitem"><p class="itemtext">Rp <?= number_format($total, 0, ',', '.') ?>,-</p></td>
                     </tr>
                 <?php
                     }
                 ?>
 
                 <tr class="tabletitle" style="line-height: 0;">
-                    <td colspan="2" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right;"><h2>Total :</h2></td>
+                    <td colspan="3" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right;"><h2>Total :</h2></td>
                     <td class="payment"><h2>Rp <?= number_format($penjualan->total_beli, 0, ',', '.') ?>,-</h2></td>
                 </tr>
 
                 <tr class="tabletitle" style="line-height: 0;">
-                    <td colspan="2" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right;"><h2>Diskon :</h2></td>
+                    <td colspan="3" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right;"><h2>Diskon :</h2></td>
                     <td class="payment"><h2><?=$penjualan->diskon?> %</h2></td>
                 </tr>
                 <?php if ($penjualan->jenis_transaksi == 'non_hutang'): ?>
                     <tr class="tabletitle" style="line-height: 0;">
-                        <td colspan="2" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right;">
+                        <td colspan="3" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right;">
                             <h2>Jumlah Bayar :</h2>
                         </td>
                         <td class="payment">
@@ -200,7 +204,7 @@
                     </tr>
 
                     <tr class="tabletitle" style="line-height: 0;">
-                        <td colspan="2" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right;">
+                        <td colspan="3" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right;">
                             <h2>Kembalian :</h2>
                         </td>
                         <td class="payment">
@@ -209,7 +213,7 @@
                     </tr>
                 <?php else: ?>
                     <tr class="tabletitle" style="line-height: 0;">
-                        <td colspan="2" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right;">
+                        <td colspan="3" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right;">
                             <h2>Jumlah Bayar DP :</h2>
                         </td>
                         <td class="payment">
@@ -218,7 +222,7 @@
                     </tr>
 
                     <tr class="tabletitle" style="line-height: 0;">
-                        <td colspan="2" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right;">
+                        <td colspan="3" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right;">
                             <h2>Sisa Pembayaran :</h2>
                         </td>
                         <td class="payment">
