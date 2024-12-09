@@ -69,6 +69,7 @@ class TransaksiController extends Controller
 
         // Format data harga
         $hargaOptions = [
+            ['id' => 'harga_jual', 'Ket' => 'Harga Jual', 'price' => $harga->harga_jual],
             ['id' => 'harga_grosir_1', 'Ket' => 'Harga Grosir 1', 'price' => $harga->harga_grosir_1],
             ['id' => 'harga_grosir_2', 'Ket' => 'Harga Grosir 2', 'price' => $harga->harga_grosir_2],
             ['id' => 'harga_grosir_3', 'Ket' => 'Harga Grosir 3', 'price' => $harga->harga_grosir_3],
@@ -348,6 +349,7 @@ class TransaksiController extends Controller
 
         // Prepare the harga data as an array of objects with `id` and `price` properties
         $hargaOptions = [
+            ['id' => 'harga_jual', 'Ket' => 'Harga Jual', 'price' => $harga->harga_jual],
             ['id' => 'harga_grosir_1', 'Ket' => 'Harga Grosir 1', 'price' => $harga->harga_grosir_1],
             ['id' => 'harga_grosir_2', 'Ket' => 'Harga Grosir 2', 'price' => $harga->harga_grosir_2],
             ['id' => 'harga_grosir_3', 'Ket' => 'Harga Grosir 3', 'price' => $harga->harga_grosir_3],
