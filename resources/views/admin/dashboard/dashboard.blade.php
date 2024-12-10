@@ -13,7 +13,7 @@
                 <div class="tile-stats">
                   <div class="icon"><i class="fa fa-users"></i>
                   </div>
-                  <div class="count"><?= $user ?></div>
+                  <div class="count"><?= $user ? $user : 0 ?></div>
 
                   <h3>Pengguna</h3>
                 </div>
@@ -22,7 +22,7 @@
                 <div class="tile-stats">
                   <div class="icon"><i class="fa fa-sort-amount-desc"></i>
                   </div>
-                  <div class="count"><?= $countBarang->total_penjualan_barang ?></div>
+                  <div class="count"><?= $countBarang->total_penjualan_barang ? $countBarang->total_penjualan_barang : 0 ?></div>
 
                   <h3>Penjualan</h3>
                 </div>
@@ -31,7 +31,7 @@
                 <div class="tile-stats">
                   <div class="icon"><i class="fa fa-sort-amount-asc"></i>
                   </div>
-                  <div class="count"><?= $countPesanan->total_penjualan_barang ?></div>
+                  <div class="count"><?= $countPesanan->total_penjualan_barang ? $countPesanan->total_penjualan_barang : 0 ?></div>
 
                   <h3>Pemesanan</h3>
                 </div>
@@ -40,7 +40,7 @@
                 <div class="tile-stats">
                   <div class="icon"><i class="fa fa-check-square-o"></i>
                   </div>
-                  <div class="count"><?= $countSelesai ?></div>
+                  <div class="count"><?= $countSelesai ? $countSelesai : 0 ?></div>
 
                   <h3>Selesai</h3>
                 </div>
@@ -50,23 +50,22 @@
             <div class="row top_tiles" style="margin: 10px 0;">
               <div class="col-md-3 tile">
                 <span>Pmesanan</span>
-                <h2>Rp. <?= number_format($countPesanan->total_pesanan, 0, ',', '.') ?></h2>
+                <h2>Rp. <?= number_format($countPesanan->total_pesanan ? $countPesanan->total_pesanan : 0, 0, ',', '.') ?></h2>
                 <span class="sparkline_two" style="height: 160px;">Bulan Ini</span>
               </div>
               <div class="col-md-3 tile">
                 <span>Hutang</span>
-                <h2>Rp. <?= number_format($penjualan->total_sisa_dp, 0, ',', '.') ?></h2>
+                <h2>Rp. <?= number_format($penjualan->total_sisa_dp ? $penjualan->total_sisa_dp : 0 , 0, ',', '.') ?></h2>
                 <span class="sparkline_two" style="height: 160px;">Bulan Ini</span>
               </div>
               <div class="col-md-3 tile">
                 <span>Saldo Kas</span>
-                <?php $saldo = $kas->saldo ? $kas->saldo : 0 ?>
-                <h2>Rp. <?= number_format($saldo, 0, ',', '.') ?></h2>
+                <h2>Rp. <?= number_format($kas && $kas->saldo ? $kas->saldo : 0, 0, ',', '.') ?></h2>
                 <span class="sparkline_three" style="height: 160px;">Bulan Ini</span>
               </div>
               <div class="col-md-3 tile">
                 <span>Penjualan</span>
-                <h2>Rp. <?= number_format($penjualan->total_penjualan, 0, ',', '.') ?></h2>
+                <h2>Rp. <?= number_format($penjualan->total_penjualan ? $penjualan->total_penjualan:0, 0, ',', '.') ?></h2>
                 <span class="sparkline_two" style="height: 160px;">Bulan Ini</span>
               </div>
             </div>

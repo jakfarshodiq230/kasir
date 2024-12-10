@@ -70,7 +70,6 @@
             </div>
         </div>
     </div>
-
     <!-- Modal -->
     <div class="modal fade" id="addDataModal" tabindex="-1" aria-labelledby="addDataModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -97,6 +96,15 @@
                             <label for="email_cabang" class="form-label">Email</label>
                             <input type="email" class="form-control" id="email_cabang" name="email_cabang" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="latitude" class="form-label">Latitude</label>
+                            <input type="text" class="form-control" id="latitude" name="latitude" required readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="longitude" class="form-label">Longitude</label>
+                            <input type="text" class="form-control" id="longitude" name="longitude" required readonly>
+                        </div>
+                        <div id="map" style="height: 200px; margin=0px;"></div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
@@ -106,7 +114,25 @@
             </form>
         </div>
     </div>
-
+    <!-- Modal Popup -->
+    <div class="modal fade" id="gpsModal" tabindex="-1" role="dialog" aria-labelledby="gpsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="gpsModalLabel">GPS Location</h5>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Latitude:</strong> <span id="latitudeField"></span></p>
+                    <p><strong>Longitude:</strong> <span id="longitudeField"></span></p>
+                    <p><strong>Address:</strong> <span id="alamat_gps"></span></p>
+                    <div id="map_view" style="height: 400px; border: 1px solid #ccc;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
     {{-- end isi conten --}}
@@ -114,6 +140,7 @@
 @endsection
 
 @section('scripts')
+
 <script>
 $("#datatable-buttons2").DataTable({
     responsive: true,
@@ -125,7 +152,17 @@ $("#datatable-buttons2").DataTable({
     columns: [
         { data: "id", title: "ID" },
         { data: "nama_toko_cabang", title: "Cabang" },
-        { data: "alamat_cabang", title: "Alamat" },
+        {
+            data: null,
+            title: 'Alamat',
+            render: function (data, type, row) {
+                // Tombol untuk membuka popup GPS
+                return `<button class="btn btn-sm btn-primary"
+                            onclick="showGPS('${row.latitude}', '${row.longitude}','${row.alamat_cabang}')">
+                            <i class="fa fa-map-marker"></i>
+                        </button>`;
+            }
+        },
         { data: "phone_cabang", title: "Phone" },
         { data: "email_cabang", title: "Email" },
         {
@@ -201,6 +238,8 @@ $(document).ready(function() {
         var alamat_cabang = $('#alamat_cabang').val();
         var email_cabang = $('#email_cabang').val();
         var phone_cabang = $('#phone_cabang').val();
+        var latitude = $('#latitude').val();
+        var longitude = $('#longitude').val();
         var id_toko = $('#id_toko').val();
         var dataId = $(this).data('id');
 
@@ -211,6 +250,8 @@ $(document).ready(function() {
             alamat_cabang: alamat_cabang,
             email_cabang: email_cabang,
             phone_cabang:phone_cabang,
+            latitude:latitude,
+            longitude:longitude,
             id_toko: id_toko,
 
             _token: '{{ csrf_token() }}'
@@ -411,6 +452,89 @@ $(document).ready(function() {
             }
         });
     });
+});
+
+function showGPS(latitude, longitude, alamat_cabang) {
+    // Populate modal fields
+    $('#latitudeField').text(latitude);
+    $('#longitudeField').text(longitude);
+    $('#alamat_gps').text(alamat_cabang);
+
+    // Show the modal
+    $('#gpsModal').modal('show');
+
+    // Remove existing map instance if it exists
+    if (window.gpsMap) {
+        window.gpsMap.remove();
+    }
+
+    // Initialize the map
+    window.gpsMap = L.map('map_view').setView([latitude, longitude], 19);
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(window.gpsMap);
+
+    // Add a marker at the GPS location
+    L.marker([latitude, longitude]).addTo(window.gpsMap)
+        .bindPopup(`You are here! <br> ${alamat_cabang}`)
+        .openPopup();
+}
+
+// ampil titik mps
+document.addEventListener('DOMContentLoaded', () => {
+    // Inisialisasi peta dengan koordinat pusat Indonesia
+    var map = L.map('map').setView([-2.5489, 118.0149], 13); // Pusat Indonesia
+
+    // Menambahkan Tile Layer dari OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+    }).addTo(map);
+
+    // Menyimpan marker yang dipilih
+    var marker;
+
+    // Menambahkan event listener untuk klik peta
+    map.on('click', function (e) {
+        // Ambil latitude dan longitude dari titik yang diklik
+        var latitude = e.latlng.lat.toFixed(6);
+        var longitude = e.latlng.lng.toFixed(6);
+
+        // Tampilkan latitude dan longitude di input form
+        document.getElementById('latitude').value = latitude;
+        document.getElementById('longitude').value = longitude;
+
+        // Hapus marker sebelumnya jika ada
+        if (marker) map.removeLayer(marker);
+
+        // Tambahkan marker baru ke peta
+        marker = L.marker(e.latlng).addTo(map);
+    });
+
+    // Menambahkan kontrol pencarian
+    var geocoder = L.Control.Geocoder.nominatim(); // Gunakan geocoder Nominatim
+    var searchControl = L.Control.geocoder({
+        geocoder: geocoder
+    }).addTo(map);
+
+    // Event saat lokasi ditemukan oleh pencarian
+    searchControl.on('markgeocode', function(e) {
+        var lat = e.geocode.center.lat.toFixed(6);
+        var lng = e.geocode.center.lng.toFixed(6);
+
+        // Tampilkan hasil pencarian di input form
+        document.getElementById('latitude').value = lat;
+        document.getElementById('longitude').value = lng;
+
+        // Zoom peta ke lokasi hasil pencarian
+        map.setView(e.geocode.center, 13);
+
+        // Tambahkan marker ke lokasi hasil pencarian
+        if (marker) map.removeLayer(marker); // Hapus marker sebelumnya
+        marker = L.marker(e.geocode.center).addTo(map);
+    });
+
 });
 
 </script>

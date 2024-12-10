@@ -212,17 +212,13 @@ class StockController extends Controller
 
     public function destroyStock($id)
     {
-        $stock = OpStockGudang::find($id);
-
-        if (!$stock) {
-            return response()->json(['success' => false, 'message' => 'Data not found.'], 404);
-        }
-
-        // Hapus semua log terkait
-        $stock->logs()->delete();
-
-        // Hapus data OpStockGudang
+        $idGudang = Auth::user()->id_gudang;
+        $stock = OpStockGudang::where('id', $id)
+            ->where('id_gudang', $idGudang)
+            ->firstOrFail();
+        $detail = OpStockGudangLog::where('id_barang', $stock->id);
         $stock->delete();
+        $detail->delete();
 
         return response()->json(['success' => true, 'message' => 'Data and related logs deleted successfully.']);
     }

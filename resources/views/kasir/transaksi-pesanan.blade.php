@@ -274,7 +274,7 @@
                     <div class="col-sm-7" style="text-align: right; padding: 0px;">
                         <button class="btn btn-sm btn-success mr-1" id="btnReset">RESET TRANSAKSI</button>
                         <button class="btn btn-sm btn-success mr-1" id="btnPrintNota" disabled data-id="<?= $nomor_transaksi ?>">PRINT NOTA</button>
-                        <button class="btn btn-sm btn-success mr-1" id="btnProseTransaksi" >SIMPAN TRANSAKSI</button>
+                        <button class="btn btn-sm btn-success mr-1" id="btnProseTransaksi" disabled >SIMPAN TRANSAKSI</button>
                         <button class="btn btn-sm btn-success " id="btnNewTransaksi" >TRANSAKSI BARU</button>
                     </div>
                 </div>
@@ -705,6 +705,16 @@
             });
         }
     });
+
+    $('#jumlah_bayar').on('input', function () {
+            var jumlahBayar = parseFloat($(this).val());
+            if (jumlahBayar > 0) {
+                $('#btnProseTransaksi').prop('disabled', false);
+            } else {
+                $('#btnProseTransaksi').prop('disabled', true);
+            }
+        });
+
 
 </script>
 @endsection

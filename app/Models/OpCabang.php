@@ -13,7 +13,7 @@ class OpCabang extends Model
 
     protected $table = 'op_toko_cabang';
 
-    protected $fillable = ['nama_toko_cabang', 'alamat_cabang', 'phone_cabang', 'email_cabang', 'id_toko', 'status_cabang'];
+    protected $fillable = ['nama_toko_cabang', 'alamat_cabang', 'phone_cabang', 'email_cabang', 'latitude', 'longitude', 'id_toko', 'status_cabang'];
 
     public function toko(): belongsTo
     {

@@ -36,7 +36,7 @@
               </div>
               <div class="col-md-6">
                 <div class="d-flex justify-content-between align-items-center" style="background: #fff; padding: 5px 10px; border: 1px solid #ccc">
-                    <select class="form-control form-control-sm" id="id_cabang" style="width: auto;">
+                    <select class="form-control form-control-sm" id="id_cabang" name="id_cabang" style="width: auto;">
                         <option selected >PILIH</option>
                         @foreach ( $cabang as $item )
                             <option value="{{ $item->id }}">{{ $item->nama_toko_cabang }}</option>

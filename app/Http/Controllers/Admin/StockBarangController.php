@@ -20,7 +20,7 @@ class StockBarangController extends Controller
 
     public function addStock()
     {
-        $suplaier = OpSuplaier::all();
+        $suplaier = OpSuplaier::where('status_suplaier', 1)->get();
         return view('admin.stock.add', compact('suplaier'));
     }
 
@@ -79,18 +79,24 @@ class StockBarangController extends Controller
             ->first();
 
         if ($currentStock) {
+            // Jika barang sudah ada, tambahkan jumlah transaksi ke stok masuk/keluar
             if ($request->jenis_transaksi_stock == 'masuk') {
-                $currentStock->stock_masuk += $request->jumlah_barang;
-                $currentStock->keterangan_stock_cabang = 'Masuk stock barang masuk: ' . $request->jumlah_barang;
+                $currentStock->stock_masuk += $request->jumlah_barang; // Tambahkan ke stok masuk
             } else if ($request->jenis_transaksi_stock == 'pengiriman') {
-                $currentStock->stock_keluar += $request->jumlah_barang;
-                $currentStock->keterangan_stock_cabang = 'Pengiriman stock barang keluar: ' . $request->jumlah_barang;
+                $currentStock->stock_keluar += $request->jumlah_barang; // Tambahkan ke stok keluar
             }
 
+            // Hitung ulang stok akhir
             $currentStock->stock_akhir = $currentStock->stock_masuk - $currentStock->stock_keluar;
+
+            // Tambahkan keterangan berdasarkan jenis transaksi
+            $currentStock->keterangan_stock_cabang = $request->jenis_transaksi_stock == 'masuk' ?
+                'Masuk stock barang masuk: ' . $request->jumlah_barang :
+                'Pengiriman stock barang keluar: ' . $request->jumlah_barang;
 
             $currentStock->save();
         } else {
+            // Jika data belum ada, buat data baru
             OpBarangCabangStock::create([
                 'id_barang' => $request->id_barang,
                 'id_suplaier' => $request->id_suplaier,
@@ -99,7 +105,8 @@ class StockBarangController extends Controller
                 'id_cabang' => Auth::user()->id_cabang,
                 'stock_masuk' => $request->jenis_transaksi_stock == 'masuk' ? $request->jumlah_barang : 0,
                 'stock_keluar' => $request->jenis_transaksi_stock == 'pengiriman' ? $request->jumlah_barang : 0,
-                'stock_akhir' => ($request->jenis_transaksi_stock == 'masuk' ? $request->jumlah_barang : 0) - ($request->jenis_transaksi_stock == 'pengiriman' ? $request->jumlah_barang : 0),
+                'stock_akhir' => ($request->jenis_transaksi_stock == 'masuk' ? $request->jumlah_barang : 0) -
+                    ($request->jenis_transaksi_stock == 'pengiriman' ? $request->jumlah_barang : 0),
                 'jenis_transaksi_stock' => $request->jenis_transaksi_stock,
                 'keterangan_stock_cabang' => $request->jenis_transaksi_stock == 'masuk' ?
                     'Masuk stock barang masuk: ' . $request->jumlah_barang :
@@ -107,8 +114,6 @@ class StockBarangController extends Controller
                 'id_user' => $request->id_user,
             ]);
         }
-
-
         // tabel log
         $latestStock = OpBarangCabangStockLog::where('id_barang', $request->id_barang)
             ->where('id_gudang', $request->id_gudang)
@@ -209,6 +214,8 @@ class StockBarangController extends Controller
             $stockGudang->save();
         }
 
+
+
         return response()->json(['success' => true, 'message' => 'Data deleted and stock_akhir recalculated.']);
     }
 
@@ -216,6 +223,7 @@ class StockBarangController extends Controller
 
     public function destroyStock($id)
     {
+        $idCabang = Auth::user()->id_cabang;
         $stock = OpBarangCabangStock::find($id);
 
         if (!$stock) {
@@ -223,9 +231,19 @@ class StockBarangController extends Controller
         }
 
         // Hapus semua log terkait
-        $stock->logs()->delete();
+        $logsDeleted = OpBarangCabangStockLog::where('id_barang', $stock->id_barang)
+            ->where('id_cabang', $idCabang)
+            ->count();
 
-        // Hapus data OpStockGudang
+        if ($logsDeleted > 0) {
+            OpBarangCabangStockLog::where('id_barang', $stock->id_barang)
+                ->where('id_cabang', $idCabang)
+                ->delete();
+        } else {
+            return response()->json(['success' => false, 'message' => 'No logs found to delete.'], 404);
+        }
+
+        // Hapus data OpStock
         $stock->delete();
 
         return response()->json(['success' => true, 'message' => 'Data and related logs deleted successfully.']);

@@ -214,8 +214,12 @@ class TransaksiController extends Controller
                 $stockUpdate = OpBarangCabangStock::where('id_barang', $cartItem->id_barang)->first();
 
                 if ($stockUpdate) {
+                    $tock_akhir_draf = $stockUpdate->stock_akhir;
                     if ($stockUpdate->stock_akhir >= $cartItem->jumlah_beli) {
+                        //$stockUpdate->stock_masuk = $stockUpdate->stock_akhir;
+                        $stockUpdate->stock_keluar += $cartItem->jumlah_beli;
                         $stockUpdate->stock_akhir -= $cartItem->jumlah_beli;
+                        $stockUpdate->jenis_transaksi_stock = 'Penjualan';
                         $stockUpdate->keterangan_stock_cabang = 'Penjualan barang dengan nomor transaksi ' . $request->nomor_transaksi;
                         $stockUpdate->save();
 
@@ -227,7 +231,7 @@ class TransaksiController extends Controller
                             'id_user' => $cartItem->id_user,
                             'id_toko' => Auth::user()->id_toko,
                             'id_cabang' => $stockUpdate->id_cabang,
-                            'stock_masuk' => 0,
+                            'stock_masuk' => $tock_akhir_draf,
                             'stock_keluar' => $cartItem->jumlah_beli,
                             'stock_akhir' => $stockUpdate->stock_akhir,
                             'jenis_transaksi_stock' => 'Penjualan',

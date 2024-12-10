@@ -53,6 +53,8 @@ Route::middleware(['auth', 'verified', 'cek_level:admin'])->group(function () {
     Route::prefix('admin-laporan')->group(function () {
         Route::get('/penjualan', [LaporanController::class, 'index'])->name('admin-laporan.penjualan');
         Route::post('/penjualan/data', [LaporanController::class, 'GetDataLaporan'])->name('admin-laporan.data-penjualan');
+        Route::delete('/penjualan/delete/{id}', [LaporanController::class, 'hapuspenjualan'])->name('admin-laporan.delete-penjualan');
+
         Route::get('/pemesanan', [LaporanController::class, 'pemesanan'])->name('admin-laporan.pemesanan');
         Route::post('/pemesanan/data', [LaporanController::class, 'GetDataPesanan'])->name('admin-laporan.data-pemesanan');
         Route::get('/utang', [LaporanController::class, 'utang'])->name('admin-laporan.utang');

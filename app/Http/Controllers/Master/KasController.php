@@ -25,8 +25,8 @@ class KasController extends Controller
             'id_cabang' => 'required',
         ]);
 
-        $startDate = Carbon::parse($request->startDate)->toDateString();
-        $endDate = Carbon::parse($request->endDate)->toDateString();
+        $startDate = Carbon::parse($request->startDate)->startOfDay()->toDateTimeString();
+        $endDate = Carbon::parse($request->endDate)->endOfDay()->toDateTimeString();
 
         $kas = OpKas::where('id_cabang', $request->id_cabang)
             ->whereBetween('tanggal', [$startDate, $endDate])

@@ -20,14 +20,14 @@
     <link href="{{ asset('vendors/nprogress/nprogress.css') }}" rel="stylesheet">
     <!-- iCheck -->
     <link href="{{ asset('vendors/iCheck/skins/flat/green.css') }}" rel="stylesheet">
-
     <!-- bootstrap-progressbar -->
     <link href="{{ asset('vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css') }}" rel="stylesheet">
-    <!-- JQVMap -->
-    <link href="{{ asset('vendors/jqvmap/dist/jqvmap.min.css') }}" rel="stylesheet">
+    <!-- Maps -->
+     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+     <!-- Tambahkan plugin geocoder untuk pencarian -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <!-- bootstrap-daterangepicker -->
     <link href="{{ asset('vendors/bootstrap-daterangepicker/daterangepicker.css') }}" rel="stylesheet">
-
     <!-- Custom Theme Style -->
     <link href="{{ asset('build/css/custom.min.css') }}" rel="stylesheet">
     <!-- Datatables -->
@@ -36,6 +36,7 @@
     <link href="{{ asset('vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css') }}" rel="stylesheet">
+
     <style>
         ::-webkit-scrollbar {
         width: 8px;
@@ -179,7 +180,7 @@
 
                     <!-- /menu footer buttons -->
                     <div class="sidebar-footer hidden-small text-center">
-                        <span class="version-info font-italic"><b>Version 0.0.10</b></span>
+                        <span class="version-info font-italic"><b>Version 0.1.1</b></span>
                     </div>
                     <!-- /menu footer buttons -->
                 </div>
@@ -297,14 +298,9 @@
     <script src="{{ asset('vendors/flot.curvedlines/curvedLines.js') }}"></script>
     <!-- DateJS -->
     <script src="{{ asset('vendors/DateJS/build/date.js') }}"></script>
-    <!-- JQVMap -->
-    <script src="{{ asset('vendors/jqvmap/dist/jquery.vmap.js') }}"></script>
-    <script src="{{ asset('vendors/jqvmap/dist/maps/jquery.vmap.world.js') }}"></script>
-    <script src="{{ asset('vendors/jqvmap/examples/js/jquery.vmap.sampledata.js') }}"></script>
     <!-- bootstrap-daterangepicker -->
     <script src="{{ asset('vendors/moment/min/moment.min.js') }}"></script>
     <script src="{{ asset('vendors/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
-
     <!-- Custom Theme Scripts -->
     <script src="{{ asset('build/js/custom.min.js') }}"></script>
     <!-- Datatables -->
@@ -327,9 +323,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     {{-- swal alert --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    	<!-- jQuery autocomplete -->
+    <!-- jQuery autocomplete -->
 	<script src="{{ asset('vendors/devbridge-autocomplete/dist/jquery.autocomplete.min.js') }}"></script>
-
+    {{-- maps --}}
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
     @yield('scripts')
     <script>
         $(document).ready(function() {

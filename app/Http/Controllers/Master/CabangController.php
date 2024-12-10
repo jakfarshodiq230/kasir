@@ -26,6 +26,8 @@ class CabangController extends Controller
             'alamat_cabang' => 'required|string|max:255',
             'phone_cabang' => 'required|string|digits_between:10,15',
             'email_cabang' => 'required|string|email|max:255|unique:op_toko_cabang,email_cabang',
+            'latitude' => 'required|string|max:255',
+            'longitude' => 'required|string|max:255',
         ]);
 
         $cabang = OpCabang::create([
@@ -33,6 +35,8 @@ class CabangController extends Controller
             'alamat_cabang' => $request->alamat_cabang,
             'phone_cabang' => $request->phone_cabang,
             'email_cabang' => $request->email_cabang,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
             'id_toko' => $request->id_toko,
             'status_cabang' => 1,
         ]);
@@ -77,6 +81,8 @@ class CabangController extends Controller
             'alamat_cabang' => 'required|string|max:255',
             'phone_cabang' => 'required|string|digits_between:10,15',
             'email_cabang' => 'required|string|email|max:255',
+            'latitude' => 'required|string|max:255',
+            'longitude' => 'required|string|max:255',
         ]);
 
         // Find the record to update
@@ -88,6 +94,8 @@ class CabangController extends Controller
             'alamat_cabang' => $request->alamat_cabang,
             'phone_cabang' => $request->phone_cabang,
             'email_cabang' => $request->email_cabang,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
         ]);
 
         return response()->json(['success' => true, 'message' => 'Data updated successfully', 'data' => $cabang]);

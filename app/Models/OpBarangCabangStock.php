@@ -36,4 +36,9 @@ class OpBarangCabangStock extends Model
     {
         return $this->belongsTo(OpToko::class, 'id_toko', 'id');
     }
+
+    public function logs()
+    {
+        return $this->hasMany(OpBarangCabangStockLog::class, 'id_barang');
+    }
 }

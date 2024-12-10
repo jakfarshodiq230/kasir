@@ -26,4 +26,9 @@ class OpStockGudang extends Model
     {
         return $this->belongsTo(OpSuplaier::class, 'id_suplaier');
     }
+
+    public function logs()
+    {
+        return $this->belongsTo(OpStockGudangLog::class, 'id_barang');
+    }
 }

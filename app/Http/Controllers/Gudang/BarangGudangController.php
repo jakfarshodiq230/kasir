@@ -13,6 +13,7 @@ use App\Models\OpSetingLensa;
 use App\Models\OpDetailBarang;
 use App\Models\OpSuplaier;
 use App\Models\OpBarangHarga;
+use App\Models\OpStockGudangLog;
 
 class BarangGudangController extends Controller
 {
@@ -21,8 +22,6 @@ class BarangGudangController extends Controller
     {
         // Ensure the date format is correct
         $year = date('Y', strtotime($date));
-        $day = date('d', strtotime($date));
-        $month = date('m', strtotime($date));
 
         // Get the highest product code created on the same day
         $highestCode = OpBarang::whereDate('created_at', '=', date('Y-m-d', strtotime($date)))
@@ -37,7 +36,7 @@ class BarangGudangController extends Controller
         }
 
         // Format the serial number to always have 4 digits
-        $productCode = "BRG" . $year . $day . $month . str_pad($serialNumber, 4, '0', STR_PAD_LEFT);
+        $productCode = "BRG" . $year . str_pad($serialNumber, 4, '0', STR_PAD_LEFT);
 
         return $productCode;
     }
@@ -230,7 +229,10 @@ class BarangGudangController extends Controller
 
     public function destroy($id)
     {
-        $barang = OpBarang::findOrFail($id);
+        $idGudang = Auth::user()->id_gudang;
+        $barang = OpBarang::where('id', $id)
+            ->where('id_gudang', $idGudang)
+            ->firstOrFail();
         $detail = OpDetailBarang::where('id_barang', $barang->id);
         $barang->delete();
         $detail->delete();

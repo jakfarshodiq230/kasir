@@ -39,7 +39,7 @@ Route::middleware('auth', 'verified', 'cek_level:gudang')->group(function () {
         Route::get('gudang-stock-log-all', [StockController::class, 'DataStockRiwayatJson'])->name('gudang-stock-data-log.data');
         Route::delete('gudang-stock-log-delete/{id}', [StockController::class, 'destroy'])->name('gudang-stock-data-log.delete');
         Route::get('get-gudang-stock-data/{id}', [StockController::class, 'viewData'])->name('gudang-stock.view');
-        Route::delete('gudang-stock-stock-delete/{id}', [StockController::class, 'destroyStock'])->name('gudang-stock-data-stock.delete');
+        Route::delete('gudang-stock-barang-delete/{id}', [StockController::class, 'destroyStock'])->name('gudang-stock-data-stock.delete');
     });
 
     Route::prefix('gudang-permintaan')->group(function () {

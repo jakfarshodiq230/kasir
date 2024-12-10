@@ -137,7 +137,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary btn-sm print-btn" id="print-btn">PRINT</button>
+                        <button type="button" class="btn btn-primary btn-sm print-btn" id="print-btn">Print</button>
+                        <button type="button" class="btn btn-danger btn-sm delete-btn" id="hapus-btn">Hapus</button>
                     </div>
                 </div>
             </form>
@@ -309,19 +310,6 @@
 
                 const data = response.data[0]; // Assuming the first item in the response is the relevant one
 
-                // Set form values
-                // $('#r_sph').val(data.pesanan.R_SPH);
-                // $('#r_cyl').val(data.pesanan.R_CYL);
-                // $('#r_axs').val(data.pesanan.R_AXS);
-                // $('#r_add').val(data.pesanan.R_ADD);
-                // $('#pd').val(data.pesanan.PD);
-
-                // $('#l_sph').val(data.pesanan.L_SPH);
-                // $('#l_cyl').val(data.pesanan.L_CYL);
-                // $('#l_axs').val(data.pesanan.L_AXS);
-                // $('#l_add').val(data.pesanan.L_ADD);
-                // $('#pd2').val(data.pesanan.PD2);
-
                 // Loop melalui data dan tambahkan baris ke tabel
                 response.data.forEach(item => {
                     const subTotal = parseFloat(item.sub_total_transaksi) || 0;
@@ -360,6 +348,55 @@
 
         modal.show();
     });
+
+    $(document).on('click', '.delete-btn', function () {
+    const dataId = $('#addDataForm').data('id'); // Retrieve the dataId from the modal's data attribute
+
+    // SweetAlert confirmation
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This transaction will be permanently deleted!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If the user confirms, send the delete request
+                $.ajax({
+                    url: '/admin-laporan/penjualan/delete/' + dataId, // Your delete endpoint
+                    type: 'DELETE',
+                    dataType: 'json',
+                    data: {
+                        _token:"{{ csrf_token() }}" // Add CSRF token manually
+                    },
+                    success: function (response) {
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: 'The transaction has been deleted successfully.',
+                            icon: 'success',
+                            confirmButtonText: 'OK',
+                        }).then(() => {
+                            $('#addDataModal').modal('hide'); // Hide the modal
+                            location.reload(); // Refresh the page to reflect changes
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.fire({
+                            title: 'Failed!',
+                            text: 'An error occurred while deleting the transaction.',
+                            icon: 'error',
+                            confirmButtonText: 'OK',
+                        });
+                    },
+                });
+            }
+        });
+    });
+
+
 
 </script>
 @endsection

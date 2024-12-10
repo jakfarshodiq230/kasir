@@ -191,7 +191,7 @@
             if (result.isConfirmed) {
                 // Send AJAX request to delete the record
                 $.ajax({
-                    url: '/admin-stock/admin-stock-barang-delete/' + dataId,
+                    url: '/admin-stock/admin-stock-stock-delete/' + dataId,
                     type: 'DELETE',
                     data: {
                         _token: '{{ csrf_token() }}',
