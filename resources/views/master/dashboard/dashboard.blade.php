@@ -13,7 +13,7 @@
                 <div class="tile-stats">
                   <div class="icon"><i class="fa fa-users"></i>
                   </div>
-                  <div class="count"><?= $user ?></div>
+                  <div class="count"><?= $user ? $user : 0 ?></div>
 
                   <h3>Pengguna</h3>
                 </div>
@@ -22,7 +22,7 @@
                 <div class="tile-stats">
                   <div class="icon"><i class="fa fa-sort-amount-desc"></i>
                   </div>
-                  <div class="count"><?= $countBarang->total_penjualan_barang ?> </div>
+                  <div class="count"><?= $countBarang->total_penjualan_barang ? $countBarang->total_penjualan_barang : 0 ?> </div>
 
                   <h3>Penjualan</h3>
                 </div>
@@ -31,7 +31,7 @@
                 <div class="tile-stats">
                   <div class="icon"><i class="fa fa-sort-amount-asc"></i>
                   </div>
-                  <div class="count"><?= $countPesanan->total_pesanan_barang ?></div>
+                  <div class="count"><?= $countPesanan->total_pesanan_barang ? $countPesanan->total_pesanan_barang : 0 ?> </div>
 
                   <h3>Pemesanan</h3>
                 </div>
@@ -40,7 +40,7 @@
                 <div class="tile-stats">
                   <div class="icon"><i class="fa fa-check-square-o"></i>
                   </div>
-                  <div class="count"><?= $countSelesai ?></div>
+                  <div class="count"><?= $countSelesai ? $countSelesai : 0 ?> </div>
 
                   <h3>Selesai</h3>
                 </div>

@@ -564,8 +564,10 @@
 
             // hutang
             function checkJumlahBayar() {
-                var jumlahPelunasan = parseInt($('#jumlah_pelunasan').val().replace(/[^\d]/g, '')) || 0;
-                var jumlahSisaDP = parseInt($('#jumlah_sisa_dp').val().replace(/[^\d]/g, '')) || 0;
+                // Remove "Rp." and any commas, then convert to an integer
+                var jumlahPelunasan = parseFloat($('#jumlah_pelunasan').val().replace(/Rp\.|[^\d,]/g, '').replace(',', '.')) || 0;
+                var jumlahSisaDP = parseFloat($('#jumlah_sisa_dp').val().replace(/Rp\.|[^\d,]/g, '').replace(',', '.')) || 0;
+
                 if (jumlahPelunasan !== jumlahSisaDP || jumlahPelunasan === 0) {
                     $('#proses-btn').prop('disabled', true);
                 } else {

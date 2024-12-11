@@ -131,6 +131,10 @@ Route::middleware('auth', 'verified', 'cek_level:owner')->group(function () {
     Route::prefix('laporan-kas')->group(function () {
         Route::get('/kas', [KasController::class, 'index'])->name('owner-kas.index');
         Route::post('/kas-data', [KasController::class, 'GatDataKas'])->name('owner-kas.data-kas');
+        Route::get('/kas-rekap', [KasController::class, 'Rekap'])->name('owner-kas.rekap-kas');
+        Route::post('/kas-rekap-data', [KasController::class, 'getFinancialDataByBranchAndYear'])->name('owner-kas.rekap-data-kas');
+        Route::get('/penjualan-rekap', [KasController::class, 'RekapPenjualan'])->name('owner-penjualan.rekap-penjualan');
+        Route::post('/penjualan-rekap-data', [KasController::class, 'getSalesAndProductDataByYearAndBranch'])->name('owner-penjualan.rekap-data-penjualan');
     });
 
     Route::prefix('divace')->group(function () {

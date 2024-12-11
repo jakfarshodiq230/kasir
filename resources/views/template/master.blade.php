@@ -111,7 +111,13 @@
                                             <li><a href="{{ route('owner-laporan.stock')}}">Stock</a></li>
                                         </ul>
                                     </li>
-                                    <li><a href="{{ route('owner-kas.index')}}"><i class="fa fa-usd"></i>Kas</a></li>
+                                    <li><a><i class="fa fa-usd"></i> Keuangan <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li><a href="{{ route('owner-kas.index')}}">Kas</a></li>
+                                            <li><a href="{{ route('owner-kas.rekap-kas')}}">Rekap</a></li>
+                                            <li><a href="{{ route('owner-penjualan.rekap-penjualan')}}">Penjualan</a></li>
+                                        </ul>
+                                    </li>
                                     <li><a href="{{ route('owner-toko.index')}}"><i class="fa fa-home"></i>Toko</a></li>
                                     <li><a href="{{ route('owner-divace-login.index')}}"><i class="fa fa-laptop"></i>Divace Login</a></li>
                                 </ul>
