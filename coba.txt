@@ -1,0 +1,43 @@
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/shom5685/repositories/optik_11_pos # Path ke repositori Laravel Anda
+    - export PUBLICDIR=/home/shom5685/public_html/optik # Path ke direktori public_html/optik
+
+    # Pindah ke direktori repositori Laravel
+    - cd $DEPLOYPATH
+
+    # Update kode dari GitHub (pastikan repo sudah terhubung)
+    - git pull origin main # Mengambil pembaruan dari cabang 'main'
+
+    # Install atau update dependensi Composer
+    - composer install --no-dev --optimize-autoloader # Menginstall dependensi tanpa dependensi pengembangan dan optimasi autoloader
+
+    # Pastikan environment file sudah ada
+    - cp .env.example .env # Menyalin file .env jika belum ada
+
+    # Generate key untuk Laravel (jika belum ada)
+    - php artisan key:generate
+
+    # Menjalankan migrasi database (jika ada perubahan pada database)
+    - php artisan migrate --force # Menjalankan migrasi, dengan --force agar berjalan pada environment production
+
+    # Clear cache dan optimize Laravel
+    - php artisan config:cache # Meng-cache konfigurasi
+    - php artisan route:cache # Meng-cache route
+    - php artisan view:cache # Meng-cache view
+
+    # Memastikan folder storage dapat diakses oleh web server
+    - chmod -R 775 storage bootstrap/cache
+
+    # Salin semua file dari repositori ke public_html/optik
+    # - cp -R $DEPLOYPATH/* $PUBLICDIR/ # Menyalin seluruh file dan direktori ke public_html/optik
+    - cp -R $DEPLOYPATH/public $PUBLICDIR/ # Menyalin hanya folder 'public' ke public_html/optik
+
+    # Pastikan folder public dapat diakses oleh web server
+    - ln -s $DEPLOYPATH/public $PUBLICDIR # Membuat symbolic link dari public ke public_html/optik
+
+    # Menghapus cache lamaa
+    - php artisan cache:clear
+
+    # Memberikan pesan sukses setelah deployment
+    - echo "Deployment Laravel berhasil!"

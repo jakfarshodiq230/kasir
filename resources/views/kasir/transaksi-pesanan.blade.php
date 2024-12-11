@@ -97,7 +97,7 @@
                         <div class="form-group row">
                             <label class="col-form-label col-md-3 col-sm-3 ">Tanggal Transaksi<span class="required">*</span></label>
                             <div class="col-md-9 col-sm-9 ">
-                                <input type="date" name="tanggal_transaksi" id="tanggal_transaksi" class="form-control form-control-sm" placeholder="Harga Grosir">
+                                <input type="date" name="tanggal_transaksi" id="tanggal_transaksi" value="<?= date('Y-m-d') ?>" class="form-control form-control-sm" placeholder="Harga Grosir" readonly>
                             </div>
                         </div>
                         <div class="form-group row">
