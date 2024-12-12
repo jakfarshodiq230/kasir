@@ -83,13 +83,13 @@
                     </div>
                     <div class="col-md-6 col-sm-6  bg-white">
                         <div class="form-group row">
-                            <label class="control-label col-md-3 col-sm-3 ">Diamater<span class="required">*</span></label>
+                            <label class="control-label col-md-3 col-sm-3 ">Diamater</label>
                             <div class="col-md-9 col-sm-9 ">
                                 <input type="number" name="diameter" id="diameter" class="form-control form-control-sm" placeholder="Diamater">
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="control-label col-md-3 col-sm-3 ">Warna<span class="required">*</span></label>
+                            <label class="control-label col-md-3 col-sm-3 ">Warna</label>
                             <div class="col-md-9 col-sm-9 ">
                                 <input type="text" name="warna" id="warna" class="form-control form-control-sm" placeholder="Warna">
                             </div>
