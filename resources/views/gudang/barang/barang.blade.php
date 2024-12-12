@@ -117,7 +117,7 @@
                 title: "Barcode",
                 orderable: false,
                 render: function(data, type, row) {
-                    const barcodeUrl = `{{ asset('${row.barcode}') }}`; // URL for the barcode image
+                    const barcodeUrl = `${window.location.origin}/storage/${row.barcode}`; // Generate URL ke gambar barcode
                     return `<img src="${barcodeUrl}" alt="Barcode" style="width: 300px; height: auto;"> `;
                 }
             },

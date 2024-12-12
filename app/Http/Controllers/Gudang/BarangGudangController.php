@@ -78,7 +78,6 @@ class BarangGudangController extends Controller
 
     public function store(Request $request)
     {
-
         $request->validate([
             // tabel produk
             'kode_produk' => 'required|string|unique:op_barang,kode_produk',
@@ -101,11 +100,11 @@ class BarangGudangController extends Controller
 
         // Generate barcode image from kode_produk
         $generator = new BarcodeGeneratorPNG();
-        $generator->getBarcode($request->kode_produk, BarcodeGeneratorPNG::TYPE_CODE_128);
+        $barcodeData = $generator->getBarcode($request->kode_produk, BarcodeGeneratorPNG::TYPE_CODE_128);
 
         // Define path to store barcode image in storage/app/public/barcode_barang
         $barcodeFolder = storage_path('app/public/barcode_barang');
-        $barcodeFolder . '/' . $request->kode_produk . '.png';
+        $barcodePath = $barcodeFolder . '/' . $request->kode_produk . '.png';
 
         // Check if barcode folder exists, if not, create it
         if (!File::exists($barcodeFolder)) {
@@ -113,9 +112,7 @@ class BarangGudangController extends Controller
         }
 
         // Save barcode image to the folder
-        asset('storage/barcode_barang/' . $request->kode_produk . '.png');
-
-
+        file_put_contents($barcodePath, $barcodeData);
 
         $barang = OpBarang::create([
             'kode_produk' => $request->kode_produk,
@@ -129,7 +126,7 @@ class BarangGudangController extends Controller
 
         $id_barang = $barang->id;
 
-        $barang = OpDetailBarang::create([
+        OpDetailBarang::create([
             'id_barang' => $id_barang,
             'id_jenis' => $request->jenis_barang,
             'id_type' => $request->type_barang,
@@ -150,7 +147,7 @@ class BarangGudangController extends Controller
             'PD2' => $request->pd2,
         ]);
 
-        $barang = OpBarangHarga::create([
+        OpBarangHarga::create([
             'id_barang' => $id_barang,
             'harga_modal' => $request->harga_modal,
             'harga_jual' => $request->harga_jual,
@@ -159,9 +156,9 @@ class BarangGudangController extends Controller
             'harga_grosir_3' => $request->harga_grosir_3,
         ]);
 
-
         return response()->json(['success' => true, 'message' => 'Data created successfully', 'data' => $barang]);
     }
+
 
     public function viewData($id)
     {
