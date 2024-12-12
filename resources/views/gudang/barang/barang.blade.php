@@ -51,6 +51,7 @@
                                     <th>Pesanan</th>
                                     <th>Keterangan</th>
                                     <th>Keterangan</th>
+                                    <th>Keterangan</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -58,6 +59,7 @@
 
                             <tbody>
                                 <tr>
+                                    <td>-</td>
                                     <td>-</td>
                                     <td>-</td>
                                     <td>-</td>
@@ -110,6 +112,15 @@
         },
         columns: [
             { data: "id", title: "ID" },
+            {
+                data: "barcode", // Assuming 'barang.kode_produk' contains the product code
+                title: "Barcode",
+                orderable: false,
+                render: function(data, type, row) {
+                    const barcodeUrl = `{{ asset('${row.barcode}') }}`; // URL for the barcode image
+                    return `<img src="${barcodeUrl}" alt="Barcode" style="width: 300px; height: auto;"> `;
+                }
+            },
             { data: "kode_produk", title: "Kode Barang" },
             { data: "nama_produk", title: "Nama Barang" },
             { data: "gudang.nama_gudang", title: "Lokasi" },

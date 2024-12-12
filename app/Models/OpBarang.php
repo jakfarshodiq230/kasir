@@ -18,6 +18,7 @@ class OpBarang extends Model
         'id_user',
         'nama_produk',
         'keterangan_produk',
+        'barcode',
     ];
 
     public function kategori()

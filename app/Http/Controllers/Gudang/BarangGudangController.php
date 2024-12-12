@@ -14,37 +14,45 @@ use App\Models\OpDetailBarang;
 use App\Models\OpSuplaier;
 use App\Models\OpBarangHarga;
 use App\Models\OpStockGudangLog;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\File;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 
 class BarangGudangController extends Controller
 {
     // kode barang otomatis
-    public function generateNextProductCode($date)
+    public function generateNextProductCode()
     {
-        // Ensure the date format is correct
-        $year = date('Y', strtotime($date));
+        // Ambil tahun saat ini
+        $tahun = Carbon::now()->format('Y');
 
-        // Get the highest product code created on the same day
-        $highestCode = OpBarang::whereDate('created_at', '=', date('Y-m-d', strtotime($date)))
-            ->orderByRaw('CAST(SUBSTRING(kode_produk, 7, 4) AS UNSIGNED) DESC') // Change to get substring starting from the 7th character
-            ->value('kode_produk');
+        // Ambil kode barang terakhir berdasarkan tahun saat ini
+        $lastBarang = OpBarang::where('kode_produk', 'LIKE', 'BRG' . $tahun . '%')
+            ->orderBy('kode_produk', 'desc')
+            ->first();
 
-        // Determine the serial number for the new product code
-        if ($highestCode) {
-            $serialNumber = (int)substr($highestCode, -4) + 1;
+        // Tentukan nomor urut baru
+        if ($lastBarang) {
+            // Ambil bagian nomor urut dari kode barang terakhir
+            $lastNumber = (int) substr($lastBarang->kode_produk, -4);
+            $newNumber = $lastNumber + 1;
         } else {
-            $serialNumber = 1;
+            // Jika belum ada kode barang, mulai dari 1
+            $newNumber = 1;
         }
 
-        // Format the serial number to always have 4 digits
-        $productCode = "BRG" . $year . str_pad($serialNumber, 4, '0', STR_PAD_LEFT);
+        // Format nomor urut menjadi 4 digit
+        $newNumberFormatted = str_pad($newNumber, 4, '0', STR_PAD_LEFT);
 
-        return $productCode;
+        // Gabungkan prefix, tahun, dan nomor urut untuk membuat kode barang baru
+        $newKodeBarang = 'BRG' . $tahun . $newNumberFormatted;
+
+        return $newKodeBarang;
     }
 
     public function KodeBarangJson()
     {
-        $date = now();
-        $serialNumber = $this->generateNextProductCode($date);
+        $serialNumber = $this->generateNextProductCode();
         $kategori = OpKategori::where('status', 1)->get();
         $jenis = OpJenis::where('status_jenis', 1)->get();
         $type = OpType::where('status_type', 1)->get();
@@ -102,6 +110,23 @@ class BarangGudangController extends Controller
             'harga_grosir_3' => 'required|numeric',
         ]);
 
+        // Generate barcode image from kode_produk
+        $generator = new BarcodeGeneratorPNG();
+        $barcodeImage = $generator->getBarcode($request->kode_produk, BarcodeGeneratorPNG::TYPE_CODE_128);
+
+        // Define path to store barcode image
+        $barcodeFolder = public_path('barcode_barang');
+        $barcodePath = $barcodeFolder . '/' . $request->kode_produk . '.png';
+
+        // Check if barcode folder exists, if not, create it
+        if (!File::exists($barcodeFolder)) {
+            File::makeDirectory($barcodeFolder, 0755, true); // Create folder with proper permissions
+        }
+
+        // Save barcode image to the folder
+        file_put_contents($barcodePath, $barcodeImage);
+
+
 
         $barang = OpBarang::create([
             'kode_produk' => $request->kode_produk,
@@ -110,6 +135,7 @@ class BarangGudangController extends Controller
             'nama_produk' => $request->nama_produk,
             'keterangan_produk' => $request->keterangan_barang,
             'id_user' => $request->id_user,
+            'barcode' => 'barcode_barang/' . $request->kode_produk . '.png',
         ]);
 
         $id_barang = $barang->id;
