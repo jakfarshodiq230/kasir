@@ -181,6 +181,12 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
+                                    <label class="control-label col-md-3 col-sm-3 ">Harga Lainya<span class="required">*</span></label>
+                                    <div class="col-md-9 col-sm-9 ">
+                                        <input type="number" name="harga_lainya" id="harga_lainya" class="form-control form-control-sm" value="0" placeholder="Ketikan Harga Lainya">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
                                     <label class="control-label col-md-3 col-sm-3 ">Jumlah<span class="required">*</span></label>
                                     <div class="col-md-9 col-sm-9 ">
                                         <input type="number" name="jumlah_barang" id="jumlah_barang" class="form-control form-control-sm" value="0" placeholder="Jumlah Beli">
@@ -408,8 +414,14 @@
         var kode = $('#kode_produk').val();
         var harga = $('#harga_barang').val();
         var jumlahBeli = $('#jumlah_barang').val();
-        // Hitung sub_total
-        var subTotal = harga * jumlahBeli;
+        var harga_lainya = $('#harga_lainya').val();
+        var subTotal = 0;
+        if (harga == 0) {
+            subTotal = harga_lainya * jumlahBeli;
+        } else {
+            subTotal = harga * jumlahBeli;
+        }
+
 
         // Kirim data melalui AJAX
         $.ajax({
@@ -421,7 +433,8 @@
                 kode_produk: kode,
                 harga: harga,
                 jumlah_beli: jumlahBeli,
-                sub_total: subTotal
+                sub_total: subTotal,
+                harga_lainya: harga_lainya,
             },
             success: function(response) {
                 if (response.success) {
@@ -431,6 +444,7 @@
                     $('#stock_barang').val('');
                     $('#harga').val('');
                     $('#jumlah_barang').val('');
+                    $('#harga_lainya').val('');
                     $('#id_produk, #harga_barang').trigger('change');
                     loadCartData();
                     const notifAudio = document.getElementById('notif-audio');
@@ -682,9 +696,9 @@
 
 
     $('#id_produk').on('change', function () {
-        const selectedOption = $(this).find('option:selected');
         const barangId = $(this).val();
         $('#harga_barang').empty().append('<option value="" disabled selected>PILIH HARGA</option>').prop('disabled', true);
+        $('#harga_lainya').closest('.form-group').hide(); // Initially hide "Harga Lainya"
 
         if (barangId) {
             $.ajax({
@@ -694,8 +708,14 @@
                 success: function (data) {
                     if (data.length > 0) {
                         $('#harga_barang').prop('disabled', false);
+
                         data.forEach(harga => {
-                            $('#harga_barang').append(`<option value="${harga.price}">${harga.Ket} - Rp ${parseFloat(harga.price).toLocaleString('id-ID')}</option>`);
+                            const optionText = harga.price == 0
+                                ? `${harga.Ket}`
+                                : `${harga.Ket} - Rp ${parseFloat(harga.price).toLocaleString('id-ID')}`;
+                            $('#harga_barang').append(
+                                `<option value="${harga.price}" data-price="${harga.price}">${optionText}</option>`
+                            );
                         });
                     }
                 },
@@ -705,6 +725,19 @@
             });
         }
     });
+
+    // Toggle "Harga Lainya" based on selection
+    $('#harga_barang').on('change', function () {
+        const selectedOption = $(this).find('option:selected');
+        const selectedPrice = selectedOption.data('price');
+
+        if (selectedPrice === 0) {
+            $('#harga_lainya').closest('.form-group').show(); // Show "Harga Lainya"
+        } else {
+            $('#harga_lainya').closest('.form-group').hide(); // Hide "Harga Lainya"
+        }
+    });
+
 
     $('#jumlah_bayar').on('input', function () {
             var jumlahBayar = parseFloat($(this).val());

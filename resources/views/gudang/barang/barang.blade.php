@@ -103,9 +103,10 @@
 @section('scripts')
 <script>
     // function
+    let loadingIndicator = $('#loading');
     $("#datatable-buttons2").DataTable({
         responsive: true,
-        processing: true,
+        //processing: true,
         ajax: {
             url: "/gudang-barang/data-gudang-barang-all", // Replace with the Laravel route URL that returns JSON
             dataSrc: "data"
