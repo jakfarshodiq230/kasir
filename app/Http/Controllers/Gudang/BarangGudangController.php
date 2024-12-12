@@ -101,11 +101,11 @@ class BarangGudangController extends Controller
 
         // Generate barcode image from kode_produk
         $generator = new BarcodeGeneratorPNG();
-        $barcodeImage = $generator->getBarcode($request->kode_produk, BarcodeGeneratorPNG::TYPE_CODE_128);
+        $generator->getBarcode($request->kode_produk, BarcodeGeneratorPNG::TYPE_CODE_128);
 
-        // Define path to store barcode image
-        $barcodeFolder = public_path('barcode_barang');
-        $barcodePath = $barcodeFolder . '/' . $request->kode_produk . '.png';
+        // Define path to store barcode image in storage/app/public/barcode_barang
+        $barcodeFolder = storage_path('app/public/barcode_barang');
+        $barcodeFolder . '/' . $request->kode_produk . '.png';
 
         // Check if barcode folder exists, if not, create it
         if (!File::exists($barcodeFolder)) {
@@ -113,7 +113,7 @@ class BarangGudangController extends Controller
         }
 
         // Save barcode image to the folder
-        file_put_contents($barcodePath, $barcodeImage);
+        asset('storage/barcode_barang/' . $request->kode_produk . '.png');
 
 
 
