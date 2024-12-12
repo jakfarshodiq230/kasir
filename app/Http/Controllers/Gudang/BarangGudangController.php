@@ -23,28 +23,17 @@ class BarangGudangController extends Controller
     // kode barang otomatis
     public function generateNextProductCode()
     {
-        // Ambil tahun saat ini
         $tahun = Carbon::now()->format('Y');
-
-        // Ambil kode barang terakhir berdasarkan tahun saat ini
         $lastBarang = OpBarang::where('kode_produk', 'LIKE', 'BRG' . $tahun . '%')
             ->orderBy('kode_produk', 'desc')
             ->first();
-
-        // Tentukan nomor urut baru
         if ($lastBarang) {
-            // Ambil bagian nomor urut dari kode barang terakhir
             $lastNumber = (int) substr($lastBarang->kode_produk, -4);
             $newNumber = $lastNumber + 1;
         } else {
-            // Jika belum ada kode barang, mulai dari 1
             $newNumber = 1;
         }
-
-        // Format nomor urut menjadi 4 digit
         $newNumberFormatted = str_pad($newNumber, 4, '0', STR_PAD_LEFT);
-
-        // Gabungkan prefix, tahun, dan nomor urut untuk membuat kode barang baru
         $newKodeBarang = 'BRG' . $tahun . $newNumberFormatted;
 
         return $newKodeBarang;
