@@ -45,6 +45,7 @@
                             <thead>
                                 <tr>
                                     <th>No</th>
+                                    <th>Barcode</th>
                                     <th>Kode gudang-stock</th>
                                     <th>Nama gudang-stock</th>
                                     <th>Kategori</th>
@@ -60,6 +61,7 @@
 
                             <tbody>
                                 <tr>
+                                    <td>-</td>
                                     <td>-</td>
                                     <td>-</td>
                                     <td>-</td>
@@ -115,13 +117,12 @@
         columns: [
             { data: "id", title: "ID" },
             {
-                data: "barang.barcode",
+                data: "barcode", // Assuming 'barang.kode_produk' contains the product code
                 title: "Barcode",
+                orderable: false,
                 render: function(data, type, row) {
-                    if (type === 'display') {
-                        return `<img src="/storage/barcode_barang/${data}" alt="Barcode" style="height: 50px; width: auto;">`;
-                    }
-                    return data;
+                    const barcodeUrl = `{{ url('storage') }}/${row.barcode}`;
+                    return `<img src="${barcodeUrl}" alt="Barcode" style="width: 300px; height: auto;"> `;
                 }
             },
             { data: "barang.kode_produk", title: "Kode Barang" },
