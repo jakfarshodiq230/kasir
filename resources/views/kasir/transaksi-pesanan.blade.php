@@ -533,7 +533,7 @@
                     $('#harga').val('');
                     $('#jumlah_barang').val('');
                     $('#harga_lainya').val('');
-                    $('#id_produk, #harga_barang, #id_gudang').val('').trigger('change');
+                    $('#id_produk, #harga_barang').val('').trigger('change');
                     loadCartData();
                     const notifAudio = document.getElementById('notif-audio');
                     if (notifAudio) {
