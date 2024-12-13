@@ -121,7 +121,7 @@
                 title: "Barcode",
                 orderable: false,
                 render: function(data, type, row) {
-                    const barcodeUrl = `{{ url('storage') }}/${row.barcode}`;
+                    const barcodeUrl = `{{ url('storage') }}/${row.barang.barcode}`;
                     return `<img src="${barcodeUrl}" alt="Barcode" style="width: 300px; height: auto;"> `;
                 }
             },
