@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\StockBarangController;
 use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\KasController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\HistoryController;
 use App\Http\Controllers\Admin\LaporanController;
 
 // Middleware gabungan dengan 'cek_level:admin'
@@ -57,9 +58,17 @@ Route::middleware(['auth', 'verified', 'cek_level:admin'])->group(function () {
 
         Route::get('/pemesanan', [LaporanController::class, 'pemesanan'])->name('admin-laporan.pemesanan');
         Route::post('/pemesanan/data', [LaporanController::class, 'GetDataPesanan'])->name('admin-laporan.data-pemesanan');
+
         Route::get('/utang', [LaporanController::class, 'utang'])->name('admin-laporan.utang');
         Route::post('/utang/data', [LaporanController::class, 'GetDataUtang'])->name('admin-laporan.data-utang');
+
         Route::get('/stock', [LaporanController::class, 'stock'])->name('admin-laporan.stock');
         Route::post('/stock/data', [LaporanController::class, 'GetDataStock'])->name('admin-laporan.data-stock');
+    });
+
+    // Admin History
+    Route::prefix('admin-history')->group(function () {
+        Route::get('/pemesanan-history', [HistoryController::class, 'pemesanan'])->name('admin-history.data-pemesanan');
+        Route::post('/pemesanan-history-data', [HistoryController::class, 'GetDataPesanan'])->name('admin-history.data-history');
     });
 });

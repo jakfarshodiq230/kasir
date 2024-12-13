@@ -72,7 +72,7 @@
                         <br>
                         <div class="form-group row mt-4">
                             <div class="col-md-12 col-sm-12 p-0">
-                                <label class="col-form-label col-md-1 col-sm-1 ">R<span class="required">*</span></label>
+                                <label class="col-form-label col-md-1 col-sm-1 ">R</label>
                                 <input type="number" step="1" name="r_sph" id="r_sph" min="<?= $seting->sph_dari ?>" max="<?= $seting->sph_sampai ?>" class="form-control form-control-sm col-md-2 mr-2" placeholder="SPH">
                                 <input type="number" step="1" name="r_cyl" id="r_cyl" min="<?= $seting->cyl_dari ?>" max="<?= $seting->cyl_sampai ?>" class="form-control form-control-sm col-md-2 mr-2" placeholder="CYL">
                                 <input type="number" step="1" name="r_axs" id="r_axs" min="<?= $seting->axs_dari ?>" max="<?= $seting->axs_sampai ?>" class="form-control form-control-sm col-md-2 mr-2" placeholder="AXS">
@@ -129,7 +129,7 @@
                         <br>
                         <div class="form-group row">
                             <div class="col-md-12 col-sm-12 p-0">
-                                <label class="col-form-label col-md-1 col-sm-1 ">L<span class="required">*</span></label>
+                                <label class="col-form-label col-md-1 col-sm-1 ">L</label>
                                 <input type="number" step="1" name="l_sph" id="l_sph" min="<?= $seting->sph_dari ?>" max="<?= $seting->sph_sampai ?>" class="form-control form-control-sm col-md-2 mr-2" placeholder="SPH">
                                 <input type="number" step="1" name="l_cyl" id="l_cyl" min="<?= $seting->cyl_dari ?>" max="<?= $seting->cyl_sampai ?>" class="form-control form-control-sm col-md-2 mr-2" placeholder="CYL">
                                 <input type="number" step="1" name="l_axs" id="l_axs" min="<?= $seting->axs_dari ?>" max="<?= $seting->axs_sampai ?>" class="form-control form-control-sm col-md-2 mr-2" placeholder="AXS">

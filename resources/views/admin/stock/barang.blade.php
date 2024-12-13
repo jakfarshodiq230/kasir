@@ -114,6 +114,16 @@
         },
         columns: [
             { data: "id", title: "ID" },
+            {
+                data: "barang.barcode",
+                title: "Barcode",
+                render: function(data, type, row) {
+                    if (type === 'display') {
+                        return `<img src="/storage/barcode_barang/${data}" alt="Barcode" style="height: 50px; width: auto;">`;
+                    }
+                    return data;
+                }
+            },
             { data: "barang.kode_produk", title: "Kode Barang" },
             { data: "barang.nama_produk", title: "Nama Barang" },
             { data: "suplaier.nama_suplaier", title: "Suplaier" },

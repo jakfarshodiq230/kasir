@@ -178,6 +178,12 @@
                                             <li><a href="{{ route('admin-laporan.stock')}}">Stock</a></li>
                                         </ul>
                                     </li>
+                                    <li><a><i class="fa fa-bookmark"></i> History <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li><a href="">Penjualan</a></li>
+                                            <li><a href="{{ route('admin-history.data-pemesanan')}}">Pemesanan</a></li>
+                                        </ul>
+                                    </li>
                                 </ul>
                             </div>
                         @endif
