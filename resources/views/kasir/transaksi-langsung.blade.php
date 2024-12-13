@@ -546,6 +546,15 @@
                 dataType: 'json',
                 success: function(response) {
                     if (response.success) {
+                        $('#total_beli').val('');
+                        $('#diskon').val('');
+                        $('#jumlah_bayar').val('');
+                        $('#sisa_bayar').val('');
+                        $('#kode_produk').val('');
+                        $('#nama_produk').val('');
+                        $('#stock_barang').val('');
+                        $('#harga').val('');
+                        $('#jumlah_barang').val('');
                         Swal.fire({
                             title: 'Transaksi berhasil diproses!',
                             icon: 'success',
