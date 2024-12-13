@@ -112,7 +112,10 @@
         processing: true,
         ajax: {
             url: "/admin-stock/data-admin-stock-all", // Replace with the Laravel route URL that returns JSON
-            dataSrc: "data"
+            dataSrc: "data",
+            complete: function (xhr) {
+                console.log('AJAX Response:', xhr.responseJSON); // Log the response
+            }
         },
         columns: [
             { data: "id", title: "ID" },
