@@ -470,7 +470,7 @@
                         $('#stock_barang').val('');
                         $('#harga').val('');
                         $('#jumlah_barang').val('');
-                        $('#id_produk, #harga_barang, #harga_lainya').trigger('change');
+                        $('#id_produk, #harga_barang, #harga_lainya').val('').trigger('change');
                         loadCartData();
                         const notifAudio = document.getElementById('notif-audio');
                         if (notifAudio) {
@@ -608,6 +608,7 @@
             $('#diskon').val('');
             $('#jumlah_bayar').val('');
             $('#sisa_bayar').val('');
+            $('#id_produk, #harga_barang, #harga_lainya').val('').trigger('change');
         });
 
         $('#btnNewTransaksi').click(function() {

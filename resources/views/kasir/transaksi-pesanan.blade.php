@@ -392,6 +392,7 @@
         placeholder: 'PILIH',
         allowClear: true
     });
+
     function printNota(id) {
         const url = `/kasir/transaksi-pemesanan-cetak/${id}`;
 
@@ -532,7 +533,7 @@
                     $('#harga').val('');
                     $('#jumlah_barang').val('');
                     $('#harga_lainya').val('');
-                    $('#id_produk, #harga_barang').trigger('change');
+                    $('#id_produk, #harga_barang, #id_gudang').val('').trigger('change');
                     loadCartData();
                     const notifAudio = document.getElementById('notif-audio');
                     if (notifAudio) {
@@ -574,22 +575,7 @@
     $('#btnReset').click(function() {
         loadCartData();
         // Reset the form values
-        $('#nama').val('');
-        $('#alamat').val('');
-        $('#id_user').val('');
-        $('#phone_transaksi').val('');
-        $('#diameter').val('');
-        $('#warna').val('');
-        $('#tanggal_transaksi').val('');
-        $('#tanggal_selesai').val('');
-        $('#tanggal_ambil').val('');
-        $('#pembayaran').val('');
-        $('#jenis_transaksi').val('');
-        $('#total_beli').val('');
-        $('#diskon').val('');
-        $('#jumlah_bayar').val('');
-        $('#sisa_bayar').val('');
-        $('#id_gudang').val('');
+        $('[data-reset]').val('');
     });
 
     $('#btnNewTransaksi').click(function() {
@@ -619,6 +605,28 @@
 
     $('#btnReset').on('click', function () {
         loadCartData();
+        $('#nama').val('');
+        $('#alamat').val('');
+        $('#id_user').val('');
+        $('#phone_transaksi').val('');
+        $('#diameter').val('');
+        $('#warna').val('');
+        $('#tanggal_transaksi').val('');
+        $('#tanggal_selesai').val('');
+        $('#tanggal_ambil').val('');
+        $('#pembayaran').val('');
+        $('#jenis_transaksi').val('');
+        $('#total_beli').val('');
+        $('#diskon').val('');
+        $('#jumlah_bayar').val('');
+        $('#sisa_bayar').val('');
+        $('#id_gudang').val('');
+        $('#id_produk').val();
+        $('#kode_produk').val();
+        $('#harga_barang').val();
+        $('#jumlah_barang').val();
+        $('#harga_lainya').val();
+        $('#id_produk, #harga_barang, #id_gudang').val('').trigger('change');
         $('#btnPrintNota').prop('disabled', true);
     });
 
