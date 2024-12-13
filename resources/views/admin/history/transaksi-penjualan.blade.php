@@ -30,7 +30,7 @@
     <div class="col-md-12 col-sm-12 ">
         <div class="x_panel">
           <div class="x_title">
-            <h2>List Pemesanan Barang</h2>
+            <h2>List Penjualan Barang</h2>
             <ul class="nav navbar-right panel_toolbox">
               <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
               </li>
@@ -101,7 +101,7 @@
         processing: true,
         serverSide: true,
         ajax: {
-            url: "/admin-history/pemesanan-history-data",
+            url: "/admin-history/penjualan-history-data",
             type: "POST",
             headers: {
                 'X-CSRF-TOKEN': "{{ csrf_token() }}"
@@ -128,8 +128,7 @@
                 title: "Nomor Transaksi",
                 render: function(data, type, row) {
                     const nomor = row.nomor_transaksi;
-                    const gudang = row.nama_gudang.toUpperCase();
-                    return nomor + " <br> " + gudang;
+                    return nomor ;
                 }
             },
             { data: "nama", title: "Nama" },
@@ -172,7 +171,7 @@
                     const pembayaran = row.pembayaran;
                     const status = row.jenis_transaksi === 'non_hutang' ? 'Tidak Hutang' : 'Hutang';
                     return '<span class="badge badge-info">'+pembayaran.toUpperCase()+'</span><br><span class="badge badge-warning">'+status.toUpperCase()+
-                        '</span><br><span class="badge badge-primary">'+row.status_pemesanan.toUpperCase()+'</span>';
+                        '</span><br><span class="badge badge-primary">'+row.status_penjualan.toUpperCase()+'</span>';
                 }
             },
             {

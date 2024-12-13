@@ -30,7 +30,7 @@
     <div class="col-md-12 col-sm-12 ">
         <div class="x_panel">
           <div class="x_title">
-            <h2>List Pemesanan Barang</h2>
+            <h2>List Penjualan Barang</h2>
             <ul class="nav navbar-right panel_toolbox">
               <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
               </li>
@@ -39,6 +39,14 @@
                 <div class="row g-2">
                     <div class="col-auto">
                         <input type="date" id="filter-tanggal-transaksi" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-auto">
+                        <select id="filter-cabang-transaksi" class="form-control form-control-sm">
+                            <option value="">Semua</option>
+                            <?php foreach ($cabang as $value) { ?>
+                                <option value="<?= $value->id ?>"><?= $value->nama_toko_cabang ?></option>
+                            <?php } ?>
+                        </select>
                     </div>
                     <div class="col-auto">
                         <select id="filter-jenis-transaksi" class="form-control form-control-sm">
@@ -101,7 +109,7 @@
         processing: true,
         serverSide: true,
         ajax: {
-            url: "/admin-history/pemesanan-history-data",
+            url: "/owner-history/penjualan-history-data",
             type: "POST",
             headers: {
                 'X-CSRF-TOKEN': "{{ csrf_token() }}"
@@ -109,6 +117,7 @@
             data: function(d) {
                 d.tanggal_transaksi = $("#filter-tanggal-transaksi").val();
                 d.jenis_transaksi = $("#filter-jenis-transaksi").val();
+                d.cabang_transaksi = $("#filter-cabang-transaksi").val();
             },
             dataSrc: function (json) {
                 return json.data;
@@ -128,8 +137,7 @@
                 title: "Nomor Transaksi",
                 render: function(data, type, row) {
                     const nomor = row.nomor_transaksi;
-                    const gudang = row.nama_gudang.toUpperCase();
-                    return nomor + " <br> " + gudang;
+                    return nomor ;
                 }
             },
             { data: "nama", title: "Nama" },
@@ -172,7 +180,7 @@
                     const pembayaran = row.pembayaran;
                     const status = row.jenis_transaksi === 'non_hutang' ? 'Tidak Hutang' : 'Hutang';
                     return '<span class="badge badge-info">'+pembayaran.toUpperCase()+'</span><br><span class="badge badge-warning">'+status.toUpperCase()+
-                        '</span><br><span class="badge badge-primary">'+row.status_pemesanan.toUpperCase()+'</span>';
+                        '</span><br><span class="badge badge-primary">'+row.status_penjualan.toUpperCase()+'</span>';
                 }
             },
             {
@@ -229,9 +237,10 @@
         }
     });
 
-    $("#filter-tanggal-transaksi, #filter-jenis-transaksi").on("change", function() {
+    $("#filter-tanggal-transaksi, #filter-jenis-transaksi, #filter-cabang-transaksi").on("change", function() {
         let tanggal = $("#filter-tanggal-transaksi").val();
         let jenis = $("#filter-jenis-transaksi").val();
+        let cabang = $("#filter-cabag-transaksi").val();
         table.ajax.reload(); // Reload table
     });
 

@@ -118,6 +118,12 @@
                                             <li><a href="{{ route('owner-penjualan.rekap-penjualan')}}">Penjualan</a></li>
                                         </ul>
                                     </li>
+                                    <li><a><i class="fa fa-history"></i> History <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li><a href="{{ route('owner-history.data-penjualan')}}">Penjualan</a></li>
+                                            <li><a href="{{ route('owner-history.data-pemesanan')}}">Pemesanan</a></li>
+                                        </ul>
+                                    </li>
                                     <li><a href="{{ route('owner-toko.index')}}"><i class="fa fa-home"></i>Toko</a></li>
                                     <li><a href="{{ route('owner-divace-login.index')}}"><i class="fa fa-laptop"></i>Divace Login</a></li>
                                 </ul>
@@ -178,9 +184,9 @@
                                             <li><a href="{{ route('admin-laporan.stock')}}">Stock</a></li>
                                         </ul>
                                     </li>
-                                    <li><a><i class="fa fa-bookmark"></i> History <span class="fa fa-chevron-down"></span></a>
+                                    <li><a><i class="fa fa-history"></i> History <span class="fa fa-chevron-down"></span></a>
                                         <ul class="nav child_menu">
-                                            <li><a href="">Penjualan</a></li>
+                                            <li><a href="{{ route('admin-history.data-penjualan')}}">Penjualan</a></li>
                                             <li><a href="{{ route('admin-history.data-pemesanan')}}">Pemesanan</a></li>
                                         </ul>
                                     </li>

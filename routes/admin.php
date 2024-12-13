@@ -69,6 +69,9 @@ Route::middleware(['auth', 'verified', 'cek_level:admin'])->group(function () {
     // Admin History
     Route::prefix('admin-history')->group(function () {
         Route::get('/pemesanan-history', [HistoryController::class, 'pemesanan'])->name('admin-history.data-pemesanan');
-        Route::post('/pemesanan-history-data', [HistoryController::class, 'GetDataPesanan'])->name('admin-history.data-history');
+        Route::post('/pemesanan-history-data', [HistoryController::class, 'GetDataPesanan'])->name('admin-history.data-history-pemesanan');
+
+        Route::get('/penjualan-history', [HistoryController::class, 'penjualan'])->name('admin-history.data-penjualan');
+        Route::post('/penjualan-history-data', [HistoryController::class, 'GetDataPenjualan'])->name('admin-history.data-history-penjualan');
     });
 });

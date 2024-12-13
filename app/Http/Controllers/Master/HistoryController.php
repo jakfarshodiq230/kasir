@@ -1,15 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
+use App\Models\OpCabang;
 use App\Models\OpKategori;
 use Illuminate\Http\Request;
-use App\Models\OpPenjualan;
-use App\Models\OpPenjualanDetail;
-use App\Models\OpPesanan;
-use App\Models\OpPesananDetail;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class HistoryController extends Controller
@@ -17,7 +13,8 @@ class HistoryController extends Controller
     public function Pemesanan()
     {
         $kategori = OpKategori::where('status', 1)->get();
-        return view("admin.history.transaksi-pemesanan", compact('kategori'));
+        $cabang    = OpCabang::where('status_cabang', 1)->get();
+        return view("master.history.transaksi-pemesanan", compact('kategori', 'cabang'));
     }
 
     public function GetDataPesanan(Request $request)
@@ -37,8 +34,7 @@ class HistoryController extends Controller
                 'b.*',
                 'g.*',
                 'p.*'
-            )
-            ->where('opd.id_cabang', Auth::user()->id_cabang);
+            );
 
         // Filter berdasarkan tanggal_transaksi jika tersedia
         if ($request->filled('tanggal_transaksi')) {
@@ -48,6 +44,11 @@ class HistoryController extends Controller
         // Filter berdasarkan jenis_transaksi jika tersedia
         if ($request->filled('jenis_transaksi')) {
             $query->where('b.id_kategori', $request->input('jenis_transaksi'));
+        }
+
+        // Filter berdasarkan jenis_transaksi jika tersedia
+        if ($request->filled('cabang_transaksi')) {
+            $query->where('opd.id_cabang', $request->input('cabang_transaksi'));
         }
 
         // Hitung total data sebelum paginasi
@@ -76,7 +77,8 @@ class HistoryController extends Controller
     public function penjualan()
     {
         $kategori = OpKategori::where('status', 1)->get();
-        return view("admin.history.transaksi-penjualan", compact('kategori'));
+        $cabang    = OpCabang::where('status_cabang', 1)->get();
+        return view("master.history.transaksi-penjualan", compact('kategori', 'cabang'));
     }
 
     public function GetDataPenjualan(Request $request)
@@ -95,8 +97,7 @@ class HistoryController extends Controller
                 'b.*',
                 'p.*',
                 'k.*'
-            )
-            ->where('opd.id_cabang', Auth::user()->id_cabang);
+            );
 
         // Filter berdasarkan tanggal_transaksi jika tersedia
         if ($request->filled('tanggal_transaksi')) {
@@ -106,6 +107,11 @@ class HistoryController extends Controller
         // Filter berdasarkan jenis_transaksi jika tersedia
         if ($request->filled('jenis_transaksi')) {
             $query->where('b.id_kategori', $request->input('jenis_transaksi'));
+        }
+
+        // Filter berdasarkan jenis_transaksi jika tersedia
+        if ($request->filled('cabang_transaksi')) {
+            $query->where('opd.id_cabang', $request->input('cabang_transaksi'));
         }
 
         // Hitung total data sebelum paginasi

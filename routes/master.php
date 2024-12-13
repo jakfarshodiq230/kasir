@@ -13,6 +13,7 @@ use App\Http\Controllers\Master\KaryawanController;
 use App\Http\Controllers\Master\CabangController;
 use App\Http\Controllers\Master\DashboardController;
 use App\Http\Controllers\Master\DivaceController;
+use App\Http\Controllers\Master\HistoryController;
 use App\Http\Controllers\Master\KasController;
 use App\Http\Controllers\Master\LaporanController;
 use App\Http\Controllers\Master\PasswordResetLinkController;
@@ -140,5 +141,13 @@ Route::middleware('auth', 'verified', 'cek_level:owner')->group(function () {
     Route::prefix('divace')->group(function () {
         Route::get('/login', [DivaceController::class, 'index'])->name('owner-divace-login.index');
         Route::get('/login-data', [DivaceController::class, 'GetDataDivace'])->name('owner-divace-login.data-login');
+    });
+
+    Route::prefix('owner-history')->group(function () {
+        Route::get('/pemesanan-history', [HistoryController::class, 'pemesanan'])->name('owner-history.data-pemesanan');
+        Route::post('/pemesanan-history-data', [HistoryController::class, 'GetDataPesanan'])->name('owner-history.data-history-pemesanan');
+
+        Route::get('/penjualan-history', [HistoryController::class, 'penjualan'])->name('owner-history.data-penjualan');
+        Route::post('/penjualan-history-data', [HistoryController::class, 'GetDataPenjualan'])->name('owner-history.data-history-penjualan');
     });
 });

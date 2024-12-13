@@ -41,6 +41,14 @@
                         <input type="date" id="filter-tanggal-transaksi" class="form-control form-control-sm">
                     </div>
                     <div class="col-auto">
+                        <select id="filter-cabang-transaksi" class="form-control form-control-sm">
+                            <option value="">Semua</option>
+                            <?php foreach ($cabang as $value) { ?>
+                                <option value="<?= $value->id ?>"><?= $value->nama_toko_cabang ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                    <div class="col-auto">
                         <select id="filter-jenis-transaksi" class="form-control form-control-sm">
                             <option value="">Semua</option>
                             <?php foreach ($kategori as $value) { ?>
@@ -101,7 +109,7 @@
         processing: true,
         serverSide: true,
         ajax: {
-            url: "/admin-history/pemesanan-history-data",
+            url: "/owner-history/pemesanan-history-data",
             type: "POST",
             headers: {
                 'X-CSRF-TOKEN': "{{ csrf_token() }}"
@@ -109,6 +117,7 @@
             data: function(d) {
                 d.tanggal_transaksi = $("#filter-tanggal-transaksi").val();
                 d.jenis_transaksi = $("#filter-jenis-transaksi").val();
+                d.cabang_transaksi = $("#filter-cabang-transaksi").val();
             },
             dataSrc: function (json) {
                 return json.data;
@@ -229,9 +238,10 @@
         }
     });
 
-    $("#filter-tanggal-transaksi, #filter-jenis-transaksi").on("change", function() {
+    $("#filter-tanggal-transaksi, #filter-jenis-transaksi, #filter-cabang-transaksi").on("change", function() {
         let tanggal = $("#filter-tanggal-transaksi").val();
         let jenis = $("#filter-jenis-transaksi").val();
+        let cabang = $("#filter-cabang-transaksi").val();
         table.ajax.reload(); // Reload table
     });
 
