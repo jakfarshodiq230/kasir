@@ -15,7 +15,7 @@ class OpBarangCabangStock extends Model
 
     public function barang()
     {
-        return $this->belongsTo(OpBarang::class, 'id_barang');
+        return $this->hasMany(OpBarang::class, 'id_barang');
     }
 
     /**
