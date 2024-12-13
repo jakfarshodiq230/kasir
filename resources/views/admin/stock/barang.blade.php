@@ -117,7 +117,7 @@
         columns: [
             { data: "id", title: "ID" },
             {
-                data: "barcode", // Assuming 'barang.kode_produk' contains the product code
+                data: null,
                 title: "Barcode",
                 orderable: false,
                 render: function(data, type, row) {
