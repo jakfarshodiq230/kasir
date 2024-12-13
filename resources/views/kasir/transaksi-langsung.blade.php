@@ -77,13 +77,13 @@
                     </div>
                     <div class="col-md-6 col-sm-6  bg-white">
                         <div class="form-group row">
-                            <label class="control-label col-md-3 col-sm-3 ">Diamater<span class="required">*</span></label>
+                            <label class="control-label col-md-3 col-sm-3 ">Diamater</label>
                             <div class="col-md-9 col-sm-9 ">
                                 <input type="text" name="diameter" id="diameter" class="form-control form-control-sm" placeholder="Diamater">
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="control-label col-md-3 col-sm-3 ">Warna<span class="required">*</span></label>
+                            <label class="control-label col-md-3 col-sm-3 ">Warna</label>
                             <div class="col-md-9 col-sm-9 ">
                                 <input type="text" name="warna" id="warna" class="form-control form-control-sm" placeholder="warna">
                             </div>
@@ -156,6 +156,12 @@
                                         <select class="select2_single form-control form-control-sm" tabindex="-1" name="harga_barang" id="harga_barang">
                                             <option>PILIH</option>
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label col-md-3 col-sm-3 ">Harga Lainya<span class="required">*</span></label>
+                                    <div class="col-md-9 col-sm-9 ">
+                                        <input type="number" name="harga_lainya" id="harga_lainya" class="form-control form-control-sm" value="0" placeholder="Ketikan Harga Lainya">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -275,6 +281,7 @@
 <script>
 
     $(document).ready(function() {
+        $('#harga_lainya').closest('.form-group').hide();
         $('#id_produk, #harga_barang').select2({
             placeholder: 'PILIH',
             allowClear: true
@@ -388,7 +395,10 @@
                     if (response.data.length > 0) {
                         $('#harga_barang').prop('disabled', false);
                         response.data.forEach(harga => {
-                            $('#harga_barang').append(`<option value="${harga.price}">${harga.Ket} - Rp ${parseFloat(harga.price).toLocaleString('id-ID')}</option>`);
+                            const optionText = harga.price == 0
+                                ? `${harga.Ket}`
+                                : `${harga.Ket} - Rp ${parseFloat(harga.price).toLocaleString('id-ID')}`;
+                            $('#harga_barang').append(`<option value="${harga.price}" data-price="${harga.price}">${optionText}</option>`);
                         });
                     }
             },
@@ -396,6 +406,17 @@
                     console.log('Unable to fetch the price at this moment.');
                 }
             });
+        });
+
+        $('#harga_barang').on('change', function () {
+            const selectedOption = $(this).find('option:selected');
+            const selectedPrice = selectedOption.data('price');
+
+            if (selectedPrice === 0) {
+                $('#harga_lainya').closest('.form-group').show(); // Show "Harga Lainya"
+            } else {
+                $('#harga_lainya').closest('.form-group').hide(); // Hide "Harga Lainya"
+            }
         });
 
         function checkJumlahBarang() {
@@ -420,10 +441,13 @@
             var kode = $('#kode_produk').val();
             var harga = $('#harga_barang').val();
             var jumlahBeli = $('#jumlah_barang').val();
-
-            // Hitung sub_total
-            var subTotal = harga * jumlahBeli;
-            console.log(id);
+            var harga_lainya = $('#harga_lainya').val();
+            var subTotal = 0;
+            if (harga == 0) {
+                subTotal = harga_lainya * jumlahBeli;
+            } else {
+                subTotal = harga * jumlahBeli;
+            }
 
             // Kirim data melalui AJAX
             $.ajax({
@@ -435,7 +459,8 @@
                     kode_produk: kode,
                     harga: harga,
                     jumlah_beli: jumlahBeli,
-                    sub_total: subTotal
+                    sub_total: subTotal,
+                    harga_lainya: harga_lainya,
                 },
                 success: function(response) {
                     if (response.success) {
@@ -445,7 +470,7 @@
                         $('#stock_barang').val('');
                         $('#harga').val('');
                         $('#jumlah_barang').val('');
-                        $('#id_produk, #harga_barang').trigger('change');
+                        $('#id_produk, #harga_barang, #harga_lainya').trigger('change');
                         loadCartData();
                         const notifAudio = document.getElementById('notif-audio');
                         if (notifAudio) {

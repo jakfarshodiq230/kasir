@@ -246,19 +246,19 @@
                 </tr>
                     <tr class="service">
                         <td class="tableitem"><p class="itemtext">R</p></td>
-                        <td class="tableitem"><p class="itemtext"><?= $penjualan->R_SPH ?></p></td>
-                        <td class="tableitem"><p class="itemtext"><?= $penjualan->R_CYL ?></p></td>
-                        <td class="tableitem"><p class="itemtext"><?= $penjualan->R_AXS ?></p></td>
-                        <td class="tableitem"><p class="itemtext"><?= $penjualan->R_ADD ?></p></td>
-                        <td class="tableitem"><p class="itemtext"><?= $penjualan->PD ?></p></td>
+                        <td class="tableitem"><p class="itemtext"><?= $penjualan->R_SPH ? $penjualan->R_SPH : '-' ?></p></td>
+                        <td class="tableitem"><p class="itemtext"><?= $penjualan->R_CYL ? $penjualan->R_CYL : '-' ?></p></td>
+                        <td class="tableitem"><p class="itemtext"><?= $penjualan->R_AXS ? $penjualan->R_AXS : '-' ?></p></td>
+                        <td class="tableitem"><p class="itemtext"><?= $penjualan->R_ADD ? $penjualan->R_ADD : '-' ?></p></td>
+                        <td class="tableitem"><p class="itemtext"><?= $penjualan->PD ? $penjualan->PD : '-' ?></p></td>
                     </tr>
                     <tr class="service">
                         <td class="tableitem"><p class="itemtext">L</p></td>
-                        <td class="tableitem"><p class="itemtext"><?= $penjualan->L_SPH ?></p></td>
-                        <td class="tableitem"><p class="itemtext"><?= $penjualan->L_CYL ?></p></td>
-                        <td class="tableitem"><p class="itemtext"><?= $penjualan->L_AXS ?></p></td>
-                        <td class="tableitem"><p class="itemtext"><?= $penjualan->L_ADD ?></p></td>
-                        <td class="tableitem"><p class="itemtext"><?= $penjualan->PD2 ?></p></td>
+                        <td class="tableitem"><p class="itemtext"><?= $penjualan->L_SPH ? $penjualan->L_SPH : '-' ?></p></td>
+                        <td class="tableitem"><p class="itemtext"><?= $penjualan->L_CYL ? $penjualan->L_CYL : '-' ?></p></td>
+                        <td class="tableitem"><p class="itemtext"><?= $penjualan->L_AXS ? $penjualan->L_AXS : '-' ?></p></td>
+                        <td class="tableitem"><p class="itemtext"><?= $penjualan->L_ADD ? $penjualan->L_ADD : '-' ?></p></td>
+                        <td class="tableitem"><p class="itemtext"><?= $penjualan->PD2 ? $penjualan->PD2 : '-' ?></p></td>
                     </tr>
 
             </table>

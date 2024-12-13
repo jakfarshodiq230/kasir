@@ -73,6 +73,7 @@ class TransaksiController extends Controller
             ['id' => 'harga_grosir_1', 'Ket' => 'Harga Grosir 1', 'price' => $harga->harga_grosir_1],
             ['id' => 'harga_grosir_2', 'Ket' => 'Harga Grosir 2', 'price' => $harga->harga_grosir_2],
             ['id' => 'harga_grosir_3', 'Ket' => 'Harga Grosir 3', 'price' => $harga->harga_grosir_3],
+            ['id' => 'harga_lainya', 'Ket' => 'Lainya', 'price' => 0],
         ];
         return response()->json(['message' => 'Data get successfully', 'data' => $hargaOptions]);
     }
@@ -86,12 +87,18 @@ class TransaksiController extends Controller
             'sub_total' => 'required|numeric',
         ]);
 
+        if ($request->harga == 0) {
+            $harga = $request->harga_lainya;
+        } else {
+            $harga = $request->harga;
+        }
+
         $dataCart = OpPenjualanCart::create([
             'id_barang' => $request->id,
             'id_cabang' => Auth::user()->id_cabang,
             'id_user' => Auth::user()->id,
             'kode_produk' => $request->kode_produk,
-            'harga' => $request->harga,
+            'harga' => $harga,
             'jumlah_beli' => $request->jumlah_beli,
             'sub_total' => $request->sub_total,
         ]);

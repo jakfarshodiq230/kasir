@@ -73,11 +73,54 @@
                         <div class="form-group row mt-4">
                             <div class="col-md-12 col-sm-12 p-0">
                                 <label class="col-form-label col-md-1 col-sm-1 ">R</label>
-                                <input type="number" step="1" name="r_sph" id="r_sph" min="<?= $seting->sph_dari ?>" max="<?= $seting->sph_sampai ?>" class="form-control form-control-sm col-md-2 mr-2" placeholder="SPH">
-                                <input type="number" step="1" name="r_cyl" id="r_cyl" min="<?= $seting->cyl_dari ?>" max="<?= $seting->cyl_sampai ?>" class="form-control form-control-sm col-md-2 mr-2" placeholder="CYL">
-                                <input type="number" step="1" name="r_axs" id="r_axs" min="<?= $seting->axs_dari ?>" max="<?= $seting->axs_sampai ?>" class="form-control form-control-sm col-md-2 mr-2" placeholder="AXS">
-                                <input type="number" step="1" name="r_add" id="r_add" min="<?= $seting->add_dari ?>" max="<?= $seting->add_sampai ?>" class="form-control form-control-sm col-md-2 mr-2" placeholder="ADD">
-                                <input type="number" step="1" name="pd" id="pd" class="form-control form-control-sm col-md-2 mr-2" placeholder="PD">
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    name="r_sph"
+                                    id="r_sph"
+                                    min="<?= number_format($seting->sph_dari, 2) ?>"
+                                    max="<?= number_format($seting->sph_sampai, 2) ?>"
+                                    class="form-control form-control-sm col-md-2 mr-2"
+                                    placeholder="SPH">
+
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    name="r_cyl"
+                                    id="r_cyl"
+                                    min="<?= number_format($seting->cyl_dari, 2) ?>"
+                                    max="<?= number_format($seting->cyl_sampai, 2) ?>"
+                                    class="form-control form-control-sm col-md-2 mr-2"
+                                    placeholder="CYL">
+
+                                <input
+                                    type="number"
+                                    step="1"
+                                    name="r_axs"
+                                    id="r_axs"
+                                    min="<?= $seting->axs_dari ?>"
+                                    max="<?= $seting->axs_sampai ?>"
+                                    class="form-control form-control-sm col-md-2 mr-2"
+                                    placeholder="AXS">
+
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    name="r_add"
+                                    id="r_add"
+                                    min="<?= number_format($seting->add_dari, 2) ?>"
+                                    max="<?= number_format($seting->add_sampai, 2) ?>"
+                                    class="form-control form-control-sm col-md-2 mr-2"
+                                    placeholder="ADD">
+
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    name="pd"
+                                    id="pd"
+                                    class="form-control form-control-sm col-md-2 mr-2"
+                                    placeholder="PD">
+
                             </div>
                         </div>
                     </div>
@@ -130,11 +173,54 @@
                         <div class="form-group row">
                             <div class="col-md-12 col-sm-12 p-0">
                                 <label class="col-form-label col-md-1 col-sm-1 ">L</label>
-                                <input type="number" step="1" name="l_sph" id="l_sph" min="<?= $seting->sph_dari ?>" max="<?= $seting->sph_sampai ?>" class="form-control form-control-sm col-md-2 mr-2" placeholder="SPH">
-                                <input type="number" step="1" name="l_cyl" id="l_cyl" min="<?= $seting->cyl_dari ?>" max="<?= $seting->cyl_sampai ?>" class="form-control form-control-sm col-md-2 mr-2" placeholder="CYL">
-                                <input type="number" step="1" name="l_axs" id="l_axs" min="<?= $seting->axs_dari ?>" max="<?= $seting->axs_sampai ?>" class="form-control form-control-sm col-md-2 mr-2" placeholder="AXS">
-                                <input type="number" step="1" name="l_add" id="l_add" min="<?= $seting->add_dari ?>" max="<?= $seting->add_sampai ?>" class="form-control form-control-sm col-md-2 mr-2" placeholder="ADD">
-                                <input type="number" step="1" name="pd2" id="pd2" class="form-control form-control-sm col-md-2 mr-2" placeholder="PD">
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    name="l_sph"
+                                    id="l_sph"
+                                    min="<?= number_format($seting->sph_dari, 2) ?>"
+                                    max="<?= number_format($seting->sph_sampai, 2) ?>"
+                                    class="form-control form-control-sm col-md-2 mr-2"
+                                    placeholder="SPH">
+
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    name="l_cyl"
+                                    id="l_cyl"
+                                    min="<?= number_format($seting->cyl_dari, 2) ?>"
+                                    max="<?= number_format($seting->cyl_sampai, 2) ?>"
+                                    class="form-control form-control-sm col-md-2 mr-2"
+                                    placeholder="CYL">
+
+                                <input
+                                    type="number"
+                                    step="1"
+                                    name="l_axs"
+                                    id="l_axs"
+                                    min="<?= $seting->axs_dari ?>"
+                                    max="<?= $seting->axs_sampai ?>"
+                                    class="form-control form-control-sm col-md-2 mr-2"
+                                    placeholder="AXS">
+
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    name="l_add"
+                                    id="l_add"
+                                    min="<?= number_format($seting->add_dari, 2) ?>"
+                                    max="<?= number_format($seting->add_sampai, 2) ?>"
+                                    class="form-control form-control-sm col-md-2 mr-2"
+                                    placeholder="ADD">
+
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    name="pd2"
+                                    id="pd2"
+                                    class="form-control form-control-sm col-md-2 mr-2"
+                                    placeholder="PD">
+
                             </div>
                         </div>
                     </div>
