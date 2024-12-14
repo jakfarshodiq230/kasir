@@ -13,7 +13,7 @@
                 <div class="tile-stats">
                   <div class="icon"><i class="fa fa-users"></i>
                   </div>
-                  <div class="count"><?= $barangCount ?></div>
+                  <div class="count"><?= $barangCount?:0 ?></div>
 
                   <h3>Barang</h3>
                 </div>
@@ -31,7 +31,7 @@
                 <div class="tile-stats">
                   <div class="icon"><i class="fa fa-sort-amount-desc"></i>
                   </div>
-                  <div class="count"><?= $pesananCount ?></div>
+                  <div class="count"><?= $pesananCount?:0 ?></div>
 
                   <h3>Pemesanan</h3>
                 </div>
@@ -40,7 +40,7 @@
                 <div class="tile-stats">
                   <div class="icon"><i class="fa fa-check-square-o"></i>
                   </div>
-                  <div class="count"><?= $selesaiCount ?></div>
+                  <div class="count"><?= $selesaiCount?:0 ?></div>
 
                   <h3>Selesai</h3>
                 </div>
@@ -106,7 +106,7 @@
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $item->nama_produk }}</td>
-                                    <td>{{ $item->stock_tersisa }}</td>
+                                    <td>{{ $item->stock_tersisa?:0 }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
