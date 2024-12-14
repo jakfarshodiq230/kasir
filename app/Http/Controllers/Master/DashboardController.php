@@ -20,7 +20,10 @@ class DashboardController extends Controller
     {
         $currentMonth = Carbon::now()->month;
         $currentYear = Carbon::now()->year;
-        $user = User::where('id_toko', Auth::user()->id_toko)->count();
+        $user = User::where('id_toko', Auth::user()->id_toko)
+            ->whereNotIn('level_user', ['owner'])
+            ->whereNotNull('created_at')
+            ->count();
 
         $kas = OpKas::select('id_cabang', 'saldo')
             ->whereIn('id', function ($query) {
