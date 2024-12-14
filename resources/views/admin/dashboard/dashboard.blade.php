@@ -133,7 +133,7 @@
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $item->nama_produk }}</td>
-                                    <td>{{ $item->stock_tersisa?: 0 }}</td>
+                                    <td>{{ $item->stock_tersisa? $item->stock_tersisa: 0 }}</td>
                                 </tr>
                             @empty
                                 <tr>
