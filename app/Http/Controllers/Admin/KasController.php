@@ -122,6 +122,7 @@ class KasController extends Controller
 
     public function update(Request $request, $id)
     {
+        // Validasi input
         $validated = $request->validate([
             'jumlah_transaksi' => 'required|numeric',
             'keterangan_transaksi' => 'nullable|string',
@@ -129,42 +130,51 @@ class KasController extends Controller
         ]);
 
         try {
+            // Ambil transaksi yang akan di-update
             $opKas = OpKas::findOrFail($id);
+
+            // Simpan nilai lama debit, kredit, dan saldo
             $oldDebit = $opKas->debit;
             $oldKredit = $opKas->kredit;
-            $oldSaldo = $opKas->saldo;
 
+            // Update keterangan transaksi
             $opKas->keterangan = $validated['keterangan_transaksi'];
 
-            if ($validated['jenis_transaksi'] == 'debit') {
+            // Update debit dan kredit berdasarkan jenis transaksi
+            if ($validated['jenis_transaksi'] === 'debit') {
                 $opKas->debit = $validated['jumlah_transaksi'];
                 $opKas->kredit = 0;
             } else {
                 $opKas->kredit = $validated['jumlah_transaksi'];
                 $opKas->debit = 0;
             }
-            $opKas->saldo = $oldSaldo - $oldDebit + $opKas->debit - $oldKredit + $opKas->kredit;
 
+            // Simpan transaksi yang diperbarui
             $opKas->save();
 
+            // Ambil semua transaksi mulai dari transaksi yang diperbarui
             $transactions = OpKas::where('id_cabang', Auth::user()->id_cabang)
-                ->where('tanggal', '>=', $opKas->tanggal)
                 ->orderBy('tanggal', 'asc')
                 ->get();
 
-            $currentSaldo = $opKas->saldo;
+            // Hitung ulang saldo transaksi secara berurutan
+            $currentSaldo = 0; // Saldo awal
 
             foreach ($transactions as $transaction) {
+                // Hitung saldo baru
                 $currentSaldo += $transaction->debit - $transaction->kredit;
                 $transaction->saldo = $currentSaldo;
+
+                // Simpan saldo yang diperbarui
                 $transaction->save();
             }
 
-            return response()->json(['success' => true, 'message' => 'Record updated and saldo updated successfully']);
+            return response()->json(['success' => true, 'message' => 'Transaksi dan saldo berhasil diperbarui']);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Error occurred: ' . $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
     }
+
 
     public function edit($id, $kode)
     {
