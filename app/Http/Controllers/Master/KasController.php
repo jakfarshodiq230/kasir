@@ -59,14 +59,13 @@ class KasController extends Controller
         $idCabang = $validated['id_cabang'];
         $tahun = $validated['tahun'];
 
-        // Retrieve data from database
+        // Retrieve data: Take saldo from the latest record in each month
         $data = OpKas::select(
             DB::raw('MONTH(tanggal) as bulan'),
             DB::raw('SUM(debit) as total_debit'),
             DB::raw('SUM(kredit) as total_kredit'),
             DB::raw('SUM(saldo) as total_saldo'),
-            DB::raw('MAX(id) as max_id'), // Get the max id for each month
-            DB::raw('MAX(created_at) as latest_created_at') // Get the latest created_at for each month
+            DB::raw('MAX(created_at) as latest_created_at')
         )
             ->where('id_cabang', $idCabang)
             ->whereYear('tanggal', $tahun)
@@ -74,17 +73,34 @@ class KasController extends Controller
             ->orderBy(DB::raw('MONTH(tanggal)'))
             ->get();
 
+        // Ensure the latest saldo per month (based on latest_created_at)
+        $latestSaldoData = OpKas::select(
+            DB::raw('MONTH(tanggal) as bulan'),
+            'saldo'
+        )
+            ->where('id_cabang', $idCabang)
+            ->whereYear('tanggal', $tahun)
+            ->whereIn('id', function ($query) use ($idCabang, $tahun) {
+                $query->selectRaw('MAX(id)')
+                    ->from('op_kas as sub')
+                    ->where('sub.id_cabang', $idCabang)
+                    ->whereYear('sub.tanggal', $tahun)
+                    ->groupBy(DB::raw('MONTH(sub.tanggal)'));
+            })
+            ->get()
+            ->keyBy('bulan');
+
         // Format the data
         $formattedData = [];
         for ($month = 1; $month <= 12; $month++) {
             $monthData = $data->firstWhere('bulan', $month);
+            $latestSaldo = $latestSaldoData[$month]->saldo ?? 0;
 
             $formattedData[] = [
                 'bulan' => $month,
                 'total_debit' => $monthData->total_debit ?? 0,
                 'total_kredit' => $monthData->total_kredit ?? 0,
-                'total_saldo' => $monthData->total_saldo ?? 0,
-                'max_id' => $monthData->max_id ?? null,
+                'total_saldo' => $latestSaldo,
                 'latest_created_at' => $monthData->latest_created_at ?? null,
             ];
         }
