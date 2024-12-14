@@ -21,10 +21,18 @@ class DashboardController extends Controller
         $currentMonth = Carbon::now()->month;
         $currentYear = Carbon::now()->year;
         $user = User::where('id_toko', Auth::user()->id_toko)->count();
-        $kas = OpKas::groupBy('id_cabang')
-            ->select('id_cabang', DB::raw('SUM(saldo) as total_saldo'))
+
+        $kas = OpKas::select('id_cabang', 'saldo')
+            ->whereIn('id', function ($query) {
+                $query->selectRaw('MAX(id)') // Get the latest id for each id_cabang
+                    ->from('op_kas as sub')
+                    ->whereColumn('sub.id_cabang', 'op_kas.id_cabang')
+                    ->groupBy('sub.id_cabang'); // Group by id_cabang to get the most recent entry
+            })
+            ->orderBy('created_at', 'desc') // Order by created_at in descending order
             ->get();
-        $totalSaldo = $kas->sum('total_saldo');
+
+        $totalSaldo = $kas->sum('saldo');
 
         $penjualan = OpPenjualan::whereMonth('created_at', $currentMonth)
             ->whereYear('created_at', $currentYear)
