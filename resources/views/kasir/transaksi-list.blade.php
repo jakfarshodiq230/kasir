@@ -857,6 +857,9 @@
                                 <button class="btn btn-sm btn-info view2-btn" data-id="${row.nomor_transaksi}" >
                                     <i class="fas fa-eye"></i>
                                 </button>
+                                <button class="btn btn-sm btn-danger batal-btn" data-id="${row.id}" ${(row.status_pemesanan === 'pesan') ? '' : 'disabled'} title="Batalkan Pesanan">
+                                    <i class="fas fa-times"></i>
+                                </button>
                                 <button class="btn btn-sm btn-warning status-btn" data-id="${row.id}" ${(row.status_pemesanan === 'selesai' || row.status_pemesanan !== 'kirim') ? 'disabled' : ''}>
                                     <i class="fa fa-check-square-o"></i> Selesai
                                 </button>
@@ -1062,6 +1065,57 @@
                     }
                 });
             });
+
+            $(document).on('click', '.batal-btn', function (e) {
+                e.preventDefault();
+                let id = $(this).data('id');
+                Swal.fire({
+                    title: 'Cancel Order?',
+                    text: "This action cannot be undone!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, Cancel it',
+                    cancelButtonText: 'No, Keep it'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Send AJAX request to cancel the order
+                        $.ajax({
+                            url: `/kasir/batal-status-pemesanan/${id}`, // Adjust endpoint URL
+                            type: 'PUT',
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    $("#datatable-buttons1").DataTable().ajax.reload();
+                                    Swal.fire(
+                                        'Cancelled!',
+                                        response.message ||'The order has been successfully cancelled.',
+                                        'success'
+                                    );
+                                } else {
+                                    $("#datatable-buttons1").DataTable().ajax.reload();
+                                    Swal.fire(
+                                        'Failed!',
+                                        response.message || 'An error occurred.',
+                                        'error'
+                                    );
+                                }
+                            },
+                            error: function (xhr) {
+                                Swal.fire(
+                                    'Error!',
+                                    'Server error occurred.',
+                                    'error'
+                                );
+                            }
+                        });
+                    }
+                });
+            });
+
 
     </script>
 

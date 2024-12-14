@@ -25,7 +25,7 @@ class SelesaiController extends Controller
         $length = $request->input('length', 10); // number of records per page
 
         // Start building the query
-        $permintaan = OpPesanan::where('id_gudang', Auth::user()->id_gudang)->where('status_pemesanan', 'selesai');
+        $permintaan = OpPesanan::where('id_gudang', Auth::user()->id_gudang)->where('status_pemesanan', '=', 'selesai');
 
         // Apply filters if they exist
         if ($request->has('tanggal_transaksi') && $request->tanggal_transaksi != '') {

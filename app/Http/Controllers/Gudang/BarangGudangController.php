@@ -14,6 +14,7 @@ use App\Models\OpDetailBarang;
 use App\Models\OpSuplaier;
 use App\Models\OpBarangHarga;
 use App\Models\OpStockGudangLog;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\File;
 use Picqer\Barcode\BarcodeGeneratorPNG;
@@ -249,5 +250,107 @@ class BarangGudangController extends Controller
         $barang->delete();
         $detail->delete();
         return response()->json(['success' => true, 'message' => 'Data deleted successfully']);
+    }
+
+    public function CetakBarcode()
+    {
+        return view("gudang.barang.cetak-barcode");
+    }
+
+    public function DataGetBarang($KodeBarang)
+    {
+        $id_gudang = Auth::user()->id_gudang;
+
+        $barang = OpBarang::where('id_gudang', $id_gudang)
+            ->where('kode_produk', $KodeBarang)
+            ->with(['opBarangDetails', 'kategori', 'gudang'])
+            ->first();
+
+        if (!$barang) {
+            return response()->json([
+                'message' => 'Barang tidak ditemukan',
+                'data' => null,
+                'detail' => null
+            ], 404);
+        }
+
+        $harga = $this->getHarga($barang->id);
+
+        return response()->json([
+            'message' => 'Data retrieved successfully',
+            'data' => $barang,
+            'harga' => $harga,
+        ]);
+    }
+
+    public function getHarga($idBarang)
+    {
+
+        $barang = OpBarang::with('harga')->find($idBarang);
+
+        if (!$barang || !$barang->harga) {
+            return response()->json(['error' => 'Harga not found'], 404);
+        }
+
+        $harga = $barang->harga;
+
+        // Prepare the harga data as an array of objects with `id` and `price` properties
+        $hargaOptions = [
+            ['id' => 'harga_jual', 'Ket' => 'Harga Jual', 'price' => $harga->harga_jual],
+            ['id' => 'harga_grosir_1', 'Ket' => 'Harga Grosir 1', 'price' => $harga->harga_grosir_1],
+            ['id' => 'harga_grosir_2', 'Ket' => 'Harga Grosir 2', 'price' => $harga->harga_grosir_2],
+            ['id' => 'harga_grosir_3', 'Ket' => 'Harga Grosir 3', 'price' => $harga->harga_grosir_3],
+            ['id' => 'harga_lainya', 'Ket' => 'Lainya', 'price' => 0],
+        ];
+
+        return response()->json($hargaOptions);
+    }
+    public function generateBarcodePdf(Request $request)
+    {
+        // Validate the inputs
+        $request->validate([
+            'kode_produk' => 'required',
+            'nama_produk' => 'required',
+            'barcode' => 'required',
+            'harga_barang' => 'required',
+            'colom' => 'required|integer|min:1',
+            'row' => 'required|integer|min:1',
+        ]);
+
+        // Check if harga_barang is 0, then use harga_lainya
+        if ($request->harga_barang == 0) {
+            $harga = $request->harga_barang;
+        } else {
+            $harga = $request->harga_lainya;
+        }
+
+        // Collect data from the request
+        $data = [
+            'kode_produk' => $request->kode_produk,
+            'nama_produk' => $request->nama_produk,
+            'barcode' => $request->barcode,
+            'harga_barang' => $harga,
+            'colom' => $request->colom,
+            'row' => $request->row,
+        ];
+
+        // Create barcode directory if it doesn't exist
+        $barcodeDirectory = storage_path('app/public/barcodes');
+        if (!File::exists($barcodeDirectory)) {
+            File::makeDirectory($barcodeDirectory, 0775, true);
+        }
+
+        // Generate dynamic filename using barcode or kode_produk
+        $filename = 'brcode_' . $request->kode_produk . '.pdf';
+        $filePath = $barcodeDirectory . '/' . $filename;
+
+        // Load the PDF view
+        $pdf = PDF::loadView('gudang.barang.barcode-pdf', $data);
+
+        // Save the PDF, overwriting the file if it exists
+        $pdf->save($filePath);
+
+        // Return the generated PDF as a response for download
+        return response()->json(['success' => true, 'pdf_url' => asset('storage/barcodes/' . $filename)]);
     }
 }

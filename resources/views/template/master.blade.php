@@ -138,6 +138,7 @@
                                         <ul class="nav child_menu">
                                             <li><a href="{{ route('gudang-barang.index') }}">Barang</a></li>
                                             <li><a href="{{ route('gudang-barang.add') }}">Tambah Barang</a></li>
+                                            <li><a href="{{ route('gudang-barang-barcode.CetakBarcode') }}">Cetak Barcode</a></li>
                                         </ul>
                                     </li>
                                 </ul>
@@ -151,6 +152,7 @@
                                     </li>
                                     <li><a href="{{ route('gudang-permintaan.index')}}"><i class="fa fa-truck"></i> Permintaan Barang</a></li>
                                     <li><a href="{{ route('gudang-selesai.index')}}"><i class="fa fa-check"></i> Permintaan Selesai</a></li>
+                                    <li><a href="{{ route('gudang-batal.index')}}"><i class="fa fa-times"></i> Permintaan Batal</a></li>
                                 </ul>
                             </div>
                         @endif

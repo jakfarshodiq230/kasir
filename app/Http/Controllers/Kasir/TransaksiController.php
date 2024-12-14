@@ -535,6 +535,26 @@ class TransaksiController extends Controller
         $detailenjulan = OpPesananDetail::with('barang')->where('nomor_transaksi', $id)->get();
         return view("kasir.nota-pemesanan", compact('penjualan', 'detailenjulan'));
     }
+
+    // Controller
+    public function batalkanPesanan($id)
+    {
+        $pesanan = OpPesanan::find($id);
+
+        if (!$pesanan) {
+            return response()->json(['success' => false, 'message' => 'Pesanan tidak ditemukan.'], 404);
+        }
+
+        if ($pesanan->status_pemesanan !== 'pesan') {
+            return response()->json(['success' => false, 'message' => 'Pesanan tidak dapat dibatalkan.'], 400);
+        }
+
+        $pesanan->status_pemesanan = 'dibatalkan';
+        $pesanan->save();
+
+        return response()->json(['success' => true, 'message' => 'Pesanan berhasil dibatalkan.']);
+    }
+
     // data list transaksi
     public function transaksiListPesanan()
     {

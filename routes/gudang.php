@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Gudang\BarangGudangController;
+use App\Http\Controllers\Gudang\BatalController;
 use App\Http\Controllers\Gudang\StockController;
 use App\Http\Controllers\Gudang\PermintaanController;
 use App\Http\Controllers\Gudang\SelesaiController;
@@ -25,6 +26,10 @@ Route::middleware('auth', 'verified', 'cek_level:gudang')->group(function () {
         Route::get('edit-gudang-barang/{id}', [BarangGudangController::class, 'editBarang'])->name('gudang-barang.edit');
         Route::put('update-gudang-barang/{id}', [BarangGudangController::class, 'update'])->name('gudang-barang.update');
         Route::delete('delete-gudang-barang/{id}', [BarangGudangController::class, 'destroy'])->name('gudang-barang.delete');
+
+        Route::get('/cetak-barcode-barang', [BarangGudangController::class, 'CetakBarcode'])->name('gudang-barang-barcode.CetakBarcode');
+        Route::get('/sercing-barcode-barang/{kode_produk}', [BarangGudangController::class, 'DataGetBarang'])->name('gudang-sercing-barang.barcode');
+        Route::post('/pdf-barcode-barang', [BarangGudangController::class, 'generateBarcodePdf'])->name('gudang-pdf-barang.barcode');
     });
 
     Route::prefix('gudang-stock')->group(function () {
@@ -56,5 +61,11 @@ Route::middleware('auth', 'verified', 'cek_level:gudang')->group(function () {
         Route::get('/permintaan-selesai-data-detail/{id}', [SelesaiController::class, 'GetDataIDPermintaan'])->name('gudang-selesai.GetDataIDPermintaan');
         Route::post('/permintaan-selesai-status-update', [SelesaiController::class, 'TindakanPermintaan'])->name('gudang-selesai.TindakanPermintaan');
         Route::get('/permintaan-selesai-ceatk-kirim/{id}/{cabang}', [SelesaiController::class, 'CetakKirim'])->name('gudang-selesai.CetakKirim');
+    });
+
+    Route::prefix('gudang-permintaan-batal')->group(function () {
+        Route::get('/permintaan-batal-barang', [BatalController::class, 'index'])->name('gudang-batal.index');
+        Route::get('/permintaan-batal-data-all', [BatalController::class, 'GetDataPermintaanBatal'])->name('gudang-batal.GetDataPermintaanBatal');
+        Route::get('/permintaan-batal-data-detail/{id}', [BatalController::class, 'GetDataIDPermintaanBatal'])->name('gudang-batal.GetDataIDPermintaanBatal');
     });
 });

@@ -30,6 +30,8 @@ Route::middleware('auth', 'verified',  'cek_level:kasir')->group(function () {
         Route::get('/data-pemesanan', [TransaksiController::class, 'DataPemesananAll'])->name('kasir.DataPemesananAll');
         Route::get('/detail-pemesanan/{id}', [TransaksiController::class, 'DetailDataPemesanan'])->name('kasir.DetailDataPemesanan');
         Route::put('/update-status-pemesanan/{id}', [TransaksiController::class, 'updateStatusPesnan'])->name('kasir.updateStatusPesnan');
+        Route::put('/batal-status-pemesanan/{id}', [TransaksiController::class, 'batalkanPesanan'])->name('kasir.batalkanPesanan');
+
         Route::get('/update-pembayaran-hutang/{id}', [TransaksiController::class, 'DetailDataHutang'])->name('kasir.DetailDataHutang');
         Route::put('/simpan-pembayaran-hutang/{id}', [TransaksiController::class, 'BayarHutang'])->name('kasir.BayarHutang');
     });
