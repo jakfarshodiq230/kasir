@@ -10,6 +10,8 @@ use App\Models\OpDetailBarang;
 use App\Models\OpSuplaier;
 use App\Models\OpBarangCabangStock;
 use App\Models\OpBarangCabangStockLog;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\File;
 
 class StockBarangController extends Controller
 {
@@ -219,8 +221,6 @@ class StockBarangController extends Controller
         return response()->json(['success' => true, 'message' => 'Data deleted and stock_akhir recalculated.']);
     }
 
-
-
     public function destroyStock($id)
     {
         $idCabang = Auth::user()->id_cabang;
@@ -247,5 +247,118 @@ class StockBarangController extends Controller
         $stock->delete();
 
         return response()->json(['success' => true, 'message' => 'Data and related logs deleted successfully.']);
+    }
+
+    public function CetakBarcode()
+    {
+        return view("admin.stock.cetak-barcode");
+    }
+
+    public function BarangBarccode($KodeBarang)
+    {
+        // Get the current user's id_cabang
+        $id_cabang = Auth::user()->id_cabang;
+
+        // Fetch the first matching result from the `OpBarangCabangStock` table, eager loading the `barang` relationship
+        $results = OpBarangCabangStock::with('barang') // Eager load `barang` relationship
+            ->whereHas('barang', function ($query) use ($KodeBarang) { // Filter `barang` by `kode_produk`
+                $query->where('kode_produk', $KodeBarang);
+            })
+            ->where('id_cabang', $id_cabang) // Filter `OpBarangCabangStock` by `id_cabang`
+            ->first(); // Use first() for single result
+
+        // If no results found, return a 404 response with a message
+        if (!$results) {
+            return response()->json([
+                'message' => 'Barang tidak ditemukan',
+                'data' => null,
+                'detail' => null
+            ], 404);
+        }
+
+        // Get the price for the fetched results
+        $harga = $this->getHarga($results->barang->id);
+
+        // Return the response with success message, data, and harga
+        return response()->json([
+            'message' => 'Data retrieved successfully',
+            'data' => $results,
+            'harga' => $harga,
+        ]);
+    }
+
+
+    public function getHarga($idBarang)
+    {
+
+        $barang = OpBarang::with('harga')->find($idBarang);
+
+        if (!$barang || !$barang->harga) {
+            return response()->json(['error' => 'Harga not found'], 404);
+        }
+
+        $harga = $barang->harga;
+
+        // Prepare the harga data as an array of objects with `id` and `price` properties
+        $hargaOptions = [
+            ['id' => 'harga_jual', 'Ket' => 'Harga Jual', 'price' => $harga->harga_jual],
+            ['id' => 'harga_grosir_1', 'Ket' => 'Harga Grosir 1', 'price' => $harga->harga_grosir_1],
+            ['id' => 'harga_grosir_2', 'Ket' => 'Harga Grosir 2', 'price' => $harga->harga_grosir_2],
+            ['id' => 'harga_grosir_3', 'Ket' => 'Harga Grosir 3', 'price' => $harga->harga_grosir_3],
+            ['id' => 'harga_lainya', 'Ket' => 'Lainya', 'price' => 0],
+        ];
+
+        return response()->json($hargaOptions);
+    }
+
+    public function generateBarcodePdf(Request $request)
+    {
+        // Validate the inputs
+        $request->validate([
+            'kode_produk' => 'required',
+            'nama_produk' => 'required',
+            'barcode' => 'required',
+            'harga_barang' => 'required|numeric',
+            'jumlah_cetak' => 'required|integer|min:1',
+        ]);
+
+        // Check if harga_barang is 0, then use harga_lainya
+        $harga = ($request->harga_barang == 0) ? $request->harga_lainya : $request->harga_barang;
+
+        // Collect data from the request
+        $data = [
+            'kode_produk' => $request->kode_produk,
+            'nama_produk' => $request->nama_produk,
+            'barcode' => $request->barcode,
+            'harga_barang' => $harga,
+            'jumlah_cetak' => $request->jumlah_cetak,
+        ];
+
+        // Create barcode directory if it doesn't exist
+        $barcodeDirectory = storage_path('app/public/barcodes');
+        if (!File::exists($barcodeDirectory)) {
+            File::makeDirectory($barcodeDirectory, 0775, true);
+        }
+
+        // Generate dynamic filename using barcode or kode_produk
+        $filename = 'brcode_' . $request->kode_produk . '.pdf';
+        $filePath = $barcodeDirectory . '/' . $filename;
+
+
+        // Generate the PDF from the view
+        $pdf = PDF::loadView('admin.stock.barcode-pdf', $data);
+
+        // Save the PDF to the defined path
+        try {
+            $pdf->save($filePath);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error generating PDF: ' . $e->getMessage()]);
+        }
+
+        // Return the generated PDF URL for download
+        return response()->json([
+            'success' => true,
+            'pdf_url' => asset('storage/barcodes/' . $filename)
+        ]);
     }
 }

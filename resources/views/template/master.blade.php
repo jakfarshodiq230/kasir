@@ -167,6 +167,7 @@
                                             <li><a href="{{ route('admin-stock.index') }}">Barang</a></li>
                                             <li><a href="{{ route('admin-stock.add') }}">Stock</a></li>
                                             <li><a href="{{ route('admin-stock.log') }}">Riwayat</a></li>
+                                            <li><a href="{{ route('admin-barang-barcode.CetakBarcode') }}">Cetak Barcode</a></li>
                                         </ul>
                                     </li>
                                 </ul>

@@ -112,7 +112,13 @@
             dataSrc: "data"
         },
         columns: [
-            { data: "id", title: "ID" },
+            {
+                data: null,
+                title: "No",
+                render: function (data, type, row, meta) {
+                    return meta.row + 1; // Nomor urut berdasarkan baris
+                }
+            },
             {
                 data: "barcode", // Assuming 'barang.kode_produk' contains the product code
                 title: "Barcode",

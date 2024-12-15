@@ -28,6 +28,10 @@ Route::middleware(['auth', 'verified', 'cek_level:admin'])->group(function () {
         Route::delete('admin-stock-log-delete/{id}', [StockBarangController::class, 'destroy'])->name('admin-stock-data-log.delete');
         Route::get('get-admin-stock-data/{id}', [StockBarangController::class, 'viewData'])->name('admin-stock.view');
         Route::delete('admin-stock-stock-delete/{id}', [StockBarangController::class, 'destroyStock'])->name('admin-stock-data-stock.delete');
+
+        Route::get('/cetak-barcode-barang', [StockBarangController::class, 'CetakBarcode'])->name('admin-barang-barcode.CetakBarcode');
+        Route::get('/sercing-barcode-barang/{kode_produk}', [StockBarangController::class, 'BarangBarccode'])->name('admin-sercing-barang.barcode');
+        Route::post('/pdf-barcode-barang', [StockBarangController::class, 'generateBarcodePdf'])->name('admin-pdf-barang.barcode');
     });
 
     // Admin Transaksi

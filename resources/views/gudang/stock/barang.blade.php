@@ -113,7 +113,13 @@
             dataSrc: "data"
         },
         columns: [
-            { data: "id", title: "ID" },
+            {
+                data: null,
+                title: "No",
+                render: function (data, type, row, meta) {
+                    return meta.row + 1;
+                }
+            },
             { data: "barang.kode_produk", title: "Kode Barang" },
             { data: "barang.nama_produk", title: "Nama Barang" },
             { data: "suplaier.nama_suplaier", title: "Suplaier" },
