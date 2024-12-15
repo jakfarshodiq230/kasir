@@ -53,15 +53,9 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-form-label col-md-3 col-sm-3 ">Colom *</label>
+                        <label class="col-form-label col-md-3 col-sm-3 ">Jumlah Cetak *</label>
                         <div class="col-md-9 col-sm-9 ">
-                            <input type="number" min="1" max="4" name="colom" id="colom" class="form-control" placeholder="colom">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-form-label col-md-3 col-sm-3 ">Row *</label>
-                        <div class="col-md-9 col-sm-9 ">
-                            <input type="number" min="1" name="row" id="row" class="form-control" placeholder="row">
+                            <input type="number" min="1" max="4" name="jumlah_cetak" id="jumlah_cetak" class="form-control" placeholder="jumlah cetak">
                         </div>
                     </div>
                 </div>
@@ -83,8 +77,8 @@
             <div class="d-flex justify-content-between align-items-center w-100">
                 <span class="text-danger"><i><b>Cetak/Download PDF barcode barang</b></i></span>
                 <div class="ml-auto"> <!-- Added div for aligning buttons to the right -->
-                    <button type="button" class="btn btn-success btn-sm btn-save" id="view-btn">Privew Barcode</button>
-                    <button type="button" class="btn btn-success btn-sm btn-save" id="download-btn">Download PDF</button>
+                    <button type="button" class="btn btn-success btn-sm view-btn" id="view-btn">Privew Barcode</button>
+                    <button type="button" class="btn btn-success btn-sm download-btn" id="download-btn" disabled>Download PDF</button>
                 </div>
             </div>
         </form>
@@ -98,6 +92,15 @@
 
 @section('scripts')
 <script>
+    // Ambil elemen tombol
+    const viewBtn = document.getElementById('view-btn');
+    const downloadBtn = document.getElementById('download-btn');
+
+    // Tambahkan event listener untuk tombol view-btn
+    viewBtn.addEventListener('click', function() {
+        // Aktifkan tombol download-btn setelah tombol view-btn diklik
+        downloadBtn.disabled = false;
+    });
 $('#harga_lainya').closest('.form-group').hide();
 $(document).ready(function () {
     // Step 1: Search Product by Product Code
@@ -205,14 +208,13 @@ $(document).ready(function () {
 
 $('#download-btn').on('click', function (e) {
     e.preventDefault();
-    let columns = $('#colom').val();
-    let rows = $('#row').val();
+    let jumlah_cetak = $('#jumlah_cetak').val();
 
     // Check if values are valid
-    if (!columns || !rows || columns < 1 || rows < 1) {
+    if (!jumlah_cetak || jumlah_cetak < 1) {
         Swal.fire({
             title: 'Error',
-            text: 'Please enter valid columns and rows.',
+            text: 'Please enter valid jumlah cetak.',
             icon: 'error',
             confirmButtonText: 'OK'
         });
@@ -226,8 +228,7 @@ $('#download-btn').on('click', function (e) {
         barcode: $('#barcode').val(),
         harga_barang: $('#harga_barang').val(),
         harga_lainya: $('#harga_lainya').val(),
-        colom: columns,
-        row: rows,
+        jumlah_cetak: jumlah_cetak,
     };
 
     // Send data to the backend via AJAX for PDF generation

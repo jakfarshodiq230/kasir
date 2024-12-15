@@ -305,6 +305,7 @@ class BarangGudangController extends Controller
 
         return response()->json($hargaOptions);
     }
+
     public function generateBarcodePdf(Request $request)
     {
         // Validate the inputs
@@ -312,17 +313,12 @@ class BarangGudangController extends Controller
             'kode_produk' => 'required',
             'nama_produk' => 'required',
             'barcode' => 'required',
-            'harga_barang' => 'required',
-            'colom' => 'required|integer|min:1',
-            'row' => 'required|integer|min:1',
+            'harga_barang' => 'required|numeric',
+            'jumlah_cetak' => 'required|integer|min:1',
         ]);
 
         // Check if harga_barang is 0, then use harga_lainya
-        if ($request->harga_barang == 0) {
-            $harga = $request->harga_barang;
-        } else {
-            $harga = $request->harga_lainya;
-        }
+        $harga = ($request->harga_barang == 0) ? $request->harga_lainya : $request->harga_barang;
 
         // Collect data from the request
         $data = [
@@ -330,8 +326,7 @@ class BarangGudangController extends Controller
             'nama_produk' => $request->nama_produk,
             'barcode' => $request->barcode,
             'harga_barang' => $harga,
-            'colom' => $request->colom,
-            'row' => $request->row,
+            'jumlah_cetak' => $request->jumlah_cetak,
         ];
 
         // Create barcode directory if it doesn't exist
@@ -344,13 +339,21 @@ class BarangGudangController extends Controller
         $filename = 'brcode_' . $request->kode_produk . '.pdf';
         $filePath = $barcodeDirectory . '/' . $filename;
 
-        // Load the PDF view
+
+        // Generate the PDF from the view
         $pdf = PDF::loadView('gudang.barang.barcode-pdf', $data);
 
-        // Save the PDF, overwriting the file if it exists
-        $pdf->save($filePath);
+        // Save the PDF to the defined path
+        try {
+            $pdf->save($filePath);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error generating PDF: ' . $e->getMessage()]);
+        }
 
-        // Return the generated PDF as a response for download
-        return response()->json(['success' => true, 'pdf_url' => asset('storage/barcodes/' . $filename)]);
+        // Return the generated PDF URL for download
+        return response()->json([
+            'success' => true,
+            'pdf_url' => asset('storage/barcodes/' . $filename)
+        ]);
     }
 }
