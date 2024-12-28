@@ -317,6 +317,7 @@ class TransaksiController extends Controller
                         'id_cabang' => Auth::user()->id_cabang,
                         'id_gudang' => $stockUpdate->id_gudang
                     ]);
+
                     OpTransaksiCart::where('id_user', Auth::user()->id)->delete();
                 }
             }
@@ -416,6 +417,15 @@ class TransaksiController extends Controller
         $transaksi->save();
         $pesanan->status_pemesanan = 'dibatalkan';
         $pesanan->save();
+
+        OpTransaksiLog::create([
+            'nomor_transaksi' => $pesanan->nomor_transaksi,
+            'status_log' => 'dibatalkan',
+            'keterangan_log' => 'transaksi anda di batalkan ',
+            'id_user' => Auth::user()->id,
+            'id_cabang' => Auth::user()->id_cabang,
+            'id_gudang' => $pesanan->id_gudang
+        ]);
 
         return response()->json(['success' => true, 'message' => 'Pesanan berhasil dibatalkan.']);
     }
@@ -567,6 +577,15 @@ class TransaksiController extends Controller
 
             // Commit perubahan ke database
             DB::commit();
+
+            OpTransaksiLog::create([
+                'nomor_transaksi' => $transaksi->nomor_transaksi,
+                'status_log' => 'dibatalkan',
+                'keterangan_log' => 'transaksi anda di batalkan ',
+                'id_user' => Auth::user()->id,
+                'id_cabang' => Auth::user()->id_cabang,
+                'id_gudang' => $transaksi->id_gudang
+            ]);
 
             return response()->json(['success' => true, 'message' => 'Transaksi berhasil dibatalkan.']);
         } catch (Exception $e) {

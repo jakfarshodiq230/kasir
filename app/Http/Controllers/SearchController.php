@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\OpPesananLog;
+use App\Models\OpTransaksiDetail;
+use App\Models\OpTransaksiLog;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
@@ -13,7 +15,7 @@ class SearchController extends Controller
             'nomor_transaksi' => 'required',
         ]);
 
-        $penjualan = OpPesananLog::where('nomor_transaksi', $request->nomor_transaksi)
+        $penjualan = OpTransaksiLog::where('nomor_transaksi', $request->nomor_transaksi)
             ->orderBy('created_at', 'ASC')
             ->get();
 
