@@ -134,7 +134,7 @@ class KasController extends Controller
         // Get sales and product data grouped by month
         $data = DB::table('op_transaksi_detail as opd')
             ->join('op_barang_harga as obh', 'opd.id_barang', '=', 'obh.id')
-            ->join('op_transalsi===]]] as op', 'opd.nomor_transaksi', '=', 'op.nomor_transaksi') // Fix join condition
+            ->join('op_transaksi as op', 'opd.nomor_transaksi', '=', 'op.nomor_transaksi') // Fix join condition
             ->select(
                 DB::raw('MONTH(opd.created_at) as bulan'),
                 DB::raw('SUM(obh.harga_modal * opd.jumlah_barang) as total_harga_modal'),
