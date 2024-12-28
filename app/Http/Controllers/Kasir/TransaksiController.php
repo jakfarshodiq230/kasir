@@ -371,6 +371,42 @@ class TransaksiController extends Controller
 
         $transaksi = OpTransaksi::where('nomor_transaksi', $pesanan->nomor_transaksi)->first();
 
+
+
+        // Temukan kas berdasarkan kode transaksi
+        $kas = OpKas::where('kode_transaksi', $pesanan->nomor_transaksi)->first();
+
+        if ($kas) {
+            // Pastikan saldo cukup untuk transaksi
+            if ($kas->saldo < $pesanan->total_beli) {
+                throw new Exception('Saldo kas tidak mencukupi untuk pembatalan.');
+            }
+
+            // Kurangi saldo berdasarkan total beli
+            $kas->debit -= $transaksi->total_beli;
+            $kas->saldo = $kas->saldo - $transaksi->total_beli; // Update saldo
+            $kas->keterangan = 'Saldo berkurang dari transaksi dibatalkan sebesar ' .
+                number_format($transaksi->total_beli, 2, ',', '.') .
+                ' dengan nomor transaksi ' . $pesanan->nomor_transaksi;
+            $kas->save();
+        }
+
+        // Update saldo semua data kas di cabang terkait
+        $kasUpdates = OpKas::where('id_cabang', Auth::user()->id_cabang)
+            ->orderBy('tanggal', 'asc') // Pastikan urut berdasarkan tanggal
+            ->get();
+
+        $currentSaldo = 0; // Variabel untuk menghitung saldo berjalan
+
+        foreach ($kasUpdates as $kasUpdate) {
+            // Hitung saldo berdasarkan debit dan kredit
+            $currentSaldo += $kasUpdate->debit - $kasUpdate->kredit;
+
+            // Update saldo baru
+            $kasUpdate->saldo = $currentSaldo;
+            $kasUpdate->save();
+        }
+
         if (!$transaksi) {
             return response()->json(['success' => false, 'message' => 'Transaksi tidak ditemukan.'], 404);
         }
@@ -469,7 +505,7 @@ class TransaksiController extends Controller
         }
         $pemesanan_hutang->update([
             'jumlah_lunas_dp' => $request->jumlah_lunas_dp,
-            'status_penjualan' => 'lunas',
+            'status_transaksi' => 'lunas',
         ]);
 
         $saldoTerakhir = OpKas::where('id_cabang', Auth::user()->id_cabang)
@@ -515,13 +551,8 @@ class TransaksiController extends Controller
             // Proses setiap detail transaksi yang ada
             foreach ($transaksi->transaksidetail as $pesanan) {
                 // Update stok barang (gudang atau cabang)
-                $barang = $this->getBarang($pesanan);
-
-                if ($barang) {
-                    // Update stok barang
-                    $this->updateStokBarang($barang, $pesanan);
-                    $barang->save();
-                }
+                $nomor = $transaksi->nomor_transaksi;
+                $barang = $this->getBarang($pesanan, $nomor);
 
                 // Update status pesanan menjadi "dibatalkan"
                 $pesanan->status_pemesanan = 'dibatalkan';
@@ -549,47 +580,78 @@ class TransaksiController extends Controller
     /**
      * Get barang based on gudang or cabang.
      */
-    private function getBarang($pesanan)
+    private function getBarang($pesanan, $nomor)
     {
-        if ($pesanan->id_gudang) {
-            return OpStockGudang::where('id_barang', $pesanan->id_barang)
+        $barang = null;
+
+        if ($pesanan->pemesanan === 'ya') {
+            $barang = OpStockGudang::where('id_barang', $pesanan->id_barang)
                 ->where('id_gudang', $pesanan->id_gudang)
                 ->first();
-        } elseif ($pesanan->id_cabang) {
-            return OpBarangCabangStock::where('id_barang', $pesanan->id_barang)
+
+            if ($barang) {
+                $barang->stock_akhir += $pesanan->jumlah_barang;
+                $barang->stock_keluar -= $pesanan->jumlah_barang;
+                $barang->jenis_transaksi_stock = 'Dibatalkan';
+                $barang->keterangan_stock_gudang = 'Pembatalan transaksi barang dengan nomor transaksi ' . $nomor;
+                $barang->save();
+            }
+        } else {
+            $barang = OpBarangCabangStock::where('id_barang', $pesanan->id_barang)
                 ->where('id_cabang', $pesanan->id_cabang)
                 ->first();
+
+            if ($barang) {
+                $barang->stock_akhir += $pesanan->jumlah_barang;
+                $barang->stock_keluar -= $pesanan->jumlah_barang;
+                $barang->jenis_transaksi_stock = 'Dibatalkan';
+                $barang->keterangan_stock_cabang = 'Pembatalan transaksi barang dengan nomor transaksi ' . $nomor;
+                $barang->save();
+            }
         }
 
-        return null;
+        return $barang;
     }
 
-    /**
-     * Update stock barang based on transaction details.
-     */
-    private function updateStokBarang($barang, $pesanan)
-    {
-        $barang->stock_akhir += $pesanan->jumlah_barang;
-        $barang->stock_keluar -= $pesanan->jumlah_barang;
-    }
 
     /**
      * Update kas based on transaction.
      */
     private function updateKas($transaksi)
     {
+        // Temukan kas berdasarkan kode transaksi
         $kas = OpKas::where('kode_transaksi', $transaksi->nomor_transaksi)->first();
 
         if ($kas) {
+            // Pastikan saldo cukup untuk transaksi
             if ($kas->saldo < $transaksi->total_beli) {
                 throw new Exception('Saldo kas tidak mencukupi untuk pembatalan.');
             }
 
-            $kas->saldo -= $transaksi->total_beli;
+            // Kurangi saldo berdasarkan total beli
             $kas->debit -= $transaksi->total_beli;
+            $kas->saldo = $kas->saldo - $transaksi->total_beli; // Update saldo
+            $kas->keterangan = 'Saldo berkurang dari transaksi dibatalkan sebesar ' .
+                number_format($transaksi->total_beli, 2, ',', '.') .
+                ' dengan nomor transaksi ' . $transaksi->nomor_transaksi;
             $kas->save();
         }
-    }
 
+        // Update saldo semua data kas di cabang terkait
+        $kasUpdates = OpKas::where('id_cabang', Auth::user()->id_cabang)
+            ->orderBy('tanggal', 'asc') // Pastikan urut berdasarkan tanggal
+            ->get();
+
+        $currentSaldo = 0; // Variabel untuk menghitung saldo berjalan
+
+        foreach ($kasUpdates as $kasUpdate) {
+            // Hitung saldo berdasarkan debit dan kredit
+            $currentSaldo += $kasUpdate->debit - $kasUpdate->kredit;
+
+            // Update saldo baru
+            $kasUpdate->saldo = $currentSaldo;
+            $kasUpdate->save();
+        }
+    }
     // end batalkan
 }

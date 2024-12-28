@@ -201,7 +201,7 @@
 
                     <!-- /menu footer buttons -->
                     <div class="sidebar-footer hidden-small text-center">
-                        <span class="version-info font-italic"><b>Version 0.1.1</b></span>
+                        <span class="version-info font-italic"><b>Version 2.10.1</b></span>
                     </div>
                     <!-- /menu footer buttons -->
                 </div>

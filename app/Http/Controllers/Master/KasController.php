@@ -149,6 +149,7 @@ class KasController extends Controller
             ->whereYear('opd.created_at', $tahun)
             ->where('opd.id_cabang', $idCabang)
             ->where('op.jenis_transaksi', $jenis)
+            ->whereNotIn('opd.status_pemesanan', ['dibatalkan'])
             ->groupBy(DB::raw('MONTH(opd.created_at)'))
             ->orderBy(DB::raw('MONTH(opd.created_at)'))
             ->get();
