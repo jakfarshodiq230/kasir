@@ -157,6 +157,7 @@
                 }
 
                 if (response.success) {
+
                     let datatable = $("#datatable-buttons2").DataTable({
                         responsive: true, // Enable responsive design
                         searching: false, // Disable the search bar
@@ -185,15 +186,15 @@
                     });
                     datatable.clear();
                     response.data.forEach((item, index) => {
-                        let totalJumlahBarang = item.penjualan_details.reduce((sum, detail) => {
-                            return sum + parseFloat(detail.jumlah_barang || 0);
-                        }, 0);
+                        // let totalJumlahBarang = item.reduce((sum, detail) => {
+                        //     return sum + parseFloat(detail.jumlah_barang || 0);
+                        // }, 0);
                         datatable.row.add([
                             index + 1,
                             item.nomor_transaksi,
-                            item.user ? item.user.name : "-",
-                            item.tanggal_transaksi,
-                            totalJumlahBarang || "-",
+                            item.user_name || "-",
+                            item.tanggal_transaksi || '=',
+                            item.jumlah_barang || "-",
                             formatCurrency(item.total_beli) || "-",
                         ]);
                     });

@@ -11,7 +11,7 @@ class OpPenjualanCart extends Model
 
     protected $table = 'op_penjualan_cart';
 
-    protected $fillable = ['id_barang', 'id_cabang', 'id_user', 'kode_produk', 'harga', 'jumlah_beli', 'sub_total'];
+    protected $fillable = ['id_barang', 'id_cabang', 'id_user', 'kode_produk', 'pesanan', 'harga', 'jumlah_beli', 'sub_total'];
 
     public function barang()
     {

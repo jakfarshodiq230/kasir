@@ -189,18 +189,18 @@
                     });
                     datatable.clear();
                     response.data.forEach((item, index) => {
-                        let totalJumlahBarang = item.pemesanandetail.reduce((sum, detail) => {
-                            return sum + parseFloat(detail.jumlah_barang || 0);
-                        }, 0);
+                        // let totalJumlahBarang = item.pemesanandetail.reduce((sum, detail) => {
+                        //     return sum + parseFloat(detail.jumlah_barang || 0);
+                        // }, 0);
                         datatable.row.add([
                             index + 1,
                             item.nomor_transaksi,
-                            item.user ? item.user.name : "-",
-                            item.tanggal_transaksi,
-                            item.pembayaran,
-                            totalJumlahBarang || "-",
-                            formatCurrency(item.total_beli) || "-",
-                            item.status_pemesanan,
+                            item.user_name || "-",
+                            item.tanggal_transaksi || '=',
+                            formatCurrency(item.pembayaran) || "-",
+                            item.jumlah_barang || "-",
+                            formatCurrency(item.sub_total_transaksi) || "-",
+                            item.keterangan || "-",
                         ]);
                     });
                     datatable.draw();

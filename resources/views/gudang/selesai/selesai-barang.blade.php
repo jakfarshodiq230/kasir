@@ -63,14 +63,12 @@
                                     <th>Nama</th>
                                     <th>Tanggal</th>
                                     <th>QTY</th>
-                                    <th>Jumlah Total</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 <tr>
-                                    <td>-</td>
                                     <td>-</td>
                                     <td>-</td>
                                     <td>-</td>
@@ -119,24 +117,24 @@
                 }
             },
             { data: "nomor_transaksi", title: "Nomor Transaksi" },
-            { data: "nama", title: "Nama" },
+            { data: "transaksi.nama", title: "Nama" },
             {
                 data: null,
                 title: "Tanggal",
                 render: function(data, type, row) {
-                    let tanggal_transaksi = new Date(row.tanggal_transaksi).toLocaleDateString('id-ID', {
+                    let tanggal_transaksi = new Date(row.transaksi.tanggal_transaksi).toLocaleDateString('id-ID', {
                         weekday: 'long',
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric'
                     });
-                    let tanggal_selesai = new Date(row.tanggal_selesai).toLocaleDateString('id-ID', {
+                    let tanggal_selesai = new Date(row.transaksi.tanggal_selesai).toLocaleDateString('id-ID', {
                         weekday: 'long',
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric'
                     });
-                    let tanggal_ambil = new Date(row.tanggal_ambil).toLocaleDateString('id-ID', {
+                    let tanggal_ambil = new Date(row.transaksi.tanggal_ambil).toLocaleDateString('id-ID', {
                         weekday: 'long',
                         year: 'numeric',
                         month: 'long',
@@ -156,25 +154,9 @@
                 data: null,
                 title: "Pembayaran" ,
                 render: function(data, type, row) {
-                    const pembayaran = row.pembayaran;
-                    const status = row.jenis_transaksi === 'non_hutang' ? 'Tidak Hutang' : 'Hutang';
-                    return '<span class="badge badge-info">'+pembayaran.toUpperCase()+'</span><br><span class="badge badge-warning">'+status.toUpperCase()+
-                        '</span><br><span class="badge badge-primary">'+row.status_pemesanan.toUpperCase()+'</span>';
+                    return'</span><br><span class="badge badge-primary">'+row.status_pemesanan.toUpperCase()+'</span>';
                 }
             },
-            {
-                data: "total_beli",
-                title: "Total Pembelian",
-                render: function(data, type, row) {
-                    // Format as Indonesian Rupiah
-                    let formatter = new Intl.NumberFormat('id-ID', {
-                        style: 'currency',
-                        currency: 'IDR'
-                    });
-                    return formatter.format(data);
-                }
-            },
-
             {
                 data: null,
                 title: "Action",

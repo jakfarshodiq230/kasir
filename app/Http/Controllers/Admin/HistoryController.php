@@ -27,18 +27,19 @@ class HistoryController extends Controller
         $draw = $request->input('draw', 1);
 
         // Query dasar menggunakan join
-        $query = DB::table('op_pemesanan_detail as opd')
+        $query = DB::table('op_transaksi_detail as opd')
             ->join('op_barang as b', 'opd.id_barang', '=', 'b.id')
             ->join('op_kategori as k', 'b.id_kategori', '=', 'k.id')
-            ->join('op_pemesanan as p', 'opd.nomor_transaksi', '=', 'p.nomor_transaksi')
-            ->join('op_gudang as g', 'p.id_gudang', '=', 'g.id')
+            ->join('op_transaksi as p', 'opd.nomor_transaksi', '=', 'p.nomor_transaksi')
+            ->join('op_gudang as g', 'opd.id_gudang', '=', 'g.id')
             ->select(
                 'opd.*',
                 'b.*',
                 'g.*',
                 'p.*'
             )
-            ->where('opd.id_cabang', Auth::user()->id_cabang);
+            ->where('opd.id_cabang', Auth::user()->id_cabang)
+            ->where('opd.pemesanan', 'ya');
 
         // Filter berdasarkan tanggal_transaksi jika tersedia
         if ($request->filled('tanggal_transaksi')) {
@@ -86,17 +87,18 @@ class HistoryController extends Controller
         $draw = $request->input('draw', 1);
 
         // Query dasar menggunakan join
-        $query = DB::table('op_penjualan_detail as opd')
+        $query = DB::table('op_transaksi_detail as opd')
             ->join('op_barang as b', 'opd.id_barang', '=', 'b.id')
             ->join('op_kategori as k', 'b.id_kategori', '=', 'k.id')
-            ->join('op_penjualan as p', 'opd.nomor_transaksi', '=', 'p.nomor_transaksi')
+            ->join('op_transaksi as p', 'opd.nomor_transaksi', '=', 'p.nomor_transaksi')
             ->select(
                 'opd.*',
                 'b.*',
                 'p.*',
                 'k.*'
             )
-            ->where('opd.id_cabang', Auth::user()->id_cabang);
+            ->where('opd.id_cabang', Auth::user()->id_cabang)
+            ->where('opd.pemesanan', 'tidak');
 
         // Filter berdasarkan tanggal_transaksi jika tersedia
         if ($request->filled('tanggal_transaksi')) {

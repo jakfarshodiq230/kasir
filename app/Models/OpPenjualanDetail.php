@@ -11,7 +11,7 @@ class OpPenjualanDetail extends Model
 
     protected $table = 'op_penjualan_detail';
 
-    protected $fillable = ['nomor_transaksi', 'id_barang', 'id_user', 'id_cabang', 'kode_produk', 'harga_barang', 'jumlah_barang', 'sub_total_transaksi'];
+    protected $fillable = ['nomor_transaksi', 'id_barang', 'id_user', 'id_cabang', 'kode_produk', 'harga_barang', 'jumlah_barang', 'sub_total_transaksi', 'pemesanan'];
 
     public function penjualan()
     {

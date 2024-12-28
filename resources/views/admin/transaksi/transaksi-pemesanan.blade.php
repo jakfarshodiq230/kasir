@@ -189,24 +189,24 @@
                     return nomor + " <br> " + gudang;
                 }
             },
-            { data: "nama", title: "Nama" },
+            { data: "transaksi.nama", title: "Nama" },
             {
                 data: null,
                 title: "Tanggal",
                 render: function(data, type, row) {
-                    let tanggal_transaksi = new Date(row.tanggal_transaksi).toLocaleDateString('id-ID', {
+                    let tanggal_transaksi = new Date(row.transaksi.tanggal_transaksi).toLocaleDateString('id-ID', {
                         weekday: 'long',
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric'
                     });
-                    let tanggal_selesai = new Date(row.tanggal_selesai).toLocaleDateString('id-ID', {
+                    let tanggal_selesai = new Date(row.transaksi.tanggal_selesai).toLocaleDateString('id-ID', {
                         weekday: 'long',
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric'
                     });
-                    let tanggal_ambil = new Date(row.tanggal_ambil).toLocaleDateString('id-ID', {
+                    let tanggal_ambil = new Date(row.transaksi.tanggal_ambil).toLocaleDateString('id-ID', {
                         weekday: 'long',
                         year: 'numeric',
                         month: 'long',
@@ -226,15 +226,15 @@
                 data: null,
                 title: "Pembayaran" ,
                 render: function(data, type, row) {
-                    const pembayaran = row.pembayaran;
-                    const status = row.jenis_transaksi === 'non_hutang' ? 'Tidak Hutang' : 'Hutang';
+                    const pembayaran = row.transaksi.pembayaran;
+                    const status = row.transaksi.jenis_transaksi === 'non_hutang' ? 'Tidak Hutang' : 'Hutang';
                     return '<span class="badge badge-info">'+pembayaran.toUpperCase()+'</span><br><span class="badge badge-warning">'+status.toUpperCase()+
                         '</span><br><span class="badge badge-primary">'+row.status_pemesanan.toUpperCase()+'</span>';
                 }
             },
             {
-                data: "total_beli",
-                title: "Total Pembelian",
+                data: "sub_total_transaksi",
+                title: "Total Pemesanan",
                 render: function(data, type, row) {
                     // Format as Indonesian Rupiah
                     let formatter = new Intl.NumberFormat('id-ID', {
@@ -313,46 +313,51 @@
             dataType: 'json',
             success: function(response) {
                 let totalSubTotal = 0;
-                let no =0;
+                let no = 0;
 
                 const data = response.data[0]; // Assuming the first item in the response is the relevant one
 
-                // Set form values
-                $('#r_sph').val(data.pesanan.R_SPH);
-                $('#r_cyl').val(data.pesanan.R_CYL);
-                $('#r_axs').val(data.pesanan.R_AXS);
-                $('#r_add').val(data.pesanan.R_ADD);
-                $('#pd').val(data.pesanan.PD);
+                // Set form values directly from the transaksi object
+                $('#r_sph').val(data.transaksi.R_SPH);
+                $('#r_cyl').val(data.transaksi.R_CYL);
+                $('#r_axs').val(data.transaksi.R_AXS);
+                $('#r_add').val(data.transaksi.R_ADD);
+                $('#pd').val(data.transaksi.PD);
 
-                $('#l_sph').val(data.pesanan.L_SPH);
-                $('#l_cyl').val(data.pesanan.L_CYL);
-                $('#l_axs').val(data.pesanan.L_AXS);
-                $('#l_add').val(data.pesanan.L_ADD);
-                $('#pd2').val(data.pesanan.PD2);
+                $('#l_sph').val(data.transaksi.L_SPH);
+                $('#l_cyl').val(data.transaksi.L_CYL);
+                $('#l_axs').val(data.transaksi.L_AXS);
+                $('#l_add').val(data.transaksi.L_ADD);
+                $('#pd2').val(data.transaksi.PD2);
 
-                // Loop melalui data dan tambahkan baris ke tabel
+                // Loop through response data and append rows to table
                 response.data.forEach(item => {
                     const subTotal = parseFloat(item.sub_total_transaksi) || 0;
-                    const rincian = `${item.kode_produk} <br> ${item.barang.nama_produk}`;
+                    const rincian = `${item.kode_produk} <br> ${item.barang.nama_produk} <br>
+                    PESAN : <spans class="badge badge-warning"> ${item.pemesanan.toUpperCase()} </spans>
+                                <spans class="badge badge-danger"> ${item.status_pemesanan.toUpperCase()} </spans>`;
                     const row = `
-                    <tr>
-                        <td>${no + 1}</td>
-                        <td>${rincian}</td>
-                        <td>${formatRupiah(item.harga_barang)}</td>
-                        <td>${item.jumlah_barang}</td>
-                        <td>${formatRupiah(item.sub_total_transaksi)}</td>
-                    </tr>
+                        <tr>
+                            <td>${no + 1}</td>
+                            <td>${rincian}</td>
+                            <td class="${item.status_pemesanan === 'dibatalkan' ? 'text-decoration-line-through text-danger' : ''}">${formatRupiah(item.harga_barang)}</td>
+                            <td class="${item.status_pemesanan === 'dibatalkan' ? 'text-decoration-line-through text-danger' : ''}">${item.jumlah_barang}</td>
+                            <td class="${item.status_pemesanan === 'dibatalkan' ? 'text-decoration-line-through text-danger' : ''}">${formatRupiah(item.sub_total_transaksi)}</td>
+                        </tr>
                     `;
                     $('#detail-penjualan tbody').append(row);
-                    totalSubTotal += subTotal;
+                    if (item.status_pemesanan != 'dibatalkan') {
+                        totalSubTotal += subTotal;
+                    }
+                    no++;
                 });
 
-                // Tambahkan baris untuk total ke tabel
+                // Add row for total to the table
                 const totalRow = `
-                <tr>
-                    <td colspan="4" style="text-align: right; font-weight: bold;">Total</td>
-                    <td style="font-weight: bold;">${formatRupiah(totalSubTotal)}</td>
-                </tr>
+                    <tr>
+                        <td colspan="4" style="text-align: right; font-weight: bold;">Total</td>
+                        <td style="font-weight: bold;">${formatRupiah(totalSubTotal)}</td>
+                    </tr>
                 `;
                 $('#detail-penjualan tbody').append(totalRow);
             },
@@ -360,6 +365,7 @@
                 console.error('Error fetching data:', error);
             }
         });
+
         var modalElement = document.getElementById('addDataModal');
         var modal = new bootstrap.Modal(modalElement, {
             backdrop: 'static',
@@ -368,6 +374,7 @@
 
         modal.show();
     });
+
 
 </script>
 @endsection

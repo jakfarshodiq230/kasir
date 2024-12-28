@@ -8,6 +8,8 @@ use App\Models\OpPenjualan;
 use App\Models\OpPenjualanDetail;
 use App\Models\OpPesanan;
 use App\Models\OpPesananDetail;
+use App\Models\OpTransaksi;
+use App\Models\OpTransaksiDetail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,36 +39,39 @@ class DashboardController extends Controller
 
         $totalSaldo = $kas->sum('saldo');
 
-        $penjualan = OpPenjualan::whereMonth('created_at', $currentMonth)
+        $penjualan = OpTransaksi::whereMonth('created_at', $currentMonth)
             ->whereYear('created_at', $currentYear)
             ->select([
                 DB::raw('SUM(jumlah_bayar) as total_penjualan'),
                 DB::raw("SUM(CASE
-                    WHEN status_penjualan = 'belum_lunas' AND jenis_transaksi = 'hutang' THEN jumlah_sisa_dp
+                    WHEN status_transaksi = 'belum_lunas' AND jenis_transaksi = 'hutang' THEN jumlah_sisa_dp
                     ELSE 0
                 END) as total_sisa_dp")
             ])
             ->first();
 
-        $countBarang = OpPenjualanDetail::whereMonth('created_at', $currentMonth)
+        $countBarang = OpTransaksiDetail::whereMonth('created_at', $currentMonth)
             ->whereYear('created_at', $currentYear)
+            ->where('pemesanan', 'tidak')
             ->select([
                 DB::raw('SUM(jumlah_barang) as total_penjualan_barang'),
             ])
             ->first();
-        $countPesanan = OpPesananDetail::whereMonth('created_at', $currentMonth)
+        $countPesanan = OpTransaksiDetail::whereMonth('created_at', $currentMonth)
             ->whereYear('created_at', $currentYear)
+            ->where('pemesanan', 'ya')
             ->select([
                 DB::raw('SUM(jumlah_barang) as total_pesanan_barang'),
                 DB::raw('SUM(sub_total_transaksi) as total_pesanan'),
             ])
             ->first();
-        $countSelesai = OpPesanan::whereMonth('created_at', $currentMonth)
+        $countSelesai = OpTransaksiDetail::whereMonth('created_at', $currentMonth)
             ->whereYear('created_at', $currentYear)
+            ->where('pemesanan', 'ya')
             ->where('status_pemesanan', 'selesai')
             ->count();
 
-        $topSellingItems = DB::table('op_penjualan_detail as opd')
+        $topSellingItems = DB::table('op_transaksi_detail as opd')
             ->join('op_barang as b', 'opd.id_barang', '=', 'b.id')
             ->select('opd.id_barang', 'b.nama_produk', DB::raw('SUM(opd.jumlah_barang) as total_terjual'))
             ->groupBy('opd.id_barang', 'b.nama_produk')

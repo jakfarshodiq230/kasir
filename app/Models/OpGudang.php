@@ -24,4 +24,9 @@ class OpGudang extends Model
     {
         return $this->HasMany(OpBarang::class, 'id_gudang');
     }
+
+    public function TransaksiCart(): HasMany
+    {
+        return $this->HasMany(OpTransaksiCart::class, 'id_gudang');
+    }
 }

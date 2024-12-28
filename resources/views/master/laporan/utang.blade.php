@@ -210,16 +210,13 @@
                     });
                     datatable.clear();
                     response.data.forEach((item, index) => {
-                        let totalJumlahBarang = item.penjualan_details.reduce((sum, detail) => {
-                            return sum + parseFloat(detail.jumlah_barang || 0);
-                        }, 0);
                         datatable.row.add([
                             index + 1,
                             item.nomor_transaksi,
-                            item.user ? item.user.name : "-",
+                            item.name ? item.name : "-",
                             item.tanggal_transaksi,
                             item.pembayaran,
-                            totalJumlahBarang || "-",
+                            item.total_jumlah_barang || "-",
                             formatCurrency(item.total_beli) || "-",
                             formatCurrency(item.jumlah_bayar_dp) || "-",
                             formatCurrency(item.jumlah_sisa_dp) || "-",

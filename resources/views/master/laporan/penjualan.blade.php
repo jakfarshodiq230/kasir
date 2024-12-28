@@ -198,18 +198,15 @@
                     });
                     datatable.clear();
                     response.data.forEach((item, index) => {
-                        let totalJumlahBarang = item.penjualan_details.reduce((sum, detail) => {
-                            return sum + parseFloat(detail.jumlah_barang || 0);
-                        }, 0);
                         datatable.row.add([
                             index + 1,
                             item.nomor_transaksi,
                             item.jenis_transaksi === 'hutang' ? 'Utang' : 'Tidak Utang',
-                            item.cabang ? item.cabang.nama_toko_cabang : "-",
-                            item.user ? item.user.name : "-",
+                            item.nama_toko_cabang ? item.nama_toko_cabang : "-",
+                            item.name ? item.name : "-",
                             item.tanggal_transaksi,
-                            totalJumlahBarang || "-",
-                            formatCurrency(item.total_beli) || "-",
+                            item.total_jumlah_barang || "-",
+                            formatCurrency(item.total_sub_total_transaksi) || "-",
                         ]);
                     });
                     datatable.draw();

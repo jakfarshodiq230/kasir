@@ -31,7 +31,7 @@
                 <div class="tile-stats">
                   <div class="icon"><i class="fa fa-sort-amount-asc"></i>
                   </div>
-                  <div class="count"><?= $countPesanan->total_penjualan_barang ? $countPesanan->total_penjualan_barang : 0 ?></div>
+                  <div class="count"><?= $countPesanan->total_pesan_barang ? $countPesanan->total_pesan_barang : 0 ?></div>
 
                   <h3>Pemesanan</h3>
                 </div>

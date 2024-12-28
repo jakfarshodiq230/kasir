@@ -171,7 +171,7 @@
                     const pembayaran = row.pembayaran;
                     const status = row.jenis_transaksi === 'non_hutang' ? 'Tidak Hutang' : 'Hutang';
                     return '<span class="badge badge-info">'+pembayaran.toUpperCase()+'</span><br><span class="badge badge-warning">'+status.toUpperCase()+
-                        '</span><br><span class="badge badge-primary">'+row.status_penjualan.toUpperCase()+'</span>';
+                        '</span><br><span class="badge badge-primary">'+row.status_pemesanan.toUpperCase()+'</span>';
                 }
             },
             {

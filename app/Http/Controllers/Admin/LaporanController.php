@@ -11,10 +11,13 @@ use App\Models\OpKategori;
 use App\Models\OpPenjualan;
 use App\Models\OpPenjualanDetail;
 use App\Models\OpPesanan;
+use App\Models\OpTransaksi;
+use App\Models\OpTransaksiDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 class LaporanController extends Controller
 {
@@ -29,21 +32,48 @@ class LaporanController extends Controller
             'startDate' => 'required|date',
             'endDate' => 'required|date|after_or_equal:startDate',
         ]);
+
         $startDate = Carbon::parse($request->startDate)->toDateString();
         $endDate = Carbon::parse($request->endDate)->toDateString();
 
-        $penjualan = OpPenjualan::where('id_cabang', Auth::user()->id_cabang)
-            ->whereBetween('tanggal_transaksi', [$startDate, $endDate])
-            ->orderBy('tanggal_transaksi', 'DESC')
-            ->with(['user', 'cabang', 'penjualanDetails'])
+        // Fetch data, grouped by 'id_transaksi' and sum the 'jumlah_barang'
+        $penjualan = OpTransaksiDetail::select([
+            'op_transaksi_detail.id_transaksi',
+            'op_transaksi.nomor_transaksi',
+            'op_transaksi.tanggal_transaksi',
+            'op_transaksi.total_beli',
+            'users.name as user_name',
+            DB::raw('SUM(op_transaksi_detail.jumlah_barang) as total_jumlah_barang'), // Sum of jumlah_barang
+        ])
+            ->join('op_transaksi', 'op_transaksi.id', '=', 'op_transaksi_detail.id_transaksi')
+            ->join('users', 'users.id', '=', 'op_transaksi.id_user') // Assuming this is the correct relation
+            ->where('op_transaksi.id_cabang', Auth::user()->id_cabang)
+            ->where('op_transaksi_detail.pemesanan', 'tidak')
+            ->whereNotIn('op_transaksi_detail.status_pemesanan', ['dibatalkan'])
+            ->whereBetween('op_transaksi.tanggal_transaksi', [$startDate, $endDate])
+            ->groupBy('op_transaksi_detail.id_transaksi', 'op_transaksi.nomor_transaksi', 'op_transaksi.tanggal_transaksi', 'users.name')
+            ->orderBy('op_transaksi.tanggal_transaksi', 'DESC')
             ->get();
+
+        // Format data for response
+        $formattedData = $penjualan->map(function ($item, $index) {
+            return [
+                'index' => $index + 1,
+                'nomor_transaksi' => $item->nomor_transaksi,
+                'user_name' => $item->user_name ?? "-",
+                'tanggal_transaksi' => $item->tanggal_transaksi,
+                'jumlah_barang' => $item->total_jumlah_barang ?? "-",
+                'total_beli' => $item->total_beli ?? "-",
+            ];
+        });
 
         return response()->json([
             'success' => true,
             'message' => 'Data loaded successfully',
-            'data' => $penjualan,
+            'data' => $formattedData,
         ]);
     }
+
 
 
     public function hapusPenjualan($nomorTransaksi)
@@ -51,7 +81,7 @@ class LaporanController extends Controller
         try {
             $idCabang = Auth::user()->id_cabang;
             // Find the Penjualan record by nomor_transaksi
-            $penjualan = OpPenjualan::where('nomor_transaksi', $nomorTransaksi)->where('id_cabang', $idCabang)->first();
+            $penjualan = OpTransaksi::where('nomor_transaksi', $nomorTransaksi)->where('id_cabang', $idCabang)->first();
 
             if (!$penjualan) {
                 throw new ModelNotFoundException("Penjualan not found.");
@@ -156,16 +186,44 @@ class LaporanController extends Controller
         $startDate = Carbon::parse($request->startDate)->toDateString();
         $endDate = Carbon::parse($request->endDate)->toDateString();
 
-        $penjualan = OpPesanan::where('id_cabang', Auth::user()->id_cabang)
-            ->whereBetween('tanggal_transaksi', [$startDate, $endDate])
-            ->orderBy('tanggal_transaksi', 'DESC')
-            ->with(['user', 'cabang', 'pemesanandetail'])
+        $penjualan = OpTransaksiDetail::select([
+            'op_transaksi_detail.id_transaksi',
+            'op_transaksi.nomor_transaksi',
+            'op_transaksi.tanggal_transaksi',
+            'op_transaksi_detail.sub_total_transaksi',
+            'op_transaksi.status_transaksi',
+            'op_transaksi.jumlah_bayar_dp',
+            'users.name as user_name',
+            DB::raw('SUM(op_transaksi_detail.jumlah_barang) as total_jumlah_barang'), // Sum of jumlah_barang
+        ])
+            ->join('op_transaksi', 'op_transaksi.id', '=', 'op_transaksi_detail.id_transaksi')
+            ->join('users', 'users.id', '=', 'op_transaksi.id_user') // Assuming this is the correct relation
+            ->where('op_transaksi.id_cabang', Auth::user()->id_cabang)
+            ->where('op_transaksi_detail.pemesanan', 'ya')
+            ->whereNotIn('op_transaksi_detail.status_pemesanan', ['dibatalkan'])
+            ->whereBetween('op_transaksi.tanggal_transaksi', [$startDate, $endDate])
+            ->groupBy('op_transaksi_detail.id_transaksi', 'op_transaksi.nomor_transaksi', 'op_transaksi.tanggal_transaksi', 'users.name')
+            ->orderBy('op_transaksi.tanggal_transaksi', 'DESC')
             ->get();
+
+        // Format data for response
+        $formattedData = $penjualan->map(function ($item, $index) {
+            return [
+                'index' => $index + 1,
+                'nomor_transaksi' => $item->nomor_transaksi,
+                'user_name' => $item->user_name ?? "-",
+                'tanggal_transaksi' => $item->tanggal_transaksi,
+                'pembayaran' => $item->jumlah_bayar_dp,
+                'jumlah_barang' => $item->total_jumlah_barang ?? "-",
+                'sub_total_transaksi' => $item->sub_total_transaksi ?? "-",
+                'keterangan' => $item->status_transaksi ?? "-",
+            ];
+        });
 
         return response()->json([
             'success' => true,
             'message' => 'Data loaded successfully',
-            'data' => $penjualan,
+            'data' => $formattedData,
         ]);
     }
 
@@ -185,12 +243,12 @@ class LaporanController extends Controller
         $endDate = Carbon::parse($request->endDate)->toDateString();
         $status = $request->status;
 
-        $penjualan = OpPenjualan::where('id_cabang', Auth::user()->id_cabang)
-            ->where('status_penjualan', '=', $status)
+        $penjualan = OpTransaksi::where('id_cabang', Auth::user()->id_cabang)
+            ->where('status_transaksi', '=', $status)
             ->where('jenis_transaksi', '=', 'hutang')
             ->whereBetween('tanggal_transaksi', [$startDate, $endDate])
             ->orderBy('tanggal_transaksi', 'DESC')
-            ->with(['user', 'cabang', 'penjualanDetails'])
+            ->with(['user', 'cabang', 'transaksidetail'])
             ->get();
 
         return response()->json([

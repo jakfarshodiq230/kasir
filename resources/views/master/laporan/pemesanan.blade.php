@@ -202,19 +202,16 @@
                     });
                     datatable.clear();
                     response.data.forEach((item, index) => {
-                        let totalJumlahBarang = item.pemesanandetail.reduce((sum, detail) => {
-                            return sum + parseFloat(detail.jumlah_barang || 0);
-                        }, 0);
                         datatable.row.add([
                             index + 1,
                             item.nomor_transaksi,
-                            item.cabang ? item.cabang.nama_toko_cabang : "-",
-                            item.user ? item.user.name : "-",
+                            item.jenis_transaksi === 'hutang' ? 'Utang' : 'Tidak Utang',
+                            item.nama_toko_cabang ? item.nama_toko_cabang : "-",
+                            item.name ? item.name : "-",
                             item.tanggal_transaksi,
-                            item.pembayaran,
-                            totalJumlahBarang || "-",
-                            formatCurrency(item.total_beli) || "-",
-                            item.status_pemesanan,
+                            item.total_jumlah_barang || "-",
+                            formatCurrency(item.total_sub_total_transaksi) || "-",
+                            item.status_pemesanan || "-",
                         ]);
                     });
                     datatable.draw();

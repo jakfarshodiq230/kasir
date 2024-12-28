@@ -70,7 +70,7 @@
                             </div>
                         </div>
                         <br>
-                        <div class="form-group row mt-4">
+                        <div class="form-group row mt-1 p-0">
                             <div class="col-md-12 col-sm-12 p-0">
                                 <label class="col-form-label col-md-1 col-sm-1 ">R</label>
                                 <input
@@ -155,22 +155,8 @@
                                 <input type="date" name="tanggal_ambil" id="tanggal_ambil" class="form-control form-control-sm" placeholder="Tanggal Ambil">
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label class="col-form-label col-md-3 col-sm-3 ">Gudang<span class="required">*</span></label>
-                            <div class="col-md-9 col-sm-9 ">
-                                <select class="select2_single form-control form-control-sm" tabindex="-1" name="id_gudang" id="id_gudang">
-                                    <option value="" disabled selected>PILIH</option>
-                                    @foreach ($gudang as $item)
-                                        <option
-                                            value="{{ $item->id }}">
-                                            {{ $item->nama_gudang}}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
                         <br>
-                        <div class="form-group row">
+                        <div class="form-group row mt-4 p-0">
                             <div class="col-md-12 col-sm-12 p-0">
                                 <label class="col-form-label col-md-1 col-sm-1 ">L</label>
                                 <input
@@ -237,6 +223,18 @@
                                     <div class="col-md-12 col-sm-12 ">
                                         <select class="select2_single form-control form-control-sm" tabindex="-1" name="id_produk" id="id_produk">
                                             <option value="" disabled selected>PILIH</option>
+                                            @foreach ($barang as $item)
+                                                <option
+                                                    value="{{ $item->id_barang }}"
+                                                    data-kode="{{ $item->kode_produk }}"
+                                                    data-nama="{{ $item->nama_produk }}"
+                                                    data-stock="{{ $item->stock_akhir ?? 0 }}"
+                                                    data-pesan="{{ $item->pesanan }}"
+                                                    data-gudang="{{ $item->nama_gudang }}"
+                                                    data-idgudang="{{ $item->id_gudang }}">
+                                                    {{ $item->kode_produk }} [ {{ $item->nama_produk }} ]
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -259,6 +257,26 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
+                                    <label class="control-label col-md-3 col-sm-3 ">Gudang<span class="required">*</span></label>
+                                    <div class="col-md-9 col-sm-9 ">
+                                        <input type="text" name="nama_gudang" id="nama_gudang" class="form-control form-control-sm" placeholder="Gudang" readonly>
+                                        <input type="hidden" name="kode_gudang" id="kode_gudang" class="form-control form-control-sm" placeholder="Gudang"/>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label col-md-3 col-sm-3 ">Pesan<span class="required">*</span></label>
+                                    <div class="col-md-9 col-sm-9 ">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="jenis_pesan" id="jenis_pesanan1" value="ya"  required>
+                                            <label class="form-check-label" for="jenis_pesanan1">YA</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="jenis_pesan" id="jenis_pesanan2" value="tidak" checked>
+                                            <label class="form-check-label" for="jenis_pesanan2">TIDAK</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
                                     <label class="control-label col-md-3 col-sm-3 ">Harga<span class="required">*</span></label>
                                     <div class="col-md-9 col-sm-9 ">
                                         <select class="select2_single form-control form-control-sm" tabindex="-1" name="harga_barang" id="harga_barang">
@@ -278,6 +296,7 @@
                                         <input type="number" name="jumlah_barang" id="jumlah_barang" class="form-control form-control-sm" value="0" placeholder="Jumlah Beli">
                                     </div>
                                 </div>
+
                             </div>
                             <div class="col-sm-12" style="text-align: right; padding: 0px;">
                                 <button class="btn btn-sm btn-success btnAdd" id="btnAdd" disabled>TAMBAH</button>
@@ -358,7 +377,7 @@
                                 <label class="form-check-label" for="jenis_transaksi1">NON UTANG</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="jenis_transaksi" id="jenis_transaksi2" value="hutang" disabled>
+                                <input class="form-check-input" type="radio" name="jenis_transaksi" id="jenis_transaksi2" value="hutang" >
                                 <label class="form-check-label" for="jenis_transaksi2">UTANG</label>
                             </div>
                         </div>
@@ -388,7 +407,7 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 <script>
     $('#harga_lainya').closest('.form-group').hide();
-    $('#id_produk, #harga_barang, #id_gudang').select2({
+    $('#id_produk, #harga_barang').select2({
         placeholder: 'PILIH',
         allowClear: true
     });
@@ -419,9 +438,11 @@
     // menampilkan data tabel
     function loadCartData() {
         $.ajax({
-            url: '/kasir/data-pemesanan-cart', // Endpoint for fetching data
+            url: '/kasir/data-transaksi-cart', // Endpoint for fetching data
             method: 'GET',
             success: function (response) {
+                console.log(response);
+
                 const no = 0;
                 let total = 0;
                 let tbody = $('#datatable-buttons2 tbody');
@@ -434,7 +455,7 @@
                         tbody.append(`
                             <tr>
                                 <td>${no +1 || '-'}</td>
-                                <td>${item.barang['nama_produk'] + '<br>'|| '-'}</td>
+                                <td>${item.barang['nama_produk'] + '<br>' + item.gudang['nama_gudang'] + '<br>' + 'PESAN : <spans class="badge badge-warning">' + item['pesanan'].toUpperCase() + '</spans><br>' || '-'}</td>
                                 <td>${item.harga ? `Rp ${parseFloat(item.harga).toLocaleString('id-ID')}` : '-'}</td>
                                 <td>${item.jumlah_beli || '-'}</td>
                                 <td>${item.sub_total ? `Rp ${parseFloat(item.sub_total).toLocaleString('id-ID')}` : '-'}</td>
@@ -509,11 +530,14 @@
         } else {
             subTotal = harga * jumlahBeli;
         }
+        var id_gudang = $('#kode_gudang').val();
+        var jenis_pesan = $('input[name="jenis_pesan"]:checked').val();
+
 
 
         // Kirim data melalui AJAX
         $.ajax({
-            url: '/kasir/simpan-pemesanan-cart', // Ganti dengan URL endpoint API Anda
+            url: '/kasir/simpan-transaksi-cart', // Ganti dengan URL endpoint API Anda
             type: 'POST',
             data: {
                 _token: '{{ csrf_token() }}',
@@ -523,6 +547,8 @@
                 jumlah_beli: jumlahBeli,
                 sub_total: subTotal,
                 harga_lainya: harga_lainya,
+                id_gudang: id_gudang,
+                jenis_pesan: jenis_pesan
             },
             success: function(response) {
                 if (response.success) {
@@ -551,11 +577,11 @@
     });
 
     // delete penjulaan carat
-    $(document).on('click', '.delete-btn', function () {
+    $('tbody').on('click', '.delete-btn', function () {
         const id = $(this).data('id');
         // AJAX request to delete the item
         $.ajax({
-            url: `/kasir/delete-pemesanan-cart/${id}`, // Endpoint to delete the item
+            url: `/kasir/delete-transaksi-cart/${id}`, // Endpoint to delete the item
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -571,6 +597,7 @@
             }
         });
     });
+
 
     $('#btnReset').click(function() {
         loadCartData();
@@ -635,7 +662,72 @@
         printNota(id)
     });
 
-            // proses penjualan klik
+    $('#id_produk').change(function() {
+        // Get the selected option's data attributes
+        var selectedOption = $(this).find('option:selected');
+        var kode = selectedOption.data('kode');
+        var nama = selectedOption.data('nama');
+        var stock = selectedOption.data('stock');
+        var pesan = selectedOption.data('pesan');
+        var gudang = selectedOption.data('gudang');
+        var idgudang = selectedOption.data('idgudang');
+
+        $('#kode_produk').val(kode);
+        $('#nama_produk').val(nama);
+        $('#stock_barang').val(stock);
+        if (pesan === 'Ya') {
+            $('#jenis_pesanan1').prop('checked', true);
+        } else if (pesan === 'Tidak') {
+            $('#jenis_pesanan2').prop('checked', true);
+        }
+        $('#nama_gudang').val(gudang);
+        $('#kode_gudang').val(idgudang);
+
+        const id = $(this).val();
+        $('#harga_barang').empty();
+            $.ajax({
+                url: '/kasir/harga-barang-transaksi/'+ id +'/' +kode,
+                type: 'GET',
+                success: function(response) {
+
+                    if (response.data.length > 0) {
+                        $('#harga_barang').prop('disabled', false);
+                        response.data.forEach(harga => {
+                            const optionText = harga.price == 0
+                                ? `${harga.Ket}`
+                                : `${harga.Ket} - Rp ${parseFloat(harga.price).toLocaleString('id-ID')}`;
+                            $('#harga_barang').append(`<option value="${harga.price}" data-price="${harga.price}">${optionText}</option>`);
+                        });
+                    }
+            },
+            error: function() {
+                    console.log('Unable to fetch the price at this moment.');
+                }
+            });
+        });
+
+    // Toggle "Harga Lainya" based on selection
+    $('#harga_barang').on('change', function () {
+        const selectedOption = $(this).find('option:selected');
+        const selectedPrice = selectedOption.data('price');
+
+        if (selectedPrice === 0) {
+            $('#harga_lainya').closest('.form-group').show(); // Show "Harga Lainya"
+        } else {
+            $('#harga_lainya').closest('.form-group').hide(); // Hide "Harga Lainya"
+        }
+    });
+
+    $('#jumlah_bayar').on('input', function () {
+        var jumlahBayar = parseFloat($(this).val());
+        if (jumlahBayar > 0) {
+            $('#btnProseTransaksi').prop('disabled', false);
+        } else {
+            $('#btnProseTransaksi').prop('disabled', true);
+        }
+    });
+
+    // proses penjualan klik
     $('#btnProseTransaksi').on('click', function(e) {
         e.preventDefault(); // Prevent the default button action
 
@@ -674,7 +766,7 @@
 
         // Perform the AJAX request
         $.ajax({
-            url: '/kasir/simpan-pemesanan-final', // Your endpoint URL
+            url: '/kasir/simpan-transaksi-final', // Your endpoint URL
             type: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -736,116 +828,6 @@
             }
         });
     });
-
-    // menampilkan barang dan harga
-    $('#id_gudang').on('change', function () {
-        const gudangId = $(this).val();
-
-        // Reset and disable subsequent selects
-        $('#id_produk').empty().append('<option value="" disabled selected>PILIH BARANG</option>').prop('disabled', true);
-        $('#harga_barang').empty().append('<option value="" disabled selected>PILIH HARGA</option>').prop('disabled', true);
-
-        // Fetch Barang based on Gudang selection
-        if (gudangId) {
-            $.ajax({
-                url: '/kasir/transaksi-pemesanan-data-barang', // Adjust URL to match your route
-                type: 'GET',
-                data: { id_gudang: gudangId },
-                success: function (data) {
-                    if (data.length > 0) {
-                        $('#id_produk').prop('disabled', false);
-                        data.forEach(item => {
-                            $('#id_produk').append(
-                                `<option value="${item.id_barang}"
-                                        data-kode="${item.kode_produk}"
-                                        data-nama="${item.nama_produk}"
-                                        data-stock="${item.stock_akhir}"
-                                        data-gudang="${item.gudang_name}"
-                                        data-id_gudang="${item.gudang_id}">
-                                    ${item.kode_produk} [${item.nama_produk}]
-                                </option>`
-                            );
-                        });
-
-                        // When a product is selected, update the fields
-                        $('#id_produk').on('change', function () {
-                            var selectedOption = $(this).find('option:selected');
-                            var kode = selectedOption.data('kode');
-                            var nama = selectedOption.data('nama');
-                            var stock = selectedOption.data('stock');
-                            var gudang = selectedOption.data('gudang');
-
-                            $('#kode_produk').val(kode);
-                            $('#nama_produk').val(nama);
-                            $('#stock_barang').val(stock);
-                            $('#gudang_barang').val(gudang);
-                        });
-                    }
-                },
-                error: function () {
-                    Swal.fire({
-                        title: 'Gagal memproses pengambilan daftar barang pada gudang, hubungi administrator gudang!',
-                        icon: 'error',
-                        confirmButtonText: 'Tutup'
-                    });
-                }
-            });
-        }
-    });
-
-
-    $('#id_produk').on('change', function () {
-        const barangId = $(this).val();
-        $('#harga_barang').empty().append('<option value="" disabled selected>PILIH HARGA</option>').prop('disabled', true);
-        $('#harga_lainya').closest('.form-group').hide(); // Initially hide "Harga Lainya"
-
-        if (barangId) {
-            $.ajax({
-                url: '/kasir/transaksi-pemesanan-data-harga',
-                type: 'GET',
-                data: { id_barang: barangId },
-                success: function (data) {
-                    if (data.length > 0) {
-                        $('#harga_barang').prop('disabled', false);
-
-                        data.forEach(harga => {
-                            const optionText = harga.price == 0
-                                ? `${harga.Ket}`
-                                : `${harga.Ket} - Rp ${parseFloat(harga.price).toLocaleString('id-ID')}`;
-                            $('#harga_barang').append(
-                                `<option value="${harga.price}" data-price="${harga.price}">${optionText}</option>`
-                            );
-                        });
-                    }
-                },
-                error: function () {
-                    alert('Failed to fetch Harga');
-                }
-            });
-        }
-    });
-
-    // Toggle "Harga Lainya" based on selection
-    $('#harga_barang').on('change', function () {
-        const selectedOption = $(this).find('option:selected');
-        const selectedPrice = selectedOption.data('price');
-
-        if (selectedPrice === 0) {
-            $('#harga_lainya').closest('.form-group').show(); // Show "Harga Lainya"
-        } else {
-            $('#harga_lainya').closest('.form-group').hide(); // Hide "Harga Lainya"
-        }
-    });
-
-
-    $('#jumlah_bayar').on('input', function () {
-            var jumlahBayar = parseFloat($(this).val());
-            if (jumlahBayar > 0) {
-                $('#btnProseTransaksi').prop('disabled', false);
-            } else {
-                $('#btnProseTransaksi').prop('disabled', true);
-            }
-        });
 
 
 </script>

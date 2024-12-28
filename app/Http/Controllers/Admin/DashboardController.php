@@ -8,6 +8,8 @@ use App\Models\OpPenjualan;
 use App\Models\OpPenjualanDetail;
 use App\Models\OpPesanan;
 use App\Models\OpPesananDetail;
+use App\Models\OpTransaksi;
+use App\Models\OpTransaksiDetail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,40 +29,52 @@ class DashboardController extends Controller
             ->first();
 
 
-        $penjualan = OpPenjualan::where('id_cabang', Auth::user()->id_cabang)
+        $penjualan = OpTransaksi::where('id_cabang', Auth::user()->id_cabang)
             ->whereMonth('created_at', $currentMonth)
             ->whereYear('created_at', $currentYear)
             ->select([
-                DB::raw('SUM(jumlah_bayar) as total_penjualan'),
                 DB::raw("SUM(CASE
-                    WHEN status_penjualan = 'belum_lunas' AND jenis_transaksi = 'hutang' THEN jumlah_sisa_dp
+                    WHEN status_transaksi = 'belum_lunas' AND jenis_transaksi = 'hutang' THEN jumlah_sisa_dp
                     ELSE 0
-                END) as total_sisa_dp")
+                END) as total_sisa_dp"),
+                DB::raw("SUM(CASE
+                    WHEN status_transaksi = 'lunas' AND jenis_transaksi = 'non_hutang' THEN total_beli
+                    ELSE 0
+                END) as total_penjualan")
             ])
             ->first();
 
-        $countBarang = OpPenjualanDetail::where('id_cabang', Auth::user()->id_cabang)
+        $countBarang = OpTransaksiDetail::where('id_cabang', Auth::user()->id_cabang)
             ->whereMonth('created_at', $currentMonth)
             ->whereYear('created_at', $currentYear)
             ->select([
-                DB::raw('SUM(jumlah_barang) as total_penjualan_barang'),
+                DB::raw("SUM(CASE
+                    WHEN pemesanan = 'tidak' AND status_pemesanan !='dibatalkan' THEN jumlah_barang
+                    ELSE 0
+                END) as total_penjualan_barang")
             ])
             ->first();
-        $countPesanan = OpPesananDetail::where('id_cabang', Auth::user()->id_cabang)
+        $countPesanan = OpTransaksiDetail::where('id_cabang', Auth::user()->id_cabang)
             ->whereMonth('created_at', $currentMonth)
             ->whereYear('created_at', $currentYear)
             ->select([
-                DB::raw('SUM(jumlah_barang) as total_penjualan_barang'),
-                DB::raw('SUM(sub_total_transaksi) as total_pesanan'),
+                DB::raw("SUM(CASE
+                    WHEN pemesanan = 'iya' AND status_pemesanan != 'dibatalkan' THEN jumlah_barang
+                    ELSE 0
+                END) as total_pesan_barang"),
+                DB::raw("SUM(CASE
+                    WHEN pemesanan = 'iya' AND status_pemesanan != 'dibatalkan' THEN sub_total_transaksi
+                    ELSE 0
+                END) as total_pesanan")
             ])
             ->first();
-        $countSelesai = OpPesanan::where('id_cabang', Auth::user()->id_cabang)
+        $countSelesai = OpTransaksi::where('id_cabang', Auth::user()->id_cabang)
             ->whereMonth('created_at', $currentMonth)
             ->whereYear('created_at', $currentYear)
-            ->where('status_pemesanan', 'selesai')
+            ->where('status_transaksi', 'lunas')
             ->count();
 
-        $topSellingItems = DB::table('op_penjualan_detail as opd')
+        $topSellingItems = DB::table('op_transaksi_detail as opd')
             ->join('op_barang as b', 'opd.id_barang', '=', 'b.id')
             ->where('opd.id_cabang', Auth::check() ? Auth::user()->id_cabang : null)
             ->select('opd.id_barang', 'b.nama_produk', DB::raw('SUM(opd.jumlah_barang) as total_terjual'))

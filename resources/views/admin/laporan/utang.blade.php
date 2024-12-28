@@ -204,7 +204,7 @@
                     });
                     datatable.clear();
                     response.data.forEach((item, index) => {
-                        let totalJumlahBarang = item.penjualan_details.reduce((sum, detail) => {
+                        let totalJumlahBarang = item.transaksidetail.reduce((sum, detail) => {
                             return sum + parseFloat(detail.jumlah_barang || 0);
                         }, 0);
                         datatable.row.add([

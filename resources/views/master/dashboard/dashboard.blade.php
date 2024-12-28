@@ -121,7 +121,7 @@
                             <tr>
                                 <th>No</th>
                                 <th>Barang</th>
-                                <th>QTY</th>
+                                <th>QTY (<10)</th>
                             </tr>
                         </thead>
                         <tbody>

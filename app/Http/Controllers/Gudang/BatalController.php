@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Gudang;
 use App\Http\Controllers\Controller;
 use App\Models\OpPesanan;
 use App\Models\OpPesananDetail;
+use App\Models\OpTransaksi;
+use App\Models\OpTransaksiDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,7 +23,7 @@ class BatalController extends Controller
         $length = $request->input('length', 10); // number of records per page
 
         // Start building the query
-        $permintaan = OpPesanan::where('id_gudang', Auth::user()->id_gudang)->whereIn('status_pemesanan', ['dibatalkan', 'tolak']);
+        $permintaan = OpTransaksiDetail::where('id_gudang', Auth::user()->id_gudang)->whereIn('pemesanan', ['ya'])->whereIn('status_pemesanan', ['dibatalkan', 'tolak']);
 
         // Apply filters if they exist
         if ($request->has('tanggal_transaksi') && $request->tanggal_transaksi != '') {
@@ -35,7 +37,7 @@ class BatalController extends Controller
         $totalRecords = $permintaan->count();
 
         // Apply pagination
-        $permintaan = $permintaan->with('user', 'cabang', 'pemesanandetail')
+        $permintaan = $permintaan->with('user', 'cabang', 'transaksi')
             ->skip($start)
             ->take($length)
             ->get();
@@ -61,8 +63,8 @@ class BatalController extends Controller
 
     public function GetDataIDPermintaanBatal($kode)
     {
-        $permintaan_barang = OpPesanan::where('nomor_transaksi', $kode)->first();
-        $permintaan_detail = OpPesananDetail::where('nomor_transaksi', $kode)->with('barang')->get();
+        $permintaan_barang = OpTransaksi::where('nomor_transaksi', $kode)->first();
+        $permintaan_detail = OpTransaksiDetail::where('nomor_transaksi', $kode)->with('barang')->get();
         return view("gudang.batal.batal-detail", compact('permintaan_barang', 'permintaan_detail'));
     }
 }

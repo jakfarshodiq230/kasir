@@ -88,7 +88,7 @@
         <div class="col-md-6 ">
             <div class="x_panel">
               <div class="x_title">
-                <h2>Stock terendah</h2>
+                <h2>Stock terendah </h2>
                 <div class="clearfix"></div>
               </div>
               <div class="x_content">
@@ -98,7 +98,7 @@
                             <tr>
                                 <th>No</th>
                                 <th>Barang</th>
-                                <th>QTY</th>
+                                <th>QTY (<10)</th>
                             </tr>
                         </thead>
                         <tbody>

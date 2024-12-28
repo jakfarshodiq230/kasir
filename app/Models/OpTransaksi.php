@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class OpPesanan extends Model
+class OpTransaksi extends Model
 {
     use HasFactory;
 
-    protected $table = 'op_pemesanan';
+    protected $table = 'op_transaksi';
 
     protected $fillable = [
         'nomor_transaksi',
@@ -43,12 +43,12 @@ class OpPesanan extends Model
         'L_ADD',
         'PD',
         'PD2',
-        'status_pemesanan',
+        'status_transaksi'
     ];
 
-    public function pemesanandetail()
+    public function transaksidetail()
     {
-        return $this->hasMany(OpPesananDetail::class, 'nomor_transaksi', 'nomor_transaksi');
+        return $this->hasMany(OpTransaksiDetail::class, 'nomor_transaksi', 'nomor_transaksi');
     }
 
     public function user()

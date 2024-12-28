@@ -217,7 +217,23 @@
                 render: function(data, type, row) {
                     const pembayaran = row.pembayaran;
                     const status = row.jenis_transaksi === 'non_hutang' ? 'Tunai' : 'Hutang';
-                    const status_penjualan = row.status_penjualan === 'lunas' ? 'Selesai' : 'Belum Selesai';
+                    let status_penjualan = ''; // Declare with 'let' since it's being updated
+                            switch (row.status_transaksi) {
+                                case 'lunas':
+                                    status_penjualan = 'Selesai';
+                                    break;
+                                case 'belum_lunas':
+                                    status_penjualan = 'Belum Selesai';
+                                    break;
+                                case 'pending':
+                                    status_penjualan = 'Pending';
+                                    break;
+                                case 'dibatalkan':
+                                    status_penjualan = 'Dibatalkan';
+                                    break;
+                                default:
+                                    status_penjualan = 'Status Tidak Diketahui';
+                            }
                     return '<span class="badge badge-info">'+pembayaran.toUpperCase()+
                         '</span><br><span class="badge badge-warning">'+status.toUpperCase()+'</span>'+
                         '</span><br><span class="badge badge-danger">'+status_penjualan.toUpperCase()+'</span>';
@@ -313,18 +329,22 @@
                 // Loop melalui data dan tambahkan baris ke tabel
                 response.data.forEach(item => {
                     const subTotal = parseFloat(item.sub_total_transaksi) || 0;
-                    const rincian = `${item.kode_produk} <br> ${item.barang.nama_produk}`;
+                    const rincian = `${item.kode_produk} <br> ${item.barang.nama_produk} <br>
+                    PESAN : <spans class="badge badge-warning"> ${item.pemesanan.toUpperCase()} </spans>
+                                <spans class="badge badge-danger"> ${item.status_pemesanan.toUpperCase()} </spans>`;
                     const row = `
                     <tr>
                         <td>${no + 1}</td>
                         <td>${rincian}</td>
-                        <td>${formatRupiah(item.harga_barang)}</td>
-                        <td>${item.jumlah_barang}</td>
-                        <td>${formatRupiah(item.sub_total_transaksi)}</td>
+                        <td class="${item.status_pemesanan === 'dibatalkan' ? 'text-decoration-line-through text-danger' : ''}">${formatRupiah(item.harga_barang)}</td>
+                        <td class="${item.status_pemesanan === 'dibatalkan' ? 'text-decoration-line-through text-danger' : ''}">${item.jumlah_barang}</td>
+                        <td class="${item.status_pemesanan === 'dibatalkan' ? 'text-decoration-line-through text-danger' : ''}">${formatRupiah(item.sub_total_transaksi)}</td>
                     </tr>
                     `;
                     $('#detail-penjualan tbody').append(row);
-                    totalSubTotal += subTotal;
+                    if (item.status_pemesanan != 'dibatalkan') {
+                        totalSubTotal += subTotal;
+                    }
                 });
 
                 // Tambahkan baris untuk total ke tabel
@@ -350,9 +370,9 @@
     });
 
     $(document).on('click', '.delete-btn', function () {
-    const dataId = $('#addDataForm').data('id'); // Retrieve the dataId from the modal's data attribute
+        const dataId = $('#addDataForm').data('id'); // Retrieve the dataId from the modal's data attribute
 
-    // SweetAlert confirmation
+        // SweetAlert confirmation
         Swal.fire({
             title: 'Are you sure?',
             text: 'This transaction will be permanently deleted!',

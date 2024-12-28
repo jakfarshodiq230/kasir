@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\OpPenjualan;
-use App\Models\OpPenjualanDetail;
+use App\Models\OpTransaksi;
+use App\Models\OpTransaksiDetail;
 use App\Models\OpPesanan;
 use App\Models\OpPesananDetail;
 use Illuminate\Support\Facades\Auth;
@@ -23,21 +23,26 @@ class TransaksiController extends Controller
         $length = $request->input('length', 10);
 
         // Start building the query
-        $penjualan = OpPenjualan::where('id_cabang', Auth::user()->id_cabang);
+        $penjualan = OpTransaksi::join('op_transaksi_detail', 'op_transaksi.id', '=', 'op_transaksi_detail.id_transaksi')
+            ->where('op_transaksi.id_cabang', Auth::user()->id_cabang)
+            ->where('op_transaksi_detail.pemesanan', 'tidak'); // Ensure you use the correct table alias
 
         // Apply filters if they exist
         if ($request->has('tanggal_transaksi') && $request->tanggal_transaksi != '') {
-            $penjualan = $penjualan->whereDate('tanggal_transaksi', $request->tanggal_transaksi);
+            $penjualan = $penjualan->whereDate('op_transaksi.tanggal_transaksi', $request->tanggal_transaksi);
         }
         if ($request->has('jenis_transaksi') && $request->jenis_transaksi != '') {
-            $penjualan = $penjualan->where('jenis_transaksi', $request->jenis_transaksi);
+            $penjualan = $penjualan->where('op_transaksi.jenis_transaksi', $request->jenis_transaksi);
         }
 
-        // Get the total count before applying pagination
-        $totalRecords = $penjualan->count();
-        $penjualan->orderBy('tanggal_transaksi', 'DESC');
+        // Get the filtered total count
+        $filteredRecords = $penjualan->count();
+
+        // Apply ordering
+        $penjualan = $penjualan->orderBy('op_transaksi.tanggal_transaksi', 'DESC');
+
         // Apply pagination
-        $penjualan = $penjualan->with('user', 'cabang', 'penjualanDetails')
+        $penjualan = $penjualan->with('user', 'cabang', 'transaksidetail')
             ->skip($start)
             ->take($length)
             ->get();
@@ -46,14 +51,14 @@ class TransaksiController extends Controller
             'success' => true,
             'message' => 'Data loaded successfully',
             'data' => $penjualan,
-            'recordsTotal' => $totalRecords,
-            'recordsFiltered' => $totalRecords, // Adjust if needed for filtered count
+            'recordsTotal' => $filteredRecords, // This can be the total count before filters
+            'recordsFiltered' => $filteredRecords, // Filtered count after applying the filters
         ]);
     }
 
     public function GetDataID($kode)
     {
-        $penjualan = OpPenjualanDetail::where('nomor_transaksi', $kode)->with('barang', 'penjualan')->get();
+        $penjualan = OpTransaksiDetail::where('nomor_transaksi', $kode)->where('pemesanan', 'tidak')->with('barang', 'transaksi')->get();
         return response()->json(['success' => true, 'message' => 'Item deleted successfully', 'data' => $penjualan]);
     }
 
@@ -69,7 +74,8 @@ class TransaksiController extends Controller
         $length = $request->input('length', 10);
         $draw = $request->input('draw', 1);
 
-        $pesanan = OpPesanan::where('id_cabang', Auth::user()->id_cabang);
+        $pesanan = OpTransaksiDetail::where('id_cabang', Auth::user()->id_cabang)
+            ->where('pemesanan', 'ya');
 
         if ($request->has('tanggal_transaksi') && $request->tanggal_transaksi != '') {
             $pesanan = $pesanan->whereDate('tanggal_transaksi', $request->tanggal_transaksi);
@@ -84,7 +90,7 @@ class TransaksiController extends Controller
         $totalRecords = $pesanan->count();
         $pesanan->orderBy('created_at', 'DESC');
         // Apply pagination
-        $pesanan = $pesanan->with('user', 'cabang', 'pemesanandetail', 'gudang')
+        $pesanan = $pesanan->with('user', 'cabang', 'transaksi', 'gudang')
             ->skip($start)
             ->take($length)
             ->get();
@@ -100,7 +106,7 @@ class TransaksiController extends Controller
 
     public function GetDataIDPesanan($kode)
     {
-        $pesanan = OpPesananDetail::where('nomor_transaksi', $kode)->with('barang', 'pesanan')->get();
+        $pesanan = OpTransaksiDetail::where('nomor_transaksi', $kode)->where('pemesanan', 'ya')->with('barang', 'transaksi')->get();
         return response()->json(['success' => true, 'message' => 'Item deleted successfully', 'data' => $pesanan]);
     }
 }

@@ -173,7 +173,7 @@
                                       <tr>
                                         <th>No.</th>
                                         <th>Rincian</th>
-                                        <th>Nama</th>
+                                        <th>Harga</th>
                                         <th>Jumlah</th>
                                         <th>Subtotal</th>
                                       </tr>
@@ -186,9 +186,7 @@
                                 <!-- /.col -->
                               </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary btn-sm print-btn" id="print-btn">PRINT</button>
+                        <div class="modal-footer" id="btn-footer">
                         </div>
                     </div>
                 </form>
@@ -341,6 +339,7 @@
 
                 $('#detail-penjualan tbody').empty();
             });
+
             function formatRupiah(value) {
                 return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value);
             }
@@ -423,7 +422,24 @@
                         render: function(data, type, row, meta) {
                             const pembayaran = row.pembayaran;
                             const jenis_transaksi = row.jenis_transaksi === 'non_hutang' ? 'Cash' : 'Hutang';
-                            return pembayaran + '<br>' + jenis_transaksi;
+                            let status_penjualan = ''; // Declare with 'let' since it's being updated
+                            switch (row.status_transaksi) {
+                                case 'lunas':
+                                    status_penjualan = 'Selesai';
+                                    break;
+                                case 'belum_lunas':
+                                    status_penjualan = 'Belum Selesai';
+                                    break;
+                                case 'pending':
+                                    status_penjualan = 'Pending';
+                                    break;
+                                case 'dibatalkan':
+                                    status_penjualan = 'Dibatalkan';
+                                    break;
+                                default:
+                                    status_penjualan = 'Status Tidak Diketahui';
+                            }
+                            return pembayaran + '<br>' + jenis_transaksi + '<br><span class="badge badge-warning">' + status_penjualan + '</span>';
                         }
                     },
                     {
@@ -480,10 +496,12 @@
             $(document).on('click', '.view-btn', function() {
 
                 var dataId = $(this).data('id');
+
                 $('#addDataForm').data('id', dataId);
                 $('#addDataForm').data('jenis', 'langsung');
                 $('#addDataModalLabel').text('DETAIL TRANSAKSI ' + dataId);
                 $('#detail-penjualan tbody').empty();
+                $('#btn-footer').empty();
                 $.ajax({
                     url: '/kasir/detail-penjualan-langsung/' + dataId,
                     type: 'GET',
@@ -491,21 +509,31 @@
                     success: function(response) {
                         let totalSubTotal = 0;
                         // Loop melalui data dan tambahkan baris ke tabel
-                        response.data.forEach(item => {
-                            const subTotal = parseFloat(item.sub_total_transaksi) || 0;
-                            const rincian = `${item.kode_produk} <br> ${item.barang.nama_produk}`;
-                            const row = `
-                            <tr>
-                                <td>${item.jumlah_barang}</td>
-                                <td>${rincian}</td>
-                                <td>${formatRupiah(item.harga_barang)}</td>
-                                <td>${item.jumlah_barang}</td>
-                                <td>${formatRupiah(item.sub_total_transaksi)}</td>
-                            </tr>
-                            `;
-                            $('#detail-penjualan tbody').append(row);
-                            totalSubTotal += subTotal;
-                        });
+                        if (response.data && response.data.length > 0) {
+                            response.data.forEach(item => {
+                                const subTotal = parseFloat(item.sub_total_transaksi) || 0;
+                                const rincian = `${item.kode_produk} <br> ${item.barang.nama_produk} <br>
+                                ${item.gudang.nama_gudang.toUpperCase()} <br> PESAN : <spans class="badge badge-warning"> ${item.pemesanan.toUpperCase()} </spans>
+                                <spans class="badge badge-danger"> ${item.status_pemesanan.toUpperCase()} </spans>`;
+                                const row = `
+                                <tr>
+                                    <td>${item.jumlah_barang}</td>
+                                    <td>${rincian}</td>
+                                    <td class="${item.status_pemesanan === 'dibatalkan' ? 'text-decoration-line-through text-danger' : ''}">${formatRupiah(item.harga_barang)}</td>
+                                    <td class="${item.status_pemesanan === 'dibatalkan' ? 'text-decoration-line-through text-danger' : ''}">${item.jumlah_barang}</td>
+                                    <td class="${item.status_pemesanan === 'dibatalkan' ? 'text-decoration-line-through text-danger' : ''}">${formatRupiah(item.sub_total_transaksi)}</td>
+                                </tr>
+                                `;
+                                $('#detail-penjualan tbody').append(row);
+                                if (item.status_pemesanan != 'dibatalkan') {
+                                    totalSubTotal += subTotal;
+                                }
+
+                            });
+                        } else {
+                            const emptyRow = `<tr><td colspan="5" class="text-center">No data available</td></tr>`;
+                            $('#detail-penjualan tbody').append(emptyRow);
+                        }
 
                         // Tambahkan baris untuk total ke tabel
                         const totalRow = `
@@ -515,6 +543,13 @@
                         </tr>
                         `;
                         $('#detail-penjualan tbody').append(totalRow);
+
+                        const btnFooter = `
+                        <button type="button" class="btn btn-danger btn-sm batalkan-transaksi" id="batalkan-transaksi" data-id="${dataId}" ${response.transaksi.status_transaksi === 'dibatalkan' ? 'disabled' : ''}>Batalkan Transaksi</button>
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary btn-sm print-btn" id="print-btn">PRINT</button>
+                        `;
+                        $('#btn-footer').html(btnFooter);
                     },
                     error: function(xhr, status, error) {
                         console.error('Error fetching data:', error);
@@ -529,6 +564,54 @@
                 modal.show();
             });
 
+            $(document).on('click', '.batalkan-transaksi', function () {
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This transaction will be cancelled!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, cancel it!',
+                    cancelButtonText: 'No, keep it'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '/kasir/batal-transaksi-pemesanan/' + id,
+                            type: 'GET',
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire(
+                                        'Cancelled!',
+                                        response.message,
+                                        'success'
+                                    ).then(() => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire(
+                                        'Failed!',
+                                        response.message,
+                                        'error'
+                                    );
+                                }
+                            },
+                            error: function (xhr) {
+                                Swal.fire(
+                                    'Error!',
+                                    'An error occurred while cancelling the transaction.',
+                                    'error'
+                                );
+                            }
+                        });
+                    }
+                });
+            });
+
             $(document).on('click', '.print-btn', function() {
                 var dataId = $('#addDataForm').data('id');
                 var jenis = $('#addDataForm').data('jenis');
@@ -538,7 +621,7 @@
                 if (jenis === 'langsung') {
                     url = `/kasir/transaksi-langsung-cetak/${dataId}`;
                 } else {
-                    url = `/kasir/transaksi-pemesanan-cetak/${dataId}`;
+                    url = `/kasir/transaksi-pesan-cetak/${dataId}`;
                 }
 
                 // Ambil konten halaman menggunakan fetch
@@ -667,7 +750,25 @@
                         render: function(data, type, row, meta) {
                             const pembayaran = row.pembayaran;
                             const jenis_transaksi = row.jenis_transaksi === 'non_hutang' ? 'Cash' : 'Hutang';
-                            const status_penjualan = row.status_penjualan === 'lunas' ? 'Selesai' : 'Belum Selesai';
+                            let status_penjualan;
+
+                            switch (row.status_transaksi) {
+                                case 'lunas':
+                                    status_penjualan = 'Selesai';
+                                    break;
+                                case 'belum_lunas':
+                                    status_penjualan = 'Belum Selesai';
+                                    break;
+                                case 'pending':
+                                    status_penjualan = 'Pending';
+                                    break;
+                                case 'dibatalkan':
+                                    status_penjualan = 'Dibatalkan';
+                                    break;
+                                default:
+                                    status_penjualan = 'Status Tidak Diketahui';
+                            }
+
                             return pembayaran + '<br>' + jenis_transaksi +'<br><span class="badge badge-warning">'+status_penjualan+'</span>';
                         }
                     },
@@ -675,7 +776,7 @@
                         data: null,
                         name: 'action',
                         render: function(data, type, row) {
-                            const bayarButtonDisabled = row.status_penjualan === 'lunas' ? 'disabled' : '';
+                            const bayarButtonDisabled = row.status_transaksi === 'lunas' ? 'disabled' : '';
                             return `
                                 <button class="btn btn-sm btn-info view-btn" data-id="${row.nomor_transaksi}">
                                     <i class="fas fa-eye"></i>
@@ -776,7 +877,6 @@
                     url: "/kasir/data-pemesanan",
                     type: "GET",
                     dataSrc: function (json) {
-                        console.log(json);
                         return json.data;
                     }
                 },
@@ -792,19 +892,19 @@
                         data: null,
                         title: "Tanggal",
                         render: function(data, type, row) {
-                            let tanggal_transaksi = new Date(row.tanggal_transaksi).toLocaleDateString('id-ID', {
+                            let tanggal_transaksi = new Date(row.transaksi.tanggal_transaksi).toLocaleDateString('id-ID', {
                                 weekday: 'long',
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric'
                             });
-                            let tanggal_selesai = new Date(row.tanggal_selesai).toLocaleDateString('id-ID', {
+                            let tanggal_selesai = new Date(row.transaksi.tanggal_selesai).toLocaleDateString('id-ID', {
                                 weekday: 'long',
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric'
                             });
-                            let tanggal_ambil = new Date(row.tanggal_ambil).toLocaleDateString('id-ID', {
+                            let tanggal_ambil = new Date(row.transaksi.tanggal_ambil).toLocaleDateString('id-ID', {
                                 weekday: 'long',
                                 year: 'numeric',
                                 month: 'long',
@@ -830,21 +930,21 @@
                             return nomor + '<br>' + status + '<br>' + gudang;
                         }
                     },
-                    { data: 'nama', name: 'Nama' },
-                    { data: 'total_beli_barang', name: 'jumlah' },
+                    { data: 'transaksi.nama', name: 'Nama' },
+                    { data: 'jumlah_barang', name: 'jumlah' },
                     {
-                        data: 'total_beli',
+                        data: 'sub_total_transaksi',
                         name: 'Bayar',
                         render: function(data, type, row) {
-                            return formatRupiah(row.total_beli);
+                            return formatRupiah(row.sub_total_transaksi);
                         }
                     },
                     {
                         data: null,
                         name: 'pembayaran',
                         render: function(data, type, row, meta) {
-                            const pembayaran = row.pembayaran;
-                            const jenis_transaksi = row.jenis_transaksi === 'non_hutang' ? 'Cash' : 'Hutang';
+                            const pembayaran = row.transaksi.pembayaran;
+                            const jenis_transaksi = row.transaksi.jenis_transaksi === 'non_hutang' ? 'Cash' : 'Hutang';
                             return pembayaran + '<br>' + jenis_transaksi;
                         }
                     },
@@ -909,8 +1009,9 @@
                 var dataId = $(this).data('id');
                 $('#addDataForm').data('id', dataId);
                 $('#addDataForm').data('jenis', 'pemesanan');
-                $('#addDataModalLabel').text('DETAIL TRANSAKSI ' + dataId);
+                $('#addDataModalLabel').text('DETAIL TRANSAKSI PEMESANAN ' + dataId);
                 $('#detail-penjualan tbody').empty();
+                $('#btn-footer').empty();
                 $.ajax({
                     url: '/kasir/detail-pemesanan/' + dataId,
                     type: 'GET',
@@ -922,17 +1023,17 @@
                         const data = response.data[0]; // Assuming the first item in the response is the relevant one
 
                         // Set form values
-                        $('#r_sph').val(data.pesanan.R_SPH);
-                        $('#r_cyl').val(data.pesanan.R_CYL);
-                        $('#r_axs').val(data.pesanan.R_AXS);
-                        $('#r_add').val(data.pesanan.R_ADD);
-                        $('#pd').val(data.pesanan.PD);
+                        $('#r_sph').val(data.transaksi.R_SPH);
+                        $('#r_cyl').val(data.transaksi.R_CYL);
+                        $('#r_axs').val(data.transaksi.R_AXS);
+                        $('#r_add').val(data.transaksi.R_ADD);
+                        $('#pd').val(data.transaksi.PD);
 
-                        $('#l_sph').val(data.pesanan.L_SPH);
-                        $('#l_cyl').val(data.pesanan.L_CYL);
-                        $('#l_axs').val(data.pesanan.L_AXS);
-                        $('#l_add').val(data.pesanan.L_ADD);
-                        $('#pd2').val(data.pesanan.PD2);
+                        $('#l_sph').val(data.transaksi.L_SPH);
+                        $('#l_cyl').val(data.transaksi.L_CYL);
+                        $('#l_axs').val(data.transaksi.L_AXS);
+                        $('#l_add').val(data.transaksi.L_ADD);
+                        $('#pd2').val(data.transaksi.PD2);
 
                         // Loop melalui data dan tambahkan baris ke tabel
                         response.data.forEach(item => {
@@ -959,6 +1060,12 @@
                         </tr>
                         `;
                         $('#detail-penjualan tbody').append(totalRow);
+
+                        const btnFooter = `
+                         <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary btn-sm print-btn" id="print-btn">PRINT</button>
+                        `;
+                        $('#btn-footer').html(btnFooter);
                     },
                     error: function(xhr, status, error) {
                         console.error('Error fetching data:', error);

@@ -93,7 +93,17 @@
   padding-right: 10px; /* Jarak kanan kolom kiri */
   font-size: 9px;
 }
-
+.payment {
+    display: inline-block;
+    padding-left: 2px;
+    white-space: nowrap; /* Prevents wrapping of the currency and number */
+}
+#invoice-POS .payment {
+  padding-left: 2px;  /* Keep left padding */
+  padding-right: 10px; /* Add padding to the right */
+  text-align: right;
+  white-space: nowrap;  /* Ensure the content stays on one line */
+}
     </style>
 
   <script>
@@ -175,7 +185,7 @@
                         $total = $value->jumlah_barang * $value->harga_barang;
                 ?>
                     <tr class="service">
-                        <td class="tableitem"><p class="itemtext"><?= $value->barang->nama_produk ?></p></td>
+                        <td class="tableitem"><p class="itemtext"><?= $value->barang->nama_produk.'<br> PESAN : <span class="badge badge-warning">'.strtoupper($value->pemesanan).'</spans>' ?></p></td>
                         <td class="tableitem"><p class="itemtext"><?= $value->jumlah_barang ?></p></td>
                         <td class="tableitem"><p class="itemtext">Rp <?= number_format($value->harga_barang, 0, ',', '.') ?>,-</p></td>
                         <td class="tableitem"><p class="itemtext">Rp <?= number_format($total, 0, ',', '.') ?>,-</p></td>
@@ -184,52 +194,62 @@
                     }
                 ?>
 
-                <tr class="tabletitle" style="line-height: 0;">
-                    <td colspan="3" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right;"><h2>Total :</h2></td>
-                    <td class="payment"><h2>Rp <?= number_format($penjualan->total_beli, 0, ',', '.') ?>,-</h2></td>
-                </tr>
-
-                <tr class="tabletitle" style="line-height: 0;">
-                    <td colspan="3" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right;"><h2>Diskon :</h2></td>
-                    <td class="payment"><h2><?=$penjualan->diskon?> %</h2></td>
-                </tr>
-                <?php if ($penjualan->jenis_transaksi == 'non_hutang'): ?>
                     <tr class="tabletitle" style="line-height: 0;">
-                        <td colspan="3" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right;">
-                            <h2>Jumlah Bayar :</h2>
+                        <td colspan="3" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right; padding-right: 10px;">
+                            <h2>Total : </h2>
                         </td>
-                        <td class="payment">
-                            <h2>Rp <?= number_format($penjualan->jumlah_bayar, 0, ',', '.') ?>,-</h2>
+                        <td class="payment" style="padding-left: 2px;" width="30px;">
+                            <h2> Rp.<?= number_format($penjualan->total_beli, 0, ',', '.') ?>,-</h2>
                         </td>
                     </tr>
 
                     <tr class="tabletitle" style="line-height: 0;">
-                        <td colspan="3" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right;">
-                            <h2>Kembalian :</h2>
+                        <td colspan="3" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right; padding-right: 10px;">
+                            <h2>Diskon :</h2>
                         </td>
-                        <td class="payment">
-                            <h2>Rp <?= number_format($penjualan->sisa_bayar, 0, ',', '.') ?>,-</h2>
-                        </td>
-                    </tr>
-                <?php else: ?>
-                    <tr class="tabletitle" style="line-height: 0;">
-                        <td colspan="3" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right;">
-                            <h2>Jumlah Bayar DP :</h2>
-                        </td>
-                        <td class="payment">
-                            <h2>Rp <?= number_format($penjualan->jumlah_bayar_dp, 0, ',', '.') ?>,-</h2>
+                        <td class="payment" style="padding-left: 2px;">
+                            <h2><?=$penjualan->diskon?> %</h2>
                         </td>
                     </tr>
 
-                    <tr class="tabletitle" style="line-height: 0;">
-                        <td colspan="3" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right;">
-                            <h2>Sisa Pembayaran :</h2>
-                        </td>
-                        <td class="payment">
-                            <h2>Rp <?= number_format($penjualan->jumlah_sisa_dp, 0, ',', '.') ?>,-</h2>
-                        </td>
-                    </tr>
-                <?php endif; ?>
+                    <?php if ($penjualan->jenis_transaksi == 'non_hutang'): ?>
+                        <tr class="tabletitle" style="line-height: 0;">
+                            <td colspan="3" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right; padding-right: 10px;">
+                                <h2>Jumlah Bayar :</h2>
+                            </td>
+                            <td class="payment" style="padding-left: 2px;">
+                                <h2>Rp <?= number_format($penjualan->jumlah_bayar, 0, ',', '.') ?>,-</h2>
+                            </td>
+                        </tr>
+
+                        <tr class="tabletitle" style="line-height: 0;">
+                            <td colspan="3" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right; padding-right: 10px;">
+                                <h2>Kembalian :</h2>
+                            </td>
+                            <td class="payment" style="padding-left: 2px;">
+                                <h2>Rp <?= number_format($penjualan->sisa_bayar, 0, ',', '.') ?>,-</h2>
+                            </td>
+                        </tr>
+                    <?php else: ?>
+                        <tr class="tabletitle" style="line-height: 0;">
+                            <td colspan="3" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right; padding-right: 10px;">
+                                <h2>Jumlah Bayar DP :</h2>
+                            </td>
+                            <td class="payment" style="padding-left: 10px;">
+                                <h2>Rp <?= number_format($penjualan->jumlah_bayar_dp, 0, ',', '.') ?>,-</h2>
+                            </td>
+                        </tr>
+
+                        <tr class="tabletitle" style="line-height: 0;">
+                            <td colspan="3" class="Rate" style="white-space: normal; word-wrap: break-word; text-align: right; padding-right: 10px;">
+                                <h2>Sisa Pembayaran :</h2>
+                            </td>
+                            <td class="payment" style="padding-left: 10px;">
+                                <h2>Rp <?= number_format($penjualan->jumlah_sisa_dp, 0, ',', '.') ?>,-</h2>
+                            </td>
+                        </tr>
+                    <?php endif; ?>
+
 
             </table>
 

@@ -76,8 +76,8 @@
                                     <img src="{{ asset('images/user.png') }}" alt="..." >{{ Auth::user()->name }}
                                 </a>
                                 <div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{route('kasir.index')}}"><i class="fa fa-shopping-bag pull-right"></i> Transaksi Non Pesanan</a>
-                                    <a class="dropdown-item" href="{{route('kasir.pesanan')}}"><i class="fa fa-shopping-cart pull-right"></i> Transaksi Pesanan</a>
+                                    {{-- <a class="dropdown-item" href="{{route('kasir.index')}}"><i class="fa fa-shopping-bag pull-right"></i> Transaksi Non Pesanan</a> --}}
+                                    <a class="dropdown-item" href="{{route('kasir.index')}}"><i class="fa fa-shopping-cart pull-right"></i> Transaksi Pesanan</a>
                                     <a class="dropdown-item" href="{{route('kasir.list')}}"><i class="fa fa-sign-in pull-right"></i> Transaksi</a>
                                     <a class="dropdown-item" href="{{route('logout')}}"><i class="fa fa-sign-out pull-right"></i> Log Out</a>
                                 </div>
