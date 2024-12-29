@@ -26,7 +26,6 @@ use Exception;
 
 class TransaksiController extends Controller
 {
-    // transaksi rubah gabungan pesan dan langsung
     public function generateNextProductCodePesnan($date)
     {
         $year = date('Y', strtotime($date));
@@ -242,6 +241,27 @@ class TransaksiController extends Controller
                 $data['jumlah_sisa_dp'] = $validatedData['sisa_bayar'] ?? 0;
                 $data['jumlah_lunas_dp'] = $validatedData['jumlah_lunas_dp'] ?? 0;
                 $data['status_transaksi'] = 'belum_lunas';
+                if ($validatedData['pembayaran'] === 'tunai') {
+                    $saldoTerakhir = OpKas::where('id_cabang', Auth::user()->id_cabang)
+                        ->where('id_user', Auth::user()->id)
+                        ->orderBy('tanggal', 'desc')
+                        ->orderBy('id', 'desc')
+                        ->first();
+
+                    $saldoTerakhirKredit = $saldoTerakhir?->kredit ?? 0; // Nilai kredit terakhir atau 0 jika null
+                    $saldo = ($saldoTerakhir?->saldo ?? 0) + $request->jumlah_bayar - $saldoTerakhirKredit; // Hitung saldo akhir
+
+                    OpKas::create([
+                        'id_cabang' => Auth::user()->id_cabang, // ID cabang pengguna saat ini
+                        'id_user' => Auth::user()->id, // ID pengguna saat ini
+                        'kode_transaksi' => $request->nomor_transaksi, // Kode transaksi dari request
+                        'tanggal' => now(), // Tanggal sekarang
+                        'keterangan' => 'Saldo tambahan dari transaksi penjualan dengan status utang ' . $request->pembayaran . ' dengan nomor transaksi ' . $request->nomor_transaksi,
+                        'debit' => $request->jumlah_bayar, // Debit diisi dengan jumlah bayar
+                        'kredit' => $saldoTerakhirKredit, // Kredit diisi dengan nilai kredit terakhir
+                        'saldo' => $saldo, // Saldo diisi dengan hasil perhitungan
+                    ]);
+                }
             }
 
             $opTransaksi = OpTransaksi::create($data);
@@ -516,15 +536,15 @@ class TransaksiController extends Controller
             ->first();
 
         $saldoTerakhirKredit = $saldoTerakhir?->kredit ?? 0; // Nilai kredit terakhir atau 0 jika null
-        $saldo = ($saldoTerakhir?->saldo ?? 0) + $request->total_beli - $saldoTerakhirKredit; // Hitung saldo akhir
+        $saldo = ($saldoTerakhir?->saldo ?? 0) + $request->jumlah_lunas_dp - $saldoTerakhirKredit; // Hitung saldo akhir
 
         OpKas::create([
             'id_cabang' => Auth::user()->id_cabang, // ID cabang pengguna saat ini
             'id_user' => Auth::user()->id, // ID pengguna saat ini
             'kode_transaksi' => $request->nomor_transaksi, // Kode transaksi dari request
             'tanggal' => now(), // Tanggal sekarang
-            'keterangan' => 'Saldo tambahan dari transaksi pelunasan hutang total' . $request->total_beli . ' dengan nomor transaksi ' . $request->nomor_transaksi,
-            'debit' => $request->total_beli, // Debit diisi dengan jumlah bayar
+            'keterangan' => 'Saldo tambahan dari transaksi pelunasan utang total' . $request->total_beli . ' dengan nomor transaksi ' . $request->nomor_transaksi,
+            'debit' => $request->jumlah_lunas_dp, // Debit diisi dengan jumlah bayar
             'kredit' => $saldoTerakhirKredit, // Kredit diisi dengan nilai kredit terakhir
             'saldo' => $saldo, // Saldo diisi dengan hasil perhitungan
         ]);

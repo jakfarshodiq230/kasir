@@ -771,7 +771,7 @@
                         data: null,
                         name: 'action',
                         render: function(data, type, row) {
-                            const bayarButtonDisabled = row.status_transaksi === 'lunas' ? 'disabled' : '';
+                            const bayarButtonDisabled = (row.status_transaksi === 'lunas' || row.status_transaksi === 'dibatalkan') ? 'disabled' : '';
                             return `
                                 <button class="btn btn-sm btn-info view-btn" data-id="${row.nomor_transaksi}">
                                     <i class="fas fa-eye"></i>
