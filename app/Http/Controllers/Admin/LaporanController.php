@@ -11,6 +11,7 @@ use App\Models\OpKategori;
 use App\Models\OpPenjualan;
 use App\Models\OpPenjualanDetail;
 use App\Models\OpPesanan;
+use App\Models\OpStockGudang;
 use App\Models\OpTransaksi;
 use App\Models\OpTransaksiDetail;
 use Illuminate\Http\Request;
@@ -18,6 +19,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
+use Exception;
 
 class LaporanController extends Controller
 {
@@ -80,65 +82,136 @@ class LaporanController extends Controller
     {
         try {
             $idCabang = Auth::user()->id_cabang;
-            // Find the Penjualan record by nomor_transaksi
-            $penjualan = OpTransaksi::where('nomor_transaksi', $nomorTransaksi)->where('id_cabang', $idCabang)->first();
+
+            // Cari transaksi berdasarkan nomor transaksi
+            $transaksi = OpTransaksi::where('nomor_transaksi', $nomorTransaksi)->first();
+
+            if (!$transaksi) {
+                throw new ModelNotFoundException("Transaksi tidak ditemukan.");
+            }
+
+            // Hitung biaya yang perlu dikurangi dari kas
+            $biayaRubah = match ($transaksi->jenis_transaksi) {
+                'hutang' => $transaksi->status_transaksi === 'lunas' ? $transaksi->total_beli : $transaksi->jumlah_bayar_dp,
+                default => $transaksi->jumlah_bayar,
+            };
+
+            // Temukan kas terkait transaksi
+            $kas = OpKas::where('kode_transaksi', $transaksi->nomor_transaksi)->first();
+
+            if ($kas) {
+                // Pastikan saldo cukup untuk pembatalan
+                if ($kas->saldo < $biayaRubah) {
+                    throw new Exception('Saldo kas tidak mencukupi untuk pembatalan.');
+                }
+
+                // Ambil saldo terakhir
+                $saldoTerakhir = OpKas::where('kode_transaksi', $kas->kode_transaksi)
+                    ->where('id_cabang', $idCabang)
+                    ->where('id_user', Auth::user()->id)
+                    ->orderBy('tanggal', 'desc')
+                    ->orderBy('id', 'desc')
+                    ->first();
+
+                $saldoAkhir = ($saldoTerakhir?->saldo ?? 0) - $biayaRubah;
+
+                // Buat catatan kas untuk pembatalan
+                OpKas::create([
+                    'id_cabang' => $idCabang,
+                    'id_user' => Auth::user()->id,
+                    'kode_transaksi' => $kas->kode_transaksi,
+                    'tanggal' => now(),
+                    'keterangan' => sprintf(
+                        'Saldo berkurang dari transaksi dibatalkan sebesar %s dengan nomor transaksi %s',
+                        number_format($biayaRubah, 2, ',', '.'),
+                        $kas->kode_transaksi
+                    ),
+                    'debit' => 0,
+                    'kredit' => $biayaRubah,
+                    'saldo' => $saldoAkhir,
+                ]);
+            }
+
+            // Temukan penjualan
+            $penjualan = OpTransaksi::where('nomor_transaksi', $nomorTransaksi)
+                ->where('id_cabang', $idCabang)
+                ->first();
 
             if (!$penjualan) {
-                throw new ModelNotFoundException("Penjualan not found.");
+                throw new ModelNotFoundException("Penjualan tidak ditemukan.");
             }
 
-            // Delete related PenjualanDetails and update stock
-            $this->updateBarangCabangStock($penjualan);
+            // Temukan detail penjualan
+            $detailPenjualan = OpTransaksiDetail::where('nomor_transaksi', $nomorTransaksi)
+                ->where('id_cabang', $idCabang)
+                ->get();
 
-            // Delete related PenjualanDetails
-            $penjualan->penjualanDetails()->delete();
-
-            // Delete the Penjualan record
-            $penjualan->delete();
-
-            // Get all related OpKas records based on id_cabang
-            $opKasRecords = OpKas::where('kode_transaksi', $penjualan->nomor_transaksi)->where('id_cabang', $idCabang)->get();
-
-            // Delete each related OpKas record
-            foreach ($opKasRecords as $opKas) {
-                $opKas->delete();
+            if ($detailPenjualan->isEmpty()) {
+                throw new ModelNotFoundException("Detail penjualan tidak ditemukan.");
             }
 
-            // Update OpKas saldo_akhir based on cabang
-            $this->updateSaldoAkhir($idCabang);
+            // Perbarui status detail penjualan
+            foreach ($detailPenjualan as $detail) {
+                $detail->status_pemesanan = 'dibatalkan';
+                $detail->save();
 
-            return response()->json(['message' => 'Penjualan, its details, and related OpKas have been deleted successfully.']);
-        } catch (\Exception $e) {
+                // Update stock for each detail
+                $this->updateBarangCabangStock($detail, $nomorTransaksi);
+            }
+
+            // Perbarui status transaksi penjualan
+            $penjualan->status_transaksi = 'dibatalkan';
+            $penjualan->save();
+
+            return response()->json(['message' => 'Penjualan, detail, dan catatan kas berhasil dibatalkan.']);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => $e->getMessage()], 404);
+        } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
 
-    private function updateBarangCabangStock($penjualan)
+
+
+    private function updateBarangCabangStock($pesanan, $nomor)
     {
-        foreach ($penjualan->penjualanDetails as $penjualanDetail) {
-            // Fetch the current stock for the barang (item) in the cabang (branch)
-            $barangCabangStock = OpBarangCabangStock::where('id_barang', $penjualanDetail->id_barang)
-                ->where('id_cabang', $penjualan->id_cabang)
+        $barang = null;
+
+        if ($pesanan->pemesanan === 'ya') {
+            $barang = OpStockGudang::where('id_barang', $pesanan->id_barang)
+                ->where('id_gudang', $pesanan->id_gudang)
                 ->first();
 
-            if ($barangCabangStock) {
-                // Store the old stock values before making any updates
-                $oldStockMasuk = $barangCabangStock->stock_masuk;
-                $oldStockKeluar = $barangCabangStock->stock_keluar;
-                $oldStockAkhir = $barangCabangStock->stock_akhir;
+            if ($barang) {
+                $barang->stock_akhir += $pesanan->jumlah_barang;
+                $barang->stock_keluar -= $pesanan->jumlah_barang;
+                $barang->jenis_transaksi_stock = 'Dibatalkan';
+                $barang->keterangan_stock_gudang = 'Penambahan Stock ' . $pesanan->jumlah_barang . ' dari Pembatalan transaksi barang dengan nomor transaksi ' . $nomor;
+                $barang->save();
 
-                // Update the stock details
-                $barangCabangStock->stock_keluar -= $penjualanDetail->jumlah_barang;
-                $barangCabangStock->stock_akhir = $barangCabangStock->stock_masuk - $barangCabangStock->stock_keluar;
-                $barangCabangStock->save();
+                $this->insertStockGudangLog($barang);
+            }
+        } else {
+            $barang = OpBarangCabangStock::where('id_barang', $pesanan->id_barang)
+                ->where('id_cabang', $pesanan->id_cabang)
+                ->first();
 
-                // Insert a log entry to record the stock changes
-                $this->insertStockLog($barangCabangStock, $oldStockMasuk, $oldStockKeluar, $oldStockAkhir);
+            if ($barang) {
+                $barang->stock_akhir += $pesanan->jumlah_barang;
+                $barang->stock_keluar -= $pesanan->jumlah_barang;
+                $barang->jenis_transaksi_stock = 'Dibatalkan';
+                $barang->keterangan_stock_cabang = 'Penambahan Stock ' . $pesanan->jumlah_barang . ' dari Pembatalan transaksi barang dengan nomor transaksi ' . $nomor;
+                $barang->save();
+
+                $this->insertStockCabangLog($barang);
             }
         }
+
+        return $barang;
     }
 
-    private function insertStockLog($barangCabangStock, $oldStockMasuk, $oldStockKeluar, $oldStockAkhir)
+
+    private function insertStockCabangLog($barangCabangStock)
     {
         // Insert the log entry into op_barang_cabang_stock_log
         OpBarangCabangStockLog::create([
@@ -152,24 +225,27 @@ class LaporanController extends Controller
             'stock_keluar' => $barangCabangStock->stock_keluar,
             'stock_akhir' => $barangCabangStock->stock_akhir,
             'jenis_transaksi_stock' => 'update', // Type of transaction
-            'keterangan_stock_cabang' => 'Stock updated due to Penjualan deletion' . $barangCabangStock->nomor_transaksi, // Description of the update
-            'old_stock_masuk' => $oldStockMasuk, // Log the previous stock values
-            'old_stock_keluar' => $oldStockKeluar,
-            'old_stock_akhir' => $oldStockAkhir,
+            'keterangan_stock_cabang' => 'Stock updated due to Penjualan cencelion' . $barangCabangStock->nomor_transaksi, // Description of the update
         ]);
     }
 
-    private function updateSaldoAkhir($idCabang)
+    private function insertStockGudangLog($barangCabangStock)
     {
-        $opKasRecords = OpKas::where('id_cabang', $idCabang)->get();
-
-        foreach ($opKasRecords as $opKas) {
-            $newSaldoAkhir = $opKas->debit - $opKas->kredit;
-            $opKas->saldo = $newSaldoAkhir;
-            $opKas->save();
-        }
+        // Insert the log entry into op_barang_cabang_stock_log
+        OpBarangCabangStockLog::create([
+            'id_barang' => $barangCabangStock->id_barang,
+            'id_suplaier' => $barangCabangStock->id_suplaier,
+            'id_gudang' => $barangCabangStock->id_gudang,
+            'id_toko' => $barangCabangStock->id_toko,
+            'id_cabang' => $barangCabangStock->id_cabang,
+            'id_user' => $barangCabangStock->id_user,
+            'stock_masuk' => $barangCabangStock->stock_masuk,
+            'stock_keluar' => $barangCabangStock->stock_keluar,
+            'stock_akhir' => $barangCabangStock->stock_akhir,
+            'jenis_transaksi_stock' => 'update', // Type of transaction
+            'keterangan_stock_gudang' => 'Stock updated due to Penjualan cencelion' . $barangCabangStock->nomor_transaksi, // Description of the update
+        ]);
     }
-
 
 
     public function pemesanan()

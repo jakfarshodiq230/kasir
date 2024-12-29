@@ -138,7 +138,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary btn-sm print-btn" id="print-btn">Print</button>
-                        <button type="button" class="btn btn-danger btn-sm delete-btn" id="hapus-btn">Hapus</button>
+                        <button type="button" class="btn btn-danger btn-sm delete-btn" id="hapus-btn">Batal Transaksi</button>
                     </div>
                 </div>
             </form>
@@ -319,13 +319,9 @@
             type: 'GET',
             dataType: 'json',
             success: function(response) {
-                console.log(response);
-
                 let totalSubTotal = 0;
                 let no =0;
-
                 const data = response.data[0]; // Assuming the first item in the response is the relevant one
-
                 // Loop melalui data dan tambahkan baris ke tabel
                 response.data.forEach(item => {
                     const subTotal = parseFloat(item.sub_total_transaksi) || 0;
@@ -395,7 +391,7 @@
                     success: function (response) {
                         Swal.fire({
                             title: 'Deleted!',
-                            text: 'The transaction has been deleted successfully.',
+                            text: 'The transaction has been cencelion successfully.',
                             icon: 'success',
                             confirmButtonText: 'OK',
                         }).then(() => {

@@ -386,7 +386,11 @@ class TransaksiController extends Controller
         $transaksi = OpTransaksi::where('nomor_transaksi', $pesanan->nomor_transaksi)->first();
         $biaya_rubah = 0;
         if ($transaksi->jenis_transaksi === 'hutang') {
-            $biaya_rubah = $transaksi->jumlah_bayar_dp;
+            if ($transaksi->status_transaksi === 'lunas') {
+                $biaya_rubah = $transaksi->total_beli;
+            } else {
+                $biaya_rubah = $transaksi->jumlah_bayar_dp;
+            }
         } else {
             $biaya_rubah = $transaksi->jumlah_bayar;
         }
@@ -628,7 +632,7 @@ class TransaksiController extends Controller
                 $barang->stock_akhir += $pesanan->jumlah_barang;
                 $barang->stock_keluar -= $pesanan->jumlah_barang;
                 $barang->jenis_transaksi_stock = 'Dibatalkan';
-                $barang->keterangan_stock_gudang = 'Pembatalan transaksi barang dengan nomor transaksi ' . $nomor;
+                $barang->keterangan_stock_gudang = 'Penambahan Stock ' . $pesanan->jumlah_barang . ' dari Pembatalan transaksi barang dengan nomor transaksi ' . $nomor;
                 $barang->save();
             }
         } else {
@@ -640,7 +644,7 @@ class TransaksiController extends Controller
                 $barang->stock_akhir += $pesanan->jumlah_barang;
                 $barang->stock_keluar -= $pesanan->jumlah_barang;
                 $barang->jenis_transaksi_stock = 'Dibatalkan';
-                $barang->keterangan_stock_cabang = 'Pembatalan transaksi barang dengan nomor transaksi ' . $nomor;
+                $barang->keterangan_stock_cabang = 'Penambahan Stock ' . $pesanan->jumlah_barang . ' dari Pembatalan transaksi barang dengan nomor transaksi ' . $nomor;
                 $barang->save();
             }
         }
