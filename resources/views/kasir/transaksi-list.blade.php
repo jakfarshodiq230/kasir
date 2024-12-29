@@ -614,8 +614,6 @@
 
             $(document).on('click', '.print-btn', function() {
                 var dataId = $('#addDataForm').data('id');
-                console.log(dataId);
-
                 var jenis = $('#addDataForm').data('jenis');
                 let url = `/kasir/transaksi-pesan-cetak/${dataId}`;
 
@@ -1012,7 +1010,6 @@
                     type: 'GET',
                     dataType: 'json',
                     success: function(response) {
-                        console.log(response);
 
                         let totalSubTotal = 0;
                         let no =0;
