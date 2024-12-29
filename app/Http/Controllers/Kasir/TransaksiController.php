@@ -384,49 +384,52 @@ class TransaksiController extends Controller
         }
 
         $transaksi = OpTransaksi::where('nomor_transaksi', $pesanan->nomor_transaksi)->first();
-
-
+        $biaya_rubah = 0;
+        if ($transaksi->jenis_transaksi === 'hutang') {
+            $biaya_rubah = $transaksi->jumlah_bayar_dp;
+        } else {
+            $biaya_rubah = $transaksi->jumlah_bayar;
+        }
 
         // Temukan kas berdasarkan kode transaksi
-        $kas = OpKas::where('kode_transaksi', $pesanan->nomor_transaksi)->first();
+        $kas = OpKas::where('kode_transaksi', $transaksi->nomor_transaksi)->first();
 
         if ($kas) {
             // Pastikan saldo cukup untuk transaksi
-            if ($kas->saldo < $pesanan->total_beli) {
+            if ($kas->saldo < $biaya_rubah) {
                 throw new Exception('Saldo kas tidak mencukupi untuk pembatalan.');
             }
 
             // Kurangi saldo berdasarkan total beli
-            $kas->debit -= $transaksi->total_beli;
-            $kas->saldo = $kas->saldo - $transaksi->total_beli; // Update saldo
-            $kas->keterangan = 'Saldo berkurang dari transaksi dibatalkan sebesar ' .
-                number_format($transaksi->total_beli, 2, ',', '.') .
-                ' dengan nomor transaksi ' . $pesanan->nomor_transaksi;
-            $kas->save();
-        }
+            $saldoTerakhir = OpKas::where('kode_transaksi', $kas->kode_transaksi)->where('id_cabang', Auth::user()->id_cabang)
+                ->where('id_user', Auth::user()->id)
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('id', 'desc')
+                ->first();
 
-        // Update saldo semua data kas di cabang terkait
-        $kasUpdates = OpKas::where('id_cabang', Auth::user()->id_cabang)
-            ->orderBy('tanggal', 'asc') // Pastikan urut berdasarkan tanggal
-            ->get();
+            $saldoTerakhirKredit = $biaya_rubah;
+            $saldo = ($saldoTerakhir?->saldo ?? 0) - $biaya_rubah; // Hitung saldo akhir
 
-        $currentSaldo = 0; // Variabel untuk menghitung saldo berjalan
-
-        foreach ($kasUpdates as $kasUpdate) {
-            // Hitung saldo berdasarkan debit dan kredit
-            $currentSaldo += $kasUpdate->debit - $kasUpdate->kredit;
-
-            // Update saldo baru
-            $kasUpdate->saldo = $currentSaldo;
-            $kasUpdate->save();
+            OpKas::create([
+                'id_cabang' => Auth::user()->id_cabang, // ID cabang pengguna saat ini
+                'id_user' => Auth::user()->id, // ID pengguna saat ini
+                'kode_transaksi' => $kas->kode_transaksi, // Kode transaksi dari request
+                'tanggal' => now(), // Tanggal sekarang
+                'keterangan' => 'Saldo berkurang dari transaksi dibatalkan sebesar ' .
+                    number_format($biaya_rubah, 2, ',', '.') .
+                    ' dengan nomor transaksi ' . $kas->kode_transaksi,
+                'debit' => 0,
+                'kredit' => $saldoTerakhirKredit,
+                'saldo' => $saldo,
+            ]);
         }
 
         if (!$transaksi) {
             return response()->json(['success' => false, 'message' => 'Transaksi tidak ditemukan.'], 404);
         }
 
-        $transaksi->total_beli -= $pesanan->sub_total_transaksi;
-        $transaksi->jumlah_bayar -= $pesanan->sub_total_transaksi;
+        $transaksi->total_beli -= $biaya_rubah;
+        $transaksi->jumlah_bayar -= $biaya_rubah;
         $transaksi->save();
         $pesanan->status_pemesanan = 'dibatalkan';
         $pesanan->save();
