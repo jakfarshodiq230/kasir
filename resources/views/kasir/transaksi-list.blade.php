@@ -1012,6 +1012,8 @@
                     type: 'GET',
                     dataType: 'json',
                     success: function(response) {
+                        console.log(response);
+
                         let totalSubTotal = 0;
                         let no =0;
 
