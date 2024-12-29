@@ -342,19 +342,10 @@ class TransaksiController extends Controller
     {
         $penjualan = OpTransaksi::with('user', 'cabang')->where('nomor_transaksi', $id)->first();
         $detailenjulan = OpTransaksiDetail::with('barang')
-            ->where('pemesanan', 'ya')
-            ->where('status_pemesanan', 'pesan')
             ->where('nomor_transaksi', $id)
             ->get();
-        return view("kasir.nota-pemesanan", compact('penjualan', 'detailenjulan'));
+        return view("kasir.nota-transaksi", compact('penjualan', 'detailenjulan'));
     }
-
-    // public function cetakPrint($id)
-    // {
-    //     $penjualan = OpTransaksi::with('user', 'cabang')->where('nomor_transaksi', $id)->first();
-    //     $detailenjulan = OpTransaksiDetail::with('barang')->where('nomor_transaksi', $id)->get();
-    //     return view("kasir.nota-langsung", compact('penjualan', 'detailenjulan'));
-    // }
 
 
     // batalkan pesanan barang
@@ -452,7 +443,7 @@ class TransaksiController extends Controller
     {
         $pemesanan = OpTransaksiDetail::where('id_cabang', Auth::user()->id_cabang)
             ->where('pemesanan', 'ya')
-            ->where('status_pemesanan', 'pesan')
+            ->whereIn('status_pemesanan', ['pesan', 'kirim'])
             ->orderBy('created_at', 'DESC')
             ->with('user', 'cabang', 'gudang', 'transaksi')
             ->get();

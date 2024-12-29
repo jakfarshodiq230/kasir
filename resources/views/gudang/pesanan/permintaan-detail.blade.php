@@ -128,8 +128,8 @@
                                 </div>
                             </div>
                             <div class="col-sm-12" style="text-align: right; padding: 0px;">
-                                <button class="btn btn-sm btn-primary save-btn" id="cetak-btn" onclick="window.location.href='/gudang-permintaan/permintaan-ceatk-kirim/<?= $permintaan_barang->nomor_transaksi ?>/<?= $permintaan_barang->id_gudang ?>'" <?= $permintaan_barang->status_pemesanan === 'kirim' ? ' ' : 'disabled' ?>>Print Nota</button>
-                                <button class="btn btn-sm btn-success save-btn" id="save-btn" <?= $permintaan_barang->status_pemesanan === 'kirim' ? 'disabled' : '' ?>>Simpan</button>
+                                <button class="btn btn-sm btn-primary save-btn" id="cetak-btn" onclick="window.location.href='/gudang-permintaan/permintaan-ceatk-kirim/<?= $permintaan_barang->nomor_transaksi ?>'">Print Nota</button>
+                                <button class="btn btn-sm btn-success save-btn" id="save-btn"> Simpan</button>
                             </div>
                         </div>
                     </div>

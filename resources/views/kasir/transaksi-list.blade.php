@@ -547,7 +547,7 @@
                         const btnFooter = `
                         <button type="button" class="btn btn-danger btn-sm batalkan-transaksi" id="batalkan-transaksi" data-id="${dataId}" ${response.transaksi.status_transaksi === 'dibatalkan' ? 'disabled' : ''}>Batalkan Transaksi</button>
                         <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary btn-sm print-btn" id="print-btn">PRINT</button>
+                        <button type="button" class="btn btn-primary btn-sm print-btn" id="print-btn" data-id="${dataId}">PRINT</button>
                         `;
                         $('#btn-footer').html(btnFooter);
                     },
@@ -614,15 +614,10 @@
 
             $(document).on('click', '.print-btn', function() {
                 var dataId = $('#addDataForm').data('id');
-                var jenis = $('#addDataForm').data('jenis');
-                let url = '';
+                console.log(dataId);
 
-                // Tentukan URL berdasarkan jenis transaksi
-                if (jenis === 'langsung') {
-                    url = `/kasir/transaksi-langsung-cetak/${dataId}`;
-                } else {
-                    url = `/kasir/transaksi-pesan-cetak/${dataId}`;
-                }
+                var jenis = $('#addDataForm').data('jenis');
+                let url = `/kasir/transaksi-pesan-cetak/${dataId}`;
 
                 // Ambil konten halaman menggunakan fetch
                 fetch(url)

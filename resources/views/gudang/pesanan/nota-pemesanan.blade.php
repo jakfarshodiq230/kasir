@@ -139,14 +139,6 @@
               <td><?=$penjualan->user->name?></td>
             </tr>
             <tr>
-              <td><strong>Status</strong></td>
-              <td><?=$penjualan->status_pemesanan?></td>
-            </tr>
-            <tr>
-                <td><strong>Pengirim</strong></td>
-                <td><?=$penjualan->gudang->nama_gudang?></td>
-            </tr>
-            <tr>
                 <td><strong>Tanggal Kirim</strong></td>
                 <td><?=$penjualan->created_at?></td>
             </tr>
@@ -169,10 +161,10 @@
                     <td class="Rate"><h2>Sub Total</h2></td>
                 </tr>
                 <?php
-                    foreach ($detailenjulan as $key => $value) {
+                    foreach ($detailpenjulan as $key => $value) {
                 ?>
                     <tr class="service">
-                        <td class="tableitem"><p class="itemtext"><?= $value->barang->nama_produk ?></p></td>
+                        <td class="tableitem"><p class="itemtext"><?= $value->barang->nama_produk ?><br><?= $value->gudang->nama_gudang ?><br><?= $value->status_pemesanan ?></p></td>
                         <td class="tableitem"><p class="itemtext"><?= $value->jumlah_barang ?></p></td>
                         <td class="tableitem"><p class="itemtext">Rp <?= number_format($value->harga_barang, 0, ',', '.') ?>,-</p></td>
                     </tr>

@@ -413,7 +413,7 @@
     });
 
     function printNota(id) {
-        const url = `/kasir/transaksi-pemesanan-cetak/${id}`;
+        const url = `/kasir/transaksi-pesan-cetak/${id}`;
 
         // Ambil konten halaman menggunakan fetch
         fetch(url)

@@ -25,7 +25,7 @@ class PermintaanController extends Controller
         $length = $request->input('length', 10); // number of records per page
 
         // Start building the query
-        $permintaan = OpTransaksiDetail::where('id_gudang', Auth::user()->id_gudang)->whereIn('status_pemesanan', ['pesan'])->whereIn('pemesanan', ['ya']);
+        $permintaan = OpTransaksiDetail::where('id_gudang', Auth::user()->id_gudang)->whereIn('status_pemesanan', ['pesan', 'kirim'])->whereIn('pemesanan', ['ya']);
 
         // Apply filters if they exist
         if ($request->has('tanggal_transaksi') && $request->tanggal_transaksi != '') {
@@ -157,10 +157,10 @@ class PermintaanController extends Controller
         }
     }
 
-    public function CetakKirim($id, $idCabang)
+    public function CetakKirim($id)
     {
-        $penjualan = OpTransaksi::with('user', 'cabang')->where('nomor_transaksi', $id)->where('id_cabang', $idCabang)->first();
-        $detailenjulan = OpTransaksiDetail::with('barang', 'gudang')->where('nomor_transaksi', $id)->where('pemesanan', 'ya')->get();
-        return view("gudang.pesanan.nota-pemesanan", compact('penjualan', 'detailenjulan'));
+        $penjualan = OpTransaksi::with('user', 'cabang')->where('nomor_transaksi', $id)->where('id_cabang', Auth::user()->id_cabang)->first();
+        $detailpenjulan = OpTransaksiDetail::with('barang', 'gudang')->where('nomor_transaksi', $id)->where('pemesanan', 'ya')->get();
+        return view("gudang.pesanan.nota-pemesanan", compact('penjualan', 'detailpenjulan'));
     }
 }

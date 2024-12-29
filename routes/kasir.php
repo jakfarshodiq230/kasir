@@ -15,7 +15,6 @@ Route::middleware('auth', 'verified',  'cek_level:kasir')->group(function () {
         Route::post('/simpan-transaksi-final', [TransaksiController::class, 'simpanTransaksiFinal'])->name('kasir.simpanTransaksiFinal');
 
         Route::get('/transaksi-pesan-cetak/{id}', [TransaksiController::class, 'cetakPrintPemesanan'])->name('kasir.cetak-pemesanan');
-        //Route::get('/transaksi-langsung-cetak/{id}', [TransaksiController::class, 'cetakPrint'])->name('kasir.cetak-langsung');
 
         Route::get('/transaksi-list', [TransaksiController::class, 'transaksiListPesanan'])->name('kasir.list');
         Route::get('/data-penjualan-langsung/{jenis_transaksi}', [TransaksiController::class, 'getDataAll'])->name('kasir.dataAlljson');

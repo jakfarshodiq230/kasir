@@ -52,7 +52,7 @@ Route::middleware('auth', 'verified', 'cek_level:gudang')->group(function () {
         Route::get('/permintaan-data-all', [PermintaanController::class, 'GetDataPermintaan'])->name('gudang-permintaan.GetDataPermintaan');
         Route::get('/permintaan-data-detail/{id}', [PermintaanController::class, 'GetDataIDPermintaan'])->name('gudang-permintaan.GetDataIDPermintaan');
         Route::post('/permintaan-status-update', [PermintaanController::class, 'TindakanPermintaan'])->name('gudang-permintaan.TindakanPermintaan');
-        Route::get('/permintaan-ceatk-kirim/{id}/{cabang}', [PermintaanController::class, 'CetakKirim'])->name('gudang-permintaan.CetakKirim');
+        Route::get('/permintaan-ceatk-kirim/{id}', [PermintaanController::class, 'CetakKirim'])->name('gudang-permintaan.CetakKirim');
     });
 
     Route::prefix('gudang-permintaan-selesai')->group(function () {
