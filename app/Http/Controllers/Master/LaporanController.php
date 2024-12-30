@@ -55,7 +55,7 @@ class LaporanController extends Controller
                 ->join('users', 'op_transaksi.id_user', '=', 'users.id')
                 ->where('op_transaksi.id_cabang', $request->id_cabang)
                 ->whereNotIn('op_transaksi.status_transaksi', ['dibatalkan'])
-                ->whereNotIn('op_transaksi_detail.pemesanan', ['tidak'])
+                ->whereIn('op_transaksi_detail.pemesanan', ['tidak'])
                 ->whereBetween('op_transaksi.tanggal_transaksi', [$startDate, $endDate])
                 ->groupBy(
                     'op_transaksi.nomor_transaksi',

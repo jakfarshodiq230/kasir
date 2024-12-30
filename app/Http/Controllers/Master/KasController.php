@@ -134,7 +134,7 @@ class KasController extends Controller
         // Get sales and product data grouped by month
         $data = DB::table('op_transaksi_detail as opd')
             ->join('op_barang_harga as obh', 'opd.id_barang', '=', 'obh.id')
-            ->join('op_transaksi as op', 'opd.nomor_transaksi', '=', 'op.nomor_transaksi') // Fix join condition
+            ->join('op_transaksi as op', 'opd.nomor_transaksi', '=', 'op.nomor_transaksi') // Correct join condition
             ->select(
                 DB::raw('MONTH(opd.created_at) as bulan'),
                 DB::raw('SUM(obh.harga_modal * opd.jumlah_barang) as total_harga_modal'),
@@ -146,14 +146,13 @@ class KasController extends Controller
                 DB::raw('SUM(op.jumlah_lunas_dp) as jumlah_lunas_dp'),
                 DB::raw('SUM(op.total_beli) as jumlah_pembelian')
             )
-            ->whereYear('opd.created_at', $tahun)
-            ->where('opd.id_cabang', $idCabang)
-            ->where('op.jenis_transaksi', $jenis)
-            ->whereNotIn('opd.status_pemesanan', ['dibatalkan'])
-            ->groupBy(DB::raw('MONTH(opd.created_at)'))
-            ->orderBy(DB::raw('MONTH(opd.created_at)'))
+            ->whereYear('opd.created_at', $tahun) // Filter by year
+            ->where('opd.id_cabang', $idCabang) // Filter by branch
+            ->where('op.jenis_transaksi', $jenis) // Filter by transaction type
+            ->whereNotIn('opd.status_pemesanan', ['dibatalkan']) // Exclude canceled orders
+            ->groupBy(DB::raw('MONTH(opd.created_at)')) // Group by month
+            ->orderBy(DB::raw('MONTH(opd.created_at)')) // Order by month
             ->get();
-
 
         // Month names in Indonesian
         $bulanIndo = [
