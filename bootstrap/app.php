@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'cek_level' => RoleCheck::class,
         ]);
     })
+
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
