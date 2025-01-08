@@ -18,7 +18,7 @@
 
 <body>
     <div class="floating-buttons shake-truck">
-        <a href="https://wa.me/1234567890?text=Hello%20there!" target="_blank" class="floating-button">
+        <a href="https://wa.me/1234567890?text=Hello%saya akan join menggunakan sistem ini, bagaimana cara mendaftarnya!" target="_blank" class="floating-button">
             <i class="fa fa-whatsapp"></i> <span></span>
         </a>
     </div>
