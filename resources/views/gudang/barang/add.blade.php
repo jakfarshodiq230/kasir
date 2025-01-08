@@ -239,7 +239,7 @@ function fetchItemForUpdate(itemId) {
                 const type = detail.type['id'] || ''; // Ensure you use the correct field for comparison
                 $('#type_barang').val(type).trigger('change');
 
-                if (!$('#type_barang option[value="' + jenis + '"]').length) {
+                if (!$('#type_barang option[value="' + type + '"]').length) {
                     $('#type_barang').val('PILIH');
                 }
 
