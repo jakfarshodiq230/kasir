@@ -22,3 +22,8 @@ Pengembangan sistem kasir optik ini menggunakan Laravel sebagai framework utama,
 ![Screenshot](https://github.com/jakfarshodiq230/kasir/blob/main/public/images/image_1.png)
 
 ![Screenshot](https://github.com/jakfarshodiq230/kasir/blob/main/public/images/image_2.png)
+
+## Pengembangan selanjutnya
+
+-   Mengirimkan struk transaksi dengan whatshap atau email.
+-   Integrasi payment gateway atau API service bank untuk transaksi mudah.
