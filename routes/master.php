@@ -1,5 +1,6 @@
 <?php
 
+
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Master\JenisController;
@@ -18,10 +19,19 @@ use App\Http\Controllers\Master\KasController;
 use App\Http\Controllers\Master\LaporanController;
 use App\Http\Controllers\Master\PasswordResetLinkController;
 use App\Http\Controllers\Master\TokoController;
+use App\Http\Controllers\Master\GrafikController;
 
 Route::middleware('auth', 'verified', 'cek_level:owner')->group(function () {
+
     Route::prefix('owner-dashboard')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('owner-dashboard.index');
+    });
+
+    Route::prefix('owner-grafik')->group(function () {
+        Route::get('/', [GrafikController::class, 'index'])->name('owner-grafik.index');
+        Route::get('/data-json', [GrafikController::class, 'getJumlahBarang'])->name('owner-grafik-json.getJumlahBarang');
+        Route::get('/data-json-pendapatan', [GrafikController::class, 'getSaldoPerMonth'])->name('owner-grafik-json.getSaldoPerMonth');
+        Route::get('/data-json-utang', [GrafikController::class, 'getJumlahUtang'])->name('owner-grafik-json.getJumlahUtang');
     });
 
     // reset password
@@ -82,7 +92,7 @@ Route::middleware('auth', 'verified', 'cek_level:owner')->group(function () {
         Route::get('/', [GudangController::class, 'index'])->name('gudang.index');
         Route::get('data-gudang-all', [GudangController::class, 'DataGudangJson'])->name('gudang.data');
         Route::post('save-gudang', [GudangController::class, 'store'])->name('gudang.save');
-        Route::get('get-data/{id}', [GudangController::class, 'viewData'])->name('kategori.view');
+        Route::get('get-data/{id}', [GudangController::class, 'viewData'])->name('gudang.view');
         Route::put('update-gudang/{id}', [GudangController::class, 'update'])->name('gudang.update');
         Route::delete('delete-gudang/{id}', [GudangController::class, 'destroy'])->name('gudang.delete');
         Route::put('status-gudang/{id}', [GudangController::class, 'updateStatus'])->name('gudang.status');

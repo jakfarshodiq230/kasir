@@ -11,7 +11,8 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 Route::get('/', function () {
     return view('welcome');
 })->name('dashboard');
-Route::get('/sercing-data-pesanan', [SearchController::class, 'index'])->name('gudang-dashboard.index');
+
+Route::get('/sercing-data-pesanan', [SearchController::class, 'index'])->name('sercing-data-pesanan.index');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

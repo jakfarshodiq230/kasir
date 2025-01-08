@@ -90,7 +90,12 @@
                             <div class="menu_section">
                                 <h3>Owner</h3>
                                 <ul class="nav side-menu">
-                                    <li><a href="{{ route('owner-dashboard.index')}}"><i class="fa fa-dashboard"></i>Dashboard</a></li>
+                                    <li><a><i class="fa fa-dashboard"></i> Home <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li><a href="{{ route('owner-dashboard.index') }}">Dashboard</a></li>
+                                            <li><a href="{{ route('owner-grafik.index') }}">Grafik</a></li>
+                                        </ul>
+                                    </li>
                                     <li><a><i class="fa fa-database"></i> Master <span class="fa fa-chevron-down"></span></a>
                                         <ul class="nav child_menu">
                                             <li><a href="{{ route('kategori.index') }}">Kategori</a></li>
@@ -349,6 +354,8 @@
     {{-- maps --}}
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <!-- Chart.js -->
+    <script src="{{ asset('vendors/vendors/Chart.js/dist/Chart.min.js') }}"></script>
     @yield('scripts')
     <script>
         $(document).ready(function() {
