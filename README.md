@@ -22,3 +22,6 @@ Pengembangan sistem kasir optik ini menggunakan Laravel sebagai framework utama,
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
 ## Hasil Runing
+
+![Screenshot](https://github.com/jakfarshodiq230/kasir/blob/main/public/images/image_1.png)
+![Screenshot](https://github.com/jakfarshodiq230/kasir/blob/main/public/images/image_2.png)
