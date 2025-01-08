@@ -26,4 +26,4 @@ Pengembangan sistem kasir optik ini menggunakan Laravel sebagai framework utama,
 ## Pengembangan selanjutnya
 
 -   Mengirimkan struk transaksi dengan whatshap atau email.
--   Integrasi payment gateway atau API service bank untuk transaksi mudah.
+-   Integrasi payment gateway atau API service bank untuk transaksi lebih mudah.
